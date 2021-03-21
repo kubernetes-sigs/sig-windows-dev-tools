@@ -6,7 +6,7 @@ Common for worker and master nodes:
 
 bridged traffic to iptables is enabled for kube-router:
 ```
-cat >> /etc/ufw/sysctl.conf <<EOF
+sudo cat >> /etc/ufw/sysctl.conf <<EOF
 net/bridge/bridge-nf-call-ip6tables = 1
 net/bridge/bridge-nf-call-iptables = 1
 net/bridge/bridge-nf-call-arptables = 1
