@@ -17,3 +17,6 @@ disable swap
 swapoff -a
 sudo sed -i '/swap/d' /etc/fstab
 ```
+
+
+Here is a [guide on how to install Docker on Win Server 2019](https://www.hostafrica.co.za/blog/new-technologies/how-to-install-docker-on-linux-and-windows/#win) and another [guide on how to install Kubernetes on Win Server 2019](https://www.hostafrica.co.za/blog/new-technologies/install-kubernetes-cluster-windows-server-worker-nodes/)
