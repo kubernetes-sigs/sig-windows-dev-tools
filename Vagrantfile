@@ -25,4 +25,5 @@ Vagrant.configure(2) do |config|
           vb.gui = true
       end
   end
+	
 end
