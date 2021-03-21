@@ -10,8 +10,8 @@ Vagrant.configure(2) do |config|
       master.vm.box = "ubuntu/focal64"
       master.vm.network :private_network, ip:"10.0.0.10"
       master.vm.provider :virtualbox do |vb|
-          vb.customize ["modifyvm", :id, "--memory", "2048"]
-          vb.customize ["modifyvm", :id, "--cpus", "2"]
+	      vb.memory = 2048
+	      vb.cpus = 2
       end
   end
 
@@ -20,9 +20,9 @@ Vagrant.configure(2) do |config|
       winWorker1.vm.box = "StefanScherer/windows_2019"  
       winWorker1.vm.network :private_network, ip:"10.0.0.11"
       winWorker1.vm.provider :virtualbox do |vb|
-          vb.customize ["modifyvm", :id, "--memory", "4096"]
-          vb.customize ["modifyvm", :id, "--cpus", "2"]
-          vb.customize ["modifyvm", :id, "--gui", "true"]
+          vb.memory = 4096
+          vb.cpus = 2
+          vb.gui = true
       end
   end
 end
