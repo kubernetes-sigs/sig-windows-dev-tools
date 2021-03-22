@@ -84,11 +84,13 @@ tag the Docker image:
 docker image tag mcr.microsoft.com/windows/nanoserver:1809 microsoft/nanoserver:latest
 ```
 
+```
 mkdir C:\kubernetes
 cd C:\kubernetes
 $ProgressPreference=’SilentlyContinue’
 iwr -outf kubernetes-node-windows-amd64.tar.gz "https://dl.k8s.io/v1.15.1/kubernetes-node-windows-amd64.tar.gz"
 tar -xkf kubernetes-node-windows-amd64.tar.gz -C C:\kubernetes
 mv C:\kubernetes\kubernetes\node\bin\*.exe C:\kubernetes
+```
 
 Here is a [guide on how to install Docker on Win Server 2019](https://www.hostafrica.co.za/blog/new-technologies/how-to-install-docker-on-linux-and-windows/#win) and another [guide on how to install Kubernetes on Win Server 2019](https://www.hostafrica.co.za/blog/new-technologies/install-kubernetes-cluster-windows-server-worker-nodes/)
