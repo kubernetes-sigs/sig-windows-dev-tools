@@ -61,21 +61,8 @@ mkdir -p $HOME/.kube
 sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 sudo chown $(id -u):$(id -g) $HOME/.kube/config
 
-#set up Calicoctl pod 
-#kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
-#prepare for install on win
-#kubectl create clusterrole calico-install-ns --verb=get --resource=namespace
-#kubectl create clusterrolebinding calico-install-ns --clusterrole=calico-install-ns --user=system:node:<eks_node_name>
-#kubectl create role calico-install-token --verb=get,list --resource=secrets --namespace calico-system
-#kubectl create rolebinding calico-install-token --role=calico-install-token --user=system:node:<eks_node_name> --namespace calico-system
-# ! after install on win run:
-#kubectl delete clusterrolebinding calico-install-ns
-#kubectl delete clusterrole calico-install-ns
-#kubectl delete rolebinding calico-install-token --namespace calico-system
-#kubectl delete role calico-install-token --namespace calico-system
-
 #set up calicoctl as a plugin for kubectl
-(cd /usr/local/bin && curl -o kubectl-calico -L  https://github.com/projectcalico/calicoctl/releases/download/v3.18.1/calicoctl && chmod +x kubectl-calico)
-kubectl-calico ipam configure --strictaffinity=true
+#(cd /usr/local/bin && curl -o kubectl-calico -L  https://github.com/projectcalico/calicoctl/releases/download/v3.18.1/calicoctl && chmod +x kubectl-calico)
+#kubectl-calico ipam configure --strictaffinity=true
 
 SHELL
