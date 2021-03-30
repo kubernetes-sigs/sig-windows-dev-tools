@@ -1,6 +1,5 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
-# TODO automate script for Linux: Docker, Windows, Firewall, Swap
 # TODO create a Kubernetes (+ Kind) vagrant box for win server 2019 ()  
 
 Vagrant.configure(2) do |config|
