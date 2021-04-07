@@ -1,18 +1,16 @@
 # KubernetesOnWindows
 ## How to run
 Some parts of the vagrantfile for windows, especially rebooting, was causing trouble. A workaround for this was just running the same commands from a makefile.
-To actually ran everything just use
+To actually run everything just use
 ```
 make run
 ```
-The last part is not resolved yet and must be done by hand. To do so enter the win VM (pw is "vagrant"), open `PowerShell` in Admin mode and run 
+The last part for Win is not resolved yet and must be done by hand. To do so enter the Win VM (pw is "vagrant"), open `PowerShell` in Admin mode and run 
 ```
 PowerShell "C:\sync\k.ps1"
 ```
 In the last part of the script I still run into errors (thats why the script currently prints out some numbering, to identify the lines that cause the errors).
-
-Hopefully, when this is fixed, the PowerShell-script can be run from the vagrantfile or the makefile.
-
+Hopefully, when this is fixed, the PowerShell-script part can be moved to the vagrantfile or the makefile.
 ```
 #register & start kube-proxy
 1
