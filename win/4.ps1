@@ -1,0 +1,1 @@
+Copy-Item "C:\sync\config" -Destination "C:\k" -Force
