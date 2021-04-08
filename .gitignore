@@ -1,4 +1,4 @@
 ./master/config
 ./win/config
 ./win/kubernetes-node-windows-amd64.tar.gz
-./.vagrant
+./.vagrant/
