@@ -1,1 +1,0 @@
-﻿powershell $BaseDir\start-kubelet.ps1 -RegisterOnly -NetworkMode $NetworkMode

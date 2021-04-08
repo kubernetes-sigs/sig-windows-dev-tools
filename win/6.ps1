@@ -1,1 +1,0 @@
-﻿ipmo C:\k\hns.psm1
