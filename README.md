@@ -9,8 +9,7 @@ The last part for Win is not resolved yet and must be done by hand. To do so ent
 ```
 PowerShell "C:\sync\k.ps1"
 ```
-In the last part of the script I still run into errors (thats why the script currently prints out some numbering, to identify the lines that cause the errors).
-Hopefully, when this is fixed, the PowerShell-script part can be moved to the vagrantfile or the makefile.
+In the last part of the script I still run into errors. Hopefully, when this is fixed, the PowerShell-script part can be moved to the vagrantfile or at least into the makefile.
 ```
 #register & start kube-proxy
 1
