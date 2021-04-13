@@ -1,6 +1,6 @@
 # KubernetesOnWindows
 ## How to run
-Some parts of the vagrantfile for windows, especially rebooting, was causing trouble. A workaround for this was just running the same commands from a makefile.
+Some parts of the vagrantfile for windows, especially rebooting, is causing trouble. A workaround for this is just to run the same commands from a makefile.
 To actually run everything just use
 ```
 make run
