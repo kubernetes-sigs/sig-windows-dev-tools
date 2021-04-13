@@ -26,7 +26,7 @@ Vagrant.configure(2) do |config|
       vb.gui = true
     end
     winw1.vm.network :private_network, ip:"10.0.0.11"
-    #winw1.vm.synced_folder "./win", "c:\\sync"
+    winw1.vm.synced_folder "./win", "c:\\sync"
 
     #install docker
     #winw1.vm.provision "shell", privileged: "true", powershell_elevated_interactive: "true", inline: <<-SHELL
