@@ -7,7 +7,7 @@ Vagrant.configure(2) do |config|
   config.vm.define :master do |master|
     master.vm.host_name = "master"
     master.vm.box = "ubuntu/focal64"
-    master.vm.network :private_network, ip:"10.0.0.10"
+    master.vm.network :private_network, ip:"10.20.30.10"
     master.vm.provider :virtualbox do |vb|
     master.vm.synced_folder "./master", "/var/sync"
       vb.memory = 2048
@@ -19,23 +19,27 @@ Vagrant.configure(2) do |config|
   # WINDOWS WORKER (win server 2019)
   config.vm.define :winw1 do |winw1|
     winw1.vm.host_name = "winw1"
+    #winw1.vm.box = "StefanScherer/windows_2019"  
     winw1.vm.box = "StefanScherer/windows_2019"  
     winw1.vm.provider :virtualbox do |vb|
       vb.memory = 4096
       vb.cpus = 2
       vb.gui = true
     end
-    winw1.vm.network :private_network, ip:"10.0.0.11"
+    winw1.vm.network :private_network, ip:"10.20.30.11"
     winw1.vm.synced_folder "./win", "c:\\sync"
 
+    #winw1.vm.provision "shell", path: "win/docker.ps1", privileged: true
+    
     #install docker
     #winw1.vm.provision "shell", privileged: "true", powershell_elevated_interactive: "true", inline: <<-SHELL
-    #  Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force -WarningAction "SilentlyContinue"
-    #  Install-Module -Name DockerMsftProvider -Force -WarningAction "SilentlyContinue"
-    #  Install-Package Docker -Providername DockerMsftProvider -Force -WarningAction "SilentlyContinue"
-    #SHELL
+    #  Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force -
+    # Install-Module -Name DockerMsftProvider -Force 
+    # Install-Package Docker -Providername DockerMsftProvider -Force
+   #   SHELL
     #reboot
     #winw1.vm.provision :reload
+
     #start docker
     # winw1.vm.provision "shell", privileged: "true", powershell_elevated_interactive: "true", inline: <<-SHELL
     #   Start-Service docker
@@ -69,7 +73,7 @@ echo "net.bridge.bridge-nf-call-arptables=1" | sudo tee -a /etc/sysctl.conf
 sudo sysctl -p
 
 #start cluster with Flannel:
-sudo kubeadm init --apiserver-advertise-address=10.0.0.10 --pod-network-cidr=10.244.0.0/16
+sudo kubeadm init --apiserver-advertise-address=10.20.30.10 --pod-network-cidr=10.244.0.0/16
 
 #to start the cluster with the current user:
 mkdir -p $HOME/.kube

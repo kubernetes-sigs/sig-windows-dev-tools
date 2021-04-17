@@ -1,0 +1,1 @@
+{"virtualbox":{"/var/sync":{"guestpath":"/var/sync","hostpath":"/home/friedrich/vagrant/KubernetesOnWindows/master","disabled":false,"__vagrantfile":true},"/vagrant":{"guestpath":"/vagrant","hostpath":"/home/friedrich/vagrant/KubernetesOnWindows","disabled":false,"__vagrantfile":true}}}
