@@ -8,6 +8,7 @@ make run
 The last part for Win is not resolved yet and must be done by hand. To do so enter the Win VM (pw is "vagrant"), open `PowerShell` in Admin mode and run 
 ```
 PowerShell "C:\sync\k.ps1"
+```
 
 ## Where did I steal all the stuff?
 This guide is based on [this very nice Vagrantfile](https://gist.github.com/danielepolencic/ef4ddb763fd9a18bf2f1eaaa2e337544) and this very good [guide on how install Kubernetes on Ubuntu Focal (20.04)](https://github.com/mialeevs/kubernetes_installation). 
