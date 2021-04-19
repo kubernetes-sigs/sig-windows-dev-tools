@@ -1,4 +1,9 @@
 # KubernetesOnWindows
+## Prerequistits
+You need the `reload` plugin for vagrant.
+```
+vagrant plugin install vagrant-reload
+```
 ## How to run
 Finally, no more need for a makefile:
 ```
@@ -8,7 +13,7 @@ will set up everything.
 
 IMPORTANT: do not log into the VMs until the provisioning is done. That is especially true for Windows because it will prevent the reboots.
 
-In case you still have an old instance of these VMs running for the same dir:
+If you still have an old instance of these VMs running for the same dir:
 ```
 vagrant destroy -f && vagrant up
 ```
