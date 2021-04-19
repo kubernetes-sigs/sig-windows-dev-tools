@@ -17,7 +17,30 @@ If you still have an old instance of these VMs running for the same dir:
 ```
 vagrant destroy -f && vagrant up
 ```
+after everything is done (can take 10 min+) ssh' into the linux vm:
+```
+vagrant ssh master
+```
+and get an overview of the nodes:
+```
+kubectl get nodes
+```
+The win node might stay 'NotReady' for a while, because it takes some time to download the flannel image.
+```
+vagrant@master:~$ kubectl get nodes
+NAME     STATUS     ROLES                  AGE    VERSION
+master   Ready      control-plane,master   8m4s   v1.20.4
+winw1    NotReady   <none>                 64s    v1.20.4
+```
+...
+```
+NAME     STATUS   ROLES                  AGE     VERSION
+master   Ready    control-plane,master   16m     v1.20.4
+winw1    Ready    <none>                 9m11s   v1.20.4
+```
+
 I have only tested this on one machine so if you run into trouble creating new issues (with info about your system) are very welcome. 
+
 
 ## Where did I steal all the stuff?
 This guide is based on [this very nice Vagrantfile](https://gist.github.com/danielepolencic/ef4ddb763fd9a18bf2f1eaaa2e337544) and this very good [guide on how install Kubernetes on Ubuntu Focal (20.04)](https://github.com/mialeevs/kubernetes_installation). 
