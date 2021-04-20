@@ -1,5 +1,5 @@
 # KubernetesOnWindows
-## Prerequistits
+## Prerequisites
 You need the `reload` plugin for vagrant.
 ```
 vagrant plugin install vagrant-reload
