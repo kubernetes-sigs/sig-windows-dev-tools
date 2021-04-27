@@ -1,1 +1,0 @@
-{"virtualbox":{"c:\\sync":{"guestpath":"c:\\sync","hostpath":"/home/friedrich/vagrant/TryHarder/sync","disabled":false,"__vagrantfile":true},"/vagrant":{"guestpath":"/vagrant","hostpath":"/home/friedrich/vagrant/TryHarder","disabled":false,"__vagrantfile":true}}}
