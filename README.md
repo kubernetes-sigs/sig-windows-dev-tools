@@ -4,6 +4,14 @@ You need the `reload` plugin for vagrant.
 ```
 vagrant plugin install vagrant-reload
 ```
+
+If your system has less than 16 gb ram, adjust the `Vagrantfile`:
+```
+    winw1.vm.provider :virtualbox do |vb|
+      vb.memory = 4096
+```
+change the `4096` to `2048`.
+
 ## How to run
 Finally, no more need for a makefile:
 ```
