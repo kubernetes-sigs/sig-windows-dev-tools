@@ -12,3 +12,7 @@ Install-Module -Name DockerMsftProvider -Force
 Write-Output "### Installing Docker"
 
 Install-Package Docker -Providername DockerMsftProvider -Force
+
+Write-Output "### Installing HyperV"
+
+Install-WindowsFeature -Name Hyper-V -IncludeManagementTools -Restart

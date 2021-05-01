@@ -22,9 +22,10 @@ Vagrant.configure(2) do |config|
     winw1.vm.host_name = "winw1"
     winw1.vm.box = "StefanScherer/windows_2019"  
     winw1.vm.provider :virtualbox do |vb|
-      vb.memory = 4096
+      vb.memory = 2048
       vb.cpus = 2
       vb.gui = true
+      vb.customize ["modifyvm", :id, "--nested-hw-virt", "on"]
     end
     winw1.vm.network :private_network, ip:"10.20.30.11"
     winw1.vm.synced_folder "./sync", "c:\\sync"

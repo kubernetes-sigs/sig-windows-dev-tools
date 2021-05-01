@@ -12,10 +12,18 @@ New-Item -ItemType Directory -Force -Path C:\k
 
 cd C:\k
 
+Write-Output "### Install Containerd" 
+
+curl.exe -LO https://github.com/kubernetes-sigs/sig-windows-tools/releases/latest/download/Install-Containerd.ps1
+
+Write-Output "###Running containerd"
+
+PowerShell "C:\k\Install-Containerd.ps1"
+
 Write-Output "### Downloading PrepareNode.ps1"
 
 curl.exe -s -LO https://github.com/kubernetes-sigs/sig-windows-tools/releases/latest/download/PrepareNode.ps1
 
 Write-Output "### Running PrepareNode.ps1"
 
-PowerShell "C:\k\PrepareNode.ps1" -KubernetesVersion v1.20.4
+PowerShell "C:\k\PrepareNode.ps1" -KubernetesVersion v1.20.4 -ContainerRuntime containerD
