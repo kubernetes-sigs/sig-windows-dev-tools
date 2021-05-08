@@ -22,8 +22,8 @@ Vagrant.configure(2) do |config|
     winw1.vm.host_name = "winw1"
     winw1.vm.box = "StefanScherer/windows_2019"  
     winw1.vm.provider :virtualbox do |vb|
-      vb.memory = 4096
-      vb.cpus = 2
+      vb.memory = 8192 # 8GB memory is the normal min for windows clusters
+      vb.cpus = 4 # 2 cores will be flakey on the join and RDP performance
       vb.gui = true
     end
     winw1.vm.network :private_network, ip:"10.20.30.11"
