@@ -1,0 +1,1 @@
+kubeadm join 10.20.30.10:6443 --token rbfbjb.ciab4t15a2c9ga6a     --discovery-token-ca-cert-hash sha256:05277713468ff373925c7c72ab666118a5daad49653305a493b3c1e0cdfedfbd --cri-socket "npipe:////./pipe/containerd-containerd"

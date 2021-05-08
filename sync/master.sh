@@ -7,27 +7,67 @@ deb https://apt.kubernetes.io/ kubernetes-xenial main
 EOF
 sudo apt-get update
 
-#Install Docker and Kubernetes, hold versions
-sudo apt-get install -y docker-ce=5:20.10.5~3-0~ubuntu-$(lsb_release -cs) kubelet=1.20.4-00 kubeadm=1.20.4-00 kubectl=1.20.4-00
-sudo apt-mark hold docker-ce kubelet kubeadm kubectl
 
 #disable swap
 swapoff -a
 sudo sed -i '/swap/d' /etc/fstab
 
-#bridged traffic to iptables is enabled for kube-router:
-echo "net.bridge.bridge-nf-call-iptables=1" | sudo tee -a /etc/sysctl.conf
-echo "net.bridge.bridge-nf-call-ip6tables=1" | sudo tee -a /etc/sysctl.conf
-echo "net.bridge.bridge-nf-call-arptables=1" | sudo tee -a /etc/sysctl.conf
-sudo sysctl -p
+cat <<EOF | sudo tee /etc/modules-load.d/containerd.conf
+overlay
+br_netfilter
+EOF
+
+sudo modprobe overlay
+sudo modprobe br_netfilter
+
+# Setup required sysctl params, these persist across reboots.
+cat <<EOF | sudo tee /etc/sysctl.d/99-kubernetes-cri.conf
+net.bridge.bridge-nf-call-iptables  = 1
+net.ipv4.ip_forward                 = 1
+net.bridge.bridge-nf-call-ip6tables = 1
+EOF
+
+# Apply sysctl params without reboot
+sudo sysctl --system
+
+
+#Install Docker and Kubernetes, hold versions
+sudo apt-get install -y docker-ce=5:20.10.5~3-0~ubuntu-$(lsb_release -cs) kubelet=1.20.4-00 kubeadm=1.20.4-00 kubectl=1.20.4-00
+sudo apt-mark hold docker-ce kubelet kubeadm kubectl
+
+
+# #bridged traffic to iptables is enabled for kube-router:
+# echo "net.bridge.bridge-nf-call-iptables=1" | sudo tee -a /etc/sysctl.conf
+# echo "net.bridge.bridge-nf-call-ip6tables=1" | sudo tee -a /etc/sysctl.conf
+# echo "net.bridge.bridge-nf-call-arptables=1" | sudo tee -a /etc/sysctl.conf
+# sudo sysctl -p
+
+# Configuring and starting containerd
+sudo mkdir -p /etc/containerd
+containerd config default | sudo tee /etc/containerd/config.toml
+sudo systemctl restart containerd
+
+cat <<EOF | sudo tee kubeadm-config.yaml
+kind: ClusterConfiguration
+apiVersion: kubeadm.k8s.io/v1beta2
+kubernetesVersion: v1.21.0
+networking:
+  podSubnet: "10.244.0.0/16"
+---
+kind: KubeletConfiguration
+apiVersion: kubelet.config.k8s.io/v1beta1
+cgroupDriver: systemd
+EOF
 
 #start cluster with Flannel:
-sudo kubeadm init --apiserver-advertise-address=10.20.30.10 --pod-network-cidr=10.244.0.0/16
+sudo kubeadm init --config kubeadm-config.yaml
 
 #to start the cluster with the current user:
 mkdir -p $HOME/.kube
 sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+rm -f /var/sync/config
 cp $HOME/.kube/config /var/sync/config
 
 #setting up flannel networking
@@ -36,7 +76,8 @@ wget https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-
 sed -i 's/"Type": "vxlan"/"Type": "vxlan","VNI": 4096,"Port": 4789/' /tmp/kube-flannel.yml
 kubectl apply -f /tmp/kube-flannel.yml
 
-curl -s -L https://github.com/kubernetes-sigs/sig-windows-tools/releases/latest/download/kube-proxy.yml | sed 's/VERSION/v1.20.4/g' | kubectl apply -f -
+curl -s -L https://github.com/kubernetes-sigs/sig-windows-tools/releases/latest/download/kube-proxy.yml | sed 's/VERSION/v1.21.0/g' | kubectl apply -f -
 kubectl apply -f https://github.com/kubernetes-sigs/sig-windows-tools/releases/latest/download/flannel-overlay.yml
 
-kubeadm token create --print-join-command > /var/sync/join.ps1
+rm -f /var/sync/join.txt
+kubeadm token create --print-join-command > /var/sync/join.txt
