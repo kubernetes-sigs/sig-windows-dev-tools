@@ -22,22 +22,21 @@ Vagrant.configure(2) do |config|
     winw1.vm.host_name = "winw1"
     winw1.vm.box = "StefanScherer/windows_2019"  
     winw1.vm.provider :virtualbox do |vb|
-      vb.memory = 4096
-      vb.cpus = 2
-      vb.gui = true
+      vb.memory = 8192
+      vb.cpus = 4
+      vb.gui = false
     end
     winw1.vm.network :private_network, ip:"10.20.30.11"
     winw1.vm.synced_folder "./sync", "c:\\sync"
 
     ### for Containerd support
-    #winw1.vm.provision "shell", path: "sync/hyperv.ps1", privileged: true
-    #winw1.vm.provision :reload
-    #winw1.vm.provision "shell", path: "sync/containerd1.ps1", privileged: true
-    #winw1.vm.provision :reload
-    #winw1.vm.provision "shell", path: "sync/containerd2.ps1", privileged: true
+    winw1.vm.provision "shell", path: "sync/hyperv.ps1", privileged: true
 
-    winw1.vm.provision "shell", path: "sync/docker.ps1", privileged: true
+    winw1.vm.provision "shell", path: "sync/containerd1.ps1", privileged: true
+    winw1.vm.provision "shell", path: "sync/containerd2.ps1", privileged: true
+
     winw1.vm.provision :reload
+
     winw1.vm.provision "shell", path: "sync/k.ps1", privileged: true
     winw1.vm.provision "shell", path: "sync/join.ps1", privileged: true
   end

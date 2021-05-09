@@ -1,0 +1,1 @@
+kubeadm join 10.20.30.10:6443 --token p8aiig.kq4myzmstu8gsp0j     --discovery-token-ca-cert-hash sha256:af527670453f7c0ec0b66514297004f3e4c124ed9fb50589e6f6aa3fd1ec1d6a --cri-socket="npipe:////./pipe/containerd-containerd"
