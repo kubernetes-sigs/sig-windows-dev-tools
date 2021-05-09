@@ -24,6 +24,7 @@ Vagrant.configure(2) do |config|
     winw1.vm.provider :virtualbox do |vb|
       vb.memory = 8192
       vb.cpus = 4
+      # use rdp to access a GUI if you need it !
       vb.gui = false
     end
     winw1.vm.network :private_network, ip:"10.20.30.11"

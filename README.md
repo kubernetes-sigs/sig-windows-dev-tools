@@ -12,14 +12,21 @@ If your system has less than 16 gb ram, adjust the `Vagrantfile`:
 ```
 change the `4096` to `2048`.
 
-## How to run
+## How to run !
+
 Finally, no more need for a makefile:
 ```
+# 1) first run this, bc vagrant needs to do some reload of machines
+vagrant plugin install vagrant-reload 
+
+# 2) bring up your entire windows cluster ! 
 vagrant up
 ```
-will set up everything.
 
-IMPORTANT: do not log into the VMs until the provisioning is done. That is especially true for Windows because it will prevent the reboots.
+AND THATS IT ! Your machines should come up in a few minutes...
+
+## IMPORTANT
+Do not log into the VMs until the provisioning is done. That is especially true for Windows because it will prevent the reboots.
 
 If you still have an old instance of these VMs running for the same dir:
 ```
@@ -48,6 +55,10 @@ winw1    Ready    <none>                 9m11s   v1.20.4
 ```
 
 I have only tested this on one machine so if you run into trouble creating new issues (with info about your system) are very welcome. 
+
+## Accessing the windows box
+
+You obviously will want to run commands on the windows box, so, you can do this by noting the IP address during `vagrant provision` and running *any* RDP client (vagrant/vagrant for username/password)
 
 
 ## Where did I steal all the stuff?
