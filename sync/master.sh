@@ -40,3 +40,5 @@ curl -s -L https://github.com/kubernetes-sigs/sig-windows-tools/releases/latest/
 kubectl apply -f https://github.com/kubernetes-sigs/sig-windows-tools/releases/latest/download/flannel-overlay.yml
 
 kubeadm token create --print-join-command > /var/sync/join.ps1
+
+echo "`cat /var/sync/join.ps1` --cri-socket=\"npipe:////./pipe/containerd-containerd\"" > /var/sync/join.ps1
