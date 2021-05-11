@@ -81,3 +81,4 @@ kubectl apply -f https://github.com/kubernetes-sigs/sig-windows-tools/releases/l
 
 rm -f /var/sync/join.txt
 kubeadm token create --print-join-command > /var/sync/join.txt
+echo "`cat /var/sync/join.ps1` --cri-socket=\"npipe:////./pipe/containerd-containerd\"" > /var/sync/join.txt
