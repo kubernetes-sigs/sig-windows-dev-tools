@@ -22,24 +22,28 @@ Vagrant.configure(2) do |config|
     winw1.vm.host_name = "winw1"
     winw1.vm.box = "StefanScherer/windows_2019"  
     winw1.vm.provider :virtualbox do |vb|
-      vb.memory = 8192
-      vb.cpus = 4
-      # use rdp to access a GUI if you need it !
-      vb.gui = false
+    vb.memory = 8192
+    vb.cpus = 4
+    # use rdp to access a GUI if you need it !
+    vb.gui = false
     end
     winw1.vm.network :private_network, ip:"10.20.30.11"
     winw1.vm.synced_folder "./sync", "c:\\sync"
 
-    ### for Containerd support
+    ## for Containerd support
     winw1.vm.provision "shell", path: "sync/hyperv.ps1", privileged: true
-
-    winw1.vm.provision "shell", path: "sync/containerd1.ps1", privileged: true
-    winw1.vm.provision "shell", path: "sync/containerd2.ps1", privileged: true
-
     winw1.vm.provision :reload
+    winw1.vm.provision "shell", path: "sync/containerd1.ps1", privileged: true
+    winw1.vm.provision :reload
+    winw1.vm.provision "shell", path: "sync/containerd2.ps1", privileged: true
+    winw1.vm.provision "shell", path: "https://github.com/kubernetes-sigs/sig-windows-tools/releases/latest/download/PrepareNode.ps1", privileged: true, args: "-KubernetesVersion v1.21.0 -ContainerRuntime containerD"
+    winw1.vm.provision "shell", path: "sync/prepjoin.ps1", privileged: true
+    winw1.vm.provision "shell", path: "sync/kubejoin.ps1", privileged: true
+    # winw1.vm.provision "shell", path: "sync/docker.ps1", privileged: true
+    # winw1.vm.provision :reload
+    # winw1.vm.provision "shell", path: "sync/k.ps1", privileged: true
+    # winw1.vm.provision "shell", path: "sync/join.ps1", privileged: true
 
-    winw1.vm.provision "shell", path: "sync/k.ps1", privileged: true
-    winw1.vm.provision "shell", path: "sync/join.ps1", privileged: true
   end
   
 end
