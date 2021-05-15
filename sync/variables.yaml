@@ -1,0 +1,3 @@
+--- 
+kubelet_path:  "./sync/kubelet" 
+kubeproxy_path:  "~/home/sladyn/work/src/k8s.io/kubernetes/_output/bin/kube-proxy.exe" 

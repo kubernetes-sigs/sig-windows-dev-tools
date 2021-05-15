@@ -2,6 +2,9 @@
 # vi: set ft=ruby :
 # TODO create a Kubernetes (+ Kind) vagrant box for win server 2019 ()  
 
+require 'yaml'
+settings = YAML.load_file 'sync/variables.yaml'
+
 Vagrant.configure(2) do |config|
 
   # LINUX MASTER
@@ -29,6 +32,9 @@ Vagrant.configure(2) do |config|
     end
     winw1.vm.network :private_network, ip:"10.20.30.11"
     winw1.vm.synced_folder "./sync", "c:\\sync"
+
+    ## Copy exe files into windows node
+    winw1.vm.provision "file", source: settings['kubelet_path'] , destination: "C:/k/bin"
 
     ## for Containerd support
     winw1.vm.provision "shell", path: "sync/hyperv.ps1", privileged: true
