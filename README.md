@@ -60,7 +60,13 @@ I have only tested this on one machine so if you run into trouble creating new i
 
 You obviously will want to run commands on the windows box, so, you can do this by noting the IP address during `vagrant provision` and running *any* RDP client (vagrant/vagrant for username/password)
 
+To run a *command* on the windows boxes, without actually using the UI, you can use `winrm` that is integrated into vagrant.  For example, you can run:
+
+```
+vagrant winrm winw1 --shell=powershell --command="ls"
+```
 
 ## Where did I steal all the stuff?
+
 This guide is based on [this very nice Vagrantfile](https://gist.github.com/danielepolencic/ef4ddb763fd9a18bf2f1eaaa2e337544) and this very good [guide on how install Kubernetes on Ubuntu Focal (20.04)](https://github.com/mialeevs/kubernetes_installation). 
 For the Windows part is used this [guide on how to install Docker on Win Server 2019](https://www.hostafrica.co.za/blog/new-technologies/how-to-install-docker-on-linux-and-windows/#win))  and another [this](https://kubernetes.io/docs/tasks/administer-cluster/kubeadm/adding-windows-nodes/) [~~this~~](https://www.hostafrica.co.za/blog/new-technologies/install-kubernetes-cluster-windows-server-worker-nodes/) guide on how to install Kubernetes on Win Server 2019 .
