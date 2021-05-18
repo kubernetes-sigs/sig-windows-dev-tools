@@ -14,7 +14,19 @@ change the `4096` to `2048`.
 
 ## How to run !
 
-Finally, no more need for a makefile:
+There are two use cases for these windows k8s dev environments: Quik testing, and testing k8s from source.
+
+### Testing from source: make
+
+To test from source, run `make all`.  This will
+- clone down k8s from github
+- compile the k8s proxy and kubelet
+- inject them into the Vagrant windows environment at the C:/k/bin/ location 
+- start the linux and windows VMs up 
+- ... TODO ~ build linux components from source as well ...
+
+### Quick testing: Vagrant up
+
 ```
 # 1) first run this, bc vagrant needs to do some reload of machines
 vagrant plugin install vagrant-reload 
