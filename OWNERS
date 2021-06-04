@@ -1,0 +1,7 @@
+# See the OWNERS docs at https://go.k8s.io/owners
+
+approvers:.
+  sig-windows-dev-tools:
+    - Sladyn Nunes
+    - Jay Vayes
+    - Friedrich Wilken
