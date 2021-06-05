@@ -19,7 +19,7 @@ There are two use cases for these windows k8s dev environments: Quik testing, an
 ### Testing from source: make
 
 To test from source, run `make all`.  This will
-- clone down k8s from github
+- clone down k8s from github. If you have the k/k repo locally you can `make path=path_to_k/k all` 
 - compile the k8s proxy and kubelet
 - inject them into the Vagrant windows environment at the C:/k/bin/ location 
 - start the linux and windows VMs up 
