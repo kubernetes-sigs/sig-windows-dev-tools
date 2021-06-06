@@ -95,6 +95,6 @@ kubectl apply -f /tmp/kube-flannel.yml
 curl -s -L https://github.com/kubernetes-sigs/sig-windows-tools/releases/latest/download/kube-proxy.yml | sed 's/VERSION/v1.21.0/g' | kubectl apply -f -
 kubectl apply -f https://github.com/kubernetes-sigs/sig-windows-tools/releases/latest/download/flannel-overlay.yml
 
-rm -f /var/sync/join.txt
-kubeadm token create --print-join-command > /var/sync/join.txt
-echo "`cat /var/sync/join.ps1` --cri-socket=\"npipe:////./pipe/containerd-containerd\"" > /var/sync/join.txt
+rm -f /var/sync/kubejoin.ps1
+kubeadm token create --print-join-command > /var/sync/kubejoin.ps1
+sed -i 's#--token#--cri-socket "npipe:////./pipe/containerd-containerd" --token#g' /var/sync/kubejoin.ps1

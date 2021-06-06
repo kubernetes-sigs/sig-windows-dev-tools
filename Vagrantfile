@@ -54,12 +54,15 @@ Vagrant.configure(2) do |config|
     ## for Containerd support
     winw1.vm.provision "shell", path: "sync/hyperv.ps1", privileged: true
     winw1.vm.provision :reload
+
     winw1.vm.provision "shell", path: "sync/containerd1.ps1", privileged: true
     winw1.vm.provision :reload
+
     winw1.vm.provision "shell", path: "sync/containerd2.ps1", privileged: true
     winw1.vm.provision "shell", path: "https://github.com/kubernetes-sigs/sig-windows-tools/releases/latest/download/PrepareNode.ps1", privileged: true, args: "-KubernetesVersion v1.21.0 -ContainerRuntime containerD"
-    winw1.vm.provision "shell", path: "sync/prepjoin.ps1", privileged: true
+    #winw1.vm.provision "shell", path: "sync/prepjoin.ps1", privileged: true
     winw1.vm.provision "shell", path: "sync/kubejoin.ps1", privileged: true
+    
     # winw1.vm.provision "shell", path: "sync/docker.ps1", privileged: true
     # winw1.vm.provision :reload
     # winw1.vm.provision "shell", path: "sync/k.ps1", privileged: true
