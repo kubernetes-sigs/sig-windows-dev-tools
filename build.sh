@@ -16,6 +16,14 @@ limitations under the License.
 '
 
 build_binaries () {
+
+    if [ -z "$1" ]
+      then
+        cd kubernetes
+      else 
+        # if the path has been provided cd into that path to find the kubernetes directory
+        cd "$1"
+    fi
     cd kubernetes
     echo "Building binaries"
     ./build/run.sh make kubelet KUBE_BUILD_PLATFORMS=windows/amd64
@@ -30,16 +38,22 @@ cleanup () {
     rm -rf ../kubernetes
 }
 
-if [ -d "kubernetes" ] 
-then
-    echo "Directory kubernetes exists." 
-    build_binaries
-    cleanup
-else
-    echo "Error: Directory kubernetes does not exists.Cloning...."
-    git clone https://github.com/kubernetes/kubernetes.git
-    build_binaries
-    cleanup
+
+if [ -z "$1" ]
+  then
+     if [ -d "kubernetes" ] 
+        then
+            echo "Directory kubernetes exists." 
+            build_binaries
+            cleanup
+        else
+            echo "Error: Directory kubernetes does not exists.Cloning...."
+            git clone https://github.com/kubernetes/kubernetes.git
+            build_binaries
+            cleanup
+        fi
+  else 
+    build_binaries "$1" 
 fi
 
 
