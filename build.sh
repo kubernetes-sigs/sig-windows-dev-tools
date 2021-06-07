@@ -30,7 +30,7 @@ build_binaries () {
     ./build/run.sh make kubelet KUBE_BUILD_PLATFORMS=windows/amd64
     ./build/run.sh make kube-proxy KUBE_BUILD_PLATFORMS=windows/amd64
     echo "Copying files to sync"
-    cp -ar ./_output/dockerized/bin/windows/amd64/ ../sync/bin
+    cp -r ./_output/dockerized/bin/windows/amd64/ ../sync/bin
 }
 
 cleanup () {
