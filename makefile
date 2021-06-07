@@ -12,8 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-all: build-binaries vagrant-up
-
+all: 1-build-binaries 2-vagrant-up
 1-build-binaries:
 	chmod +x build.sh
 	./build.sh $(path)
