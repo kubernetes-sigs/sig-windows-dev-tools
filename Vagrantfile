@@ -50,6 +50,12 @@ Vagrant.configure(2) do |config|
     winw1.vm.synced_folder "./sync", "c:\\sync"
 
     ## Copy exe files into windows node
+
+    # I think this is invalid... (jay 6/7)
+    # the reason being that PrepareNode.ps1 seems to check C:/k/ for the contents of the files,
+    # and so this isnt used... it always downloads them...
+    # winw1.vm.provision "file", source: settings['kubelet_path'] , destination: "C:/k/bin"
+
     winw1.vm.provision "file", source: settings['kubelet_path'] , destination: "C:/k/"
 
     ## for Containerd support
