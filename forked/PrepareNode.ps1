@@ -33,12 +33,14 @@ function DownloadFile($destination, $source) {
         Write-Host("Skipping download to avoid overwriting, already found on disk...")
         return
     }
-    Write-Host("Downloading $source to $destination")
-    curl.exe --silent --fail -Lo $destination $source
+    else {
+        Write-Host("Downloading $source to $destination")
+        curl.exe --silent --fail -Lo $destination $source
 
-    if (!$?) {
-        Write-Error "Download $source failed"
-        exit 1
+        if (!$?) {
+            Write-Error "Download $source failed"
+            exit 1
+        }
     }
 }
 

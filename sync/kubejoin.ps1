@@ -1,5 +1,3 @@
-# To avoid the "crictl.exe not on the path error, we add containerd permanantly to the pathhhhh"
-$env:path += ";C:\Program Files\containerd"
-[Environment]::SetEnvironmentVariable("Path", $env:Path, [System.EnvironmentVariableTarget]::Machine)
-
-kubeadm join 10.0.2.15:6443 --cri-socket "npipe:////./pipe/containerd-containerd" --token x3sloc.76v9vmngy4iqqbae     --discovery-token-ca-cert-hash sha256:ab028a3edaf4df32d47fff414bf5a534bb3c53288ba3f6f86b61b6342df34aa8
+:path += ";C:\Program Files\containerd"
+[Environment]::SetEnvironmentVariable("Path", :Path, [System.EnvironmentVariableTarget]::Machine)
+kubeadm join 10.0.2.15:6443 --cri-socket "npipe:////./pipe/containerd-containerd" --token 7fjfe4.g88j3cohkjuyaxeo     --discovery-token-ca-cert-hash sha256:20ce09aace70da710531a7ff140e200444a70b08ad00d2dab77b260226ad24a8 

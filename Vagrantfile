@@ -50,7 +50,7 @@ Vagrant.configure(2) do |config|
     winw1.vm.synced_folder "./sync", "c:\\sync"
 
     ## Copy exe files into windows node
-    winw1.vm.provision "file", source: settings['kubelet_path'] , destination: "C:/k/bin"
+    winw1.vm.provision "file", source: settings['kubelet_path'] , destination: "C:/k/"
 
     ## for Containerd support
     winw1.vm.provision "shell", path: "sync/hyperv.ps1", privileged: true
