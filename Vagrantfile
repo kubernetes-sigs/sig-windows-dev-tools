@@ -29,7 +29,7 @@ Vagrant.configure(2) do |config|
     master.vm.network :private_network, ip:"10.20.30.10"
     master.vm.provider :virtualbox do |vb|
     master.vm.synced_folder "./sync", "/var/sync"
-      vb.memory = 2048
+      vb.memory = 4096
       vb.cpus = 2
     end
     master.vm.provision :shell, privileged: false, path: "sync/master.sh"
@@ -46,6 +46,7 @@ Vagrant.configure(2) do |config|
     vb.gui = false
     end
     winw1.vm.network :private_network, ip:"10.20.30.11"
+    winw1.vm.synced_folder ".", "/vagrant", disabled:true
     winw1.vm.synced_folder "./sync", "c:\\sync"
 
     ## Copy exe files into windows node
@@ -59,8 +60,8 @@ Vagrant.configure(2) do |config|
     winw1.vm.provision :reload
 
     winw1.vm.provision "shell", path: "sync/containerd2.ps1", privileged: true
-    winw1.vm.provision "shell", path: "https://github.com/kubernetes-sigs/sig-windows-tools/releases/latest/download/PrepareNode.ps1", privileged: true, args: "-KubernetesVersion v1.21.0 -ContainerRuntime containerD"
-    #winw1.vm.provision "shell", path: "sync/prepjoin.ps1", privileged: true
+    winw1.vm.provision "shell", path: "forked/PrepareNode.ps1", privileged: true, args: "-KubernetesVersion v1.21.0 -ContainerRuntime containerD"
+    # winw1.vm.provision "shell", path: "sync/prepjoin.ps1", privileged: true
     winw1.vm.provision "shell", path: "sync/kubejoin.ps1", privileged: true
     
     # winw1.vm.provision "shell", path: "sync/docker.ps1", privileged: true

@@ -95,6 +95,14 @@ kubectl apply -f /tmp/kube-flannel.yml
 curl -s -L https://github.com/kubernetes-sigs/sig-windows-tools/releases/latest/download/kube-proxy.yml | sed 's/VERSION/v1.21.0/g' | kubectl apply -f -
 kubectl apply -f https://github.com/kubernetes-sigs/sig-windows-tools/releases/latest/download/flannel-overlay.yml
 
+######## MAKE THE JOIN FILE FOR WINDOWS ##########
 rm -f /var/sync/kubejoin.ps1
-kubeadm token create --print-join-command > /var/sync/kubejoin.ps1
+
+cat << EOF > /var/sync/kubejoin.ps1
+$env:path += ";C:\Program Files\containerd"
+[Environment]::SetEnvironmentVariable("Path", $env:Path, [System.EnvironmentVariableTarget]::Machine)
+EOF
+
+kubeadm token create --print-join-command >> /var/sync/kubejoin.ps1
+
 sed -i 's#--token#--cri-socket "npipe:////./pipe/containerd-containerd" --token#g' /var/sync/kubejoin.ps1

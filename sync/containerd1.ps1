@@ -34,3 +34,7 @@ Write-Output "### Running 'Install-Containerd.ps1'"
 PowerShell "C:\k\Install-Containerd.ps1"
 
 Write-Output "### DONE with 'containerd1.ps1'"
+
+# To avoid the "crictl.exe not on the path error, we add containerd permanantly to the pathhhhh"
+$env:path += ";C:\Program Files\containerd"
+[Environment]::SetEnvironmentVariable("Path", $env:Path, [System.EnvironmentVariableTarget]::Machine)

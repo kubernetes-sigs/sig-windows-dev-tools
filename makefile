@@ -14,10 +14,12 @@
 
 all: build-binaries vagrant-up
 
-build-binaries:
+1-build-binaries:
 	chmod +x build.sh
 	./build.sh $(path)
 
-vagrant-up:
+2-vagrant-up:
 	vagrant destroy -f && vagrant up
- 
+
+3-e2e-test:
+	sonobuoy run --e2e-focus=...

@@ -30,7 +30,7 @@ $ErrorActionPreference = 'Stop'
 
 function DownloadFile($destination, $source) {
     if (Test-Path -Path $destination) {
-        Write-Error("Skipping download to avoid overwriting, already found on disk..."
+        Write-Host("Skipping download to avoid overwriting, already found on disk...")
         return
     }
     Write-Host("Downloading $source to $destination")
@@ -93,7 +93,7 @@ start-service rancher-wins
 mkdir -force C:\var\log\kubelet
 mkdir -force C:\var\lib\kubelet\etc\kubernetes
 mkdir -force C:\etc\kubernetes\pki
-New-Item -path C:\var\lib\kubelet\etc\kubernetes\pki -type SymbolicLink -value C:\etc\kubernetes\pki\
+New-Item -force -path C:\var\lib\kubelet\etc\kubernetes\pki -type SymbolicLink -value C:\etc\kubernetes\pki\
 
 $StartKubeletFileContent = '$FileContent = Get-Content -Path "/var/lib/kubelet/kubeadm-flags.env"
 $global:KubeletArgs = $FileContent.TrimStart(''KUBELET_KUBEADM_ARGS='').Trim(''"'')
