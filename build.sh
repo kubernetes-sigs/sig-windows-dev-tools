@@ -14,6 +14,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 '
+set -e
 
 build_binaries () {
 
@@ -47,7 +48,7 @@ if [ -z "$1" ]
             build_binaries
             cleanup
         else
-            echo "Error: Directory kubernetes does not exists.Cloning...."
+            echo "Directory kubernetes does not exists. Cloning ..."
             git clone https://github.com/kubernetes/kubernetes.git
             build_binaries
             cleanup
