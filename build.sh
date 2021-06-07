@@ -17,20 +17,18 @@ limitations under the License.
 set -e
 
 build_binaries () {
-
-    if [ -z "$1" ]
-      then
-        cd kubernetes
-      else 
-        # if the path has been provided cd into that path to find the kubernetes directory
-        cd "$1"
-    fi
-    cd kubernetes
-    echo "Building binaries"
-    ./build/run.sh make kubelet KUBE_BUILD_PLATFORMS=windows/amd64
-    ./build/run.sh make kube-proxy KUBE_BUILD_PLATFORMS=windows/amd64
-    echo "Copying files to sync"
-    cp -r ./_output/dockerized/bin/windows/amd64/ ../sync/bin
+    echo "building kube from $1"
+    startDir=`pwd`
+    pushd $1
+	    if [[ -d ./_output/dockerized/bin/windows/amd64/ ]]; then
+		echo "skipping compilation of windows bits... _output is present"
+	    else
+	    	./build/run.sh make kubelet KUBE_BUILD_PLATFORMS=windows/amd64
+	    	./build/run.sh make kube-proxy KUBE_BUILD_PLATFORMS=windows/amd64
+            fi
+	    echo "Copying files to sync"
+	    cp -r ./_output/dockerized/bin/windows/amd64/ $startDir/sync/bin
+    popd
 }
 
 cleanup () {
@@ -39,22 +37,14 @@ cleanup () {
     rm -rf ../kubernetes
 }
 
-
-if [ -z "$1" ]
-  then
-     if [ -d "kubernetes" ] 
-        then
-            echo "Directory kubernetes exists." 
-            build_binaries
-            cleanup
-        else
-            echo "Directory kubernetes does not exists. Cloning ..."
-            git clone https://github.com/kubernetes/kubernetes.git
-            build_binaries
-            cleanup
-        fi
-  else 
-    build_binaries "$1" 
+echo "args $0 -- $1 - "
+# check if theres an input for the path
+if [[ ! -z "$1" ]] ;then
+	echo "Directory kubernetes provided... building"
+	build_binaries $1
+	cleanup
+else
+	echo "missing path argument $1 , need a kubernetes/ path"
+	exit 1
 fi
-
 

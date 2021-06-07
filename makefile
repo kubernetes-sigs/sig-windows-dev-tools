@@ -12,7 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-all: 1-build-binaries 2-vagrant-up
+path ?= kubernetes
+
+all: 0-fetch-k8s 1-build-binaries 2-vagrant-up
+
+0-fetch-k8s:
+	chmod +x fetch.sh
+	echo $(path)
+	./fetch.sh $(path)
+
 1-build-binaries:
 	chmod +x build.sh
 	./build.sh $(path)
