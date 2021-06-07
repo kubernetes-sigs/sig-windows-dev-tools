@@ -99,8 +99,8 @@ kubectl apply -f https://github.com/kubernetes-sigs/sig-windows-tools/releases/l
 rm -f /var/sync/kubejoin.ps1
 
 cat << EOF > /var/sync/kubejoin.ps1
-$env:path += ";C:\Program Files\containerd"
-[Environment]::SetEnvironmentVariable("Path", $env:Path, [System.EnvironmentVariableTarget]::Machine)
+\$env:path += ";C:\Program Files\containerd"
+[Environment]::SetEnvironmentVariable("Path", \$env:Path, [System.EnvironmentVariableTarget]::Machine)
 EOF
 
 kubeadm token create --print-join-command >> /var/sync/kubejoin.ps1
