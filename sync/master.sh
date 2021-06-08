@@ -63,20 +63,24 @@ sudo mkdir -p /etc/containerd
 containerd config default | sudo tee /etc/containerd/config.toml
 sudo systemctl restart containerd
 
-cat <<EOF | sudo tee kubeadm-config.yaml
-kind: ClusterConfiguration
-apiVersion: kubeadm.k8s.io/v1beta2
-kubernetesVersion: v1.21.0
-networking:
-  podSubnet: "10.244.0.0/16"
----
-kind: KubeletConfiguration
-apiVersion: kubelet.config.k8s.io/v1beta1
-cgroupDriver: systemd
-EOF
-
+# TODO HELP WANTED
 #start cluster with Flannel:
-sudo kubeadm init --config kubeadm-config.yaml
+# https://stackoverflow.com/questions/60391127/kubeadm-init-apiserver-advertise-address-flag-equivalent-in-config-file
+# Someday consider
+  #cat <<EOF | sudo tee kubeadm-config.yaml
+  #kind: ClusterConfiguration
+  #apiVersion: kubeadm.k8s.io/v1beta2
+  #kubernetesVersion: v1.21.0
+  #networking:
+  #  podSubnet: "10.244.0.0/16"
+  #---
+  #kind: KubeletConfiguration
+  #apiVersion: kubelet.config.k8s.io/v1beta1
+  #cgroupDriver: systemd
+  #EOF
+# RIGHT NOW we NEED to use ApiSErverAdvertiseAddress... but not sure how to do that equivalent in kubeadm.
+
+sudo kubeadm init --apiserver-advertise-address=10.20.30.10 --pod-network-cidr=10.244.0.0/16
 
 #to start the cluster with the current user:
 mkdir -p $HOME/.kube
