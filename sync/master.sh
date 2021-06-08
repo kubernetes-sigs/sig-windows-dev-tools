@@ -90,15 +90,27 @@ sudo chown $(id -u):$(id -g) $HOME/.kube/config
 rm -f /var/sync/config
 cp $HOME/.kube/config /var/sync/config
 
-#setting up flannel networking
-wget https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml -P /tmp -q
-## this is important for windows:
-sed -i 's/"Type": "vxlan"/"Type": "vxlan","VNI": 4096,"Port": 4789/' /tmp/kube-flannel.yml
-kubectl apply -f /tmp/kube-flannel.yml
+# CNI: Not 100% tested, just a prototype...
+function cni_flannel {
+  wget https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml -P /tmp -q
+  ## this is important for windows:
+  sed -i 's/"Type": "vxlan"/"Type": "vxlan","VNI": 4096,"Port": 4789/' /tmp/kube-flannel.yml
+  kubectl apply -f /tmp/kube-flannel.yml
 
-curl -s -L https://github.com/kubernetes-sigs/sig-windows-tools/releases/latest/download/kube-proxy.yml | sed 's/VERSION/v1.21.0/g' | kubectl apply -f -
-kubectl apply -f https://github.com/kubernetes-sigs/sig-windows-tools/releases/latest/download/flannel-overlay.yml
+  curl -s -L https://github.com/kubernetes-sigs/sig-windows-tools/releases/latest/download/kube-proxy.yml | sed 's/VERSION/v1.21.0/g' | kubectl apply -f -
+  kubectl apply -f https://github.com/kubernetes-sigs/sig-windows-tools/releases/latest/download/flannel-overlay.yml
+}
 
+function cni_antrea {
+  kubectl apply -f https://github.com/antrea-io/antrea/releases/download/v0.13.2/antrea.yml
+}
+
+# flannel
+antrea
+
+
+######## MAKE THE JOIN FILE FOR WINDOWS ##########
+######## MAKE THE JOIN FILE FOR WINDOWS ##########
 ######## MAKE THE JOIN FILE FOR WINDOWS ##########
 rm -f /var/sync/kubejoin.ps1
 

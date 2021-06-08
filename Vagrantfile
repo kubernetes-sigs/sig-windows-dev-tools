@@ -67,13 +67,11 @@ Vagrant.configure(2) do |config|
 
     winw1.vm.provision "shell", path: "sync/containerd2.ps1", privileged: true
     winw1.vm.provision "shell", path: "forked/PrepareNode.ps1", privileged: true, args: "-KubernetesVersion v1.21.0 -ContainerRuntime containerD"
-    # winw1.vm.provision "shell", path: "sync/prepjoin.ps1", privileged: true
     winw1.vm.provision "shell", path: "sync/kubejoin.ps1", privileged: true
-    
-    # winw1.vm.provision "shell", path: "sync/docker.ps1", privileged: true
-    # winw1.vm.provision :reload
-    # winw1.vm.provision "shell", path: "sync/k.ps1", privileged: true
-    # winw1.vm.provision "shell", path: "sync/join.ps1", privileged: true
+
+    # Experimental at the moment...
+    winw1.vm.provision "shell", path: "sync/0-antrea.ps1", privileged: true
+    winw1.vm.provision "shell", path: "sync/1-antrea.ps1", privileged: true
 
   end
   

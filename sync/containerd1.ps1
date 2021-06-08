@@ -36,5 +36,12 @@ PowerShell "C:\k\Install-Containerd.ps1"
 Write-Output "### DONE with 'containerd1.ps1'"
 
 # To avoid the "crictl.exe not on the path error, we add containerd permanantly to the pathhhhh"
+# TODO THIS might not be needed ...
 $env:path += ";C:\Program Files\containerd"
 [Environment]::SetEnvironmentVariable("Path", $env:Path, [System.EnvironmentVariableTarget]::Machine)
+
+# REBOOT AFTER THIS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# USED FOR OVS OR OTHER DEV SERVICES THAT WE WANT TO TEST THAT ARENT SIGNED
+# NOTE THAT THIS ASSUMES WE ARE REBOOTING AFTER THIS SCRIPT RUNS !!!
+#
+Bcdedit.exe -set TESTSIGNING ON
