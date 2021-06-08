@@ -70,8 +70,8 @@ Vagrant.configure(2) do |config|
     winw1.vm.provision "shell", path: "sync/kubejoin.ps1", privileged: true
 
     # Experimental at the moment...
-    winw1.vm.provision "shell", path: "sync/0-antrea.ps1", privileged: true
-    winw1.vm.provision "shell", path: "sync/1-antrea.ps1", privileged: true
+    winw1.vm.provision "shell", path: "forked/0-antrea.ps1", privileged: true
+    winw1.vm.provision "shell", path: "forked/1-antrea.ps1", privileged: true
 
   end
   

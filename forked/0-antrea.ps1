@@ -33,6 +33,6 @@ if (Test-Path -Path C:/k/antrea/bin/antrea-agent.exe ) {
 }
 else {
    curl.exe https://github.com/antrea-io/antrea/releases/download/v1.1.0/antrea-agent-windows-x86_64.exe
-   cp antrea-agent-windows-x86_64.exe C:/k/antrea/bin/antrea-agent.exe
+   cp .\antrea-agent-windows-x86_64.exe C:/k/antrea/bin/antrea-agent.exe
 }
 
