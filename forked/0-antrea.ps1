@@ -10,7 +10,6 @@ mkdir -Force C:/k/antrea/bin/ #executables
 
 ######## ANTREA install files into the right locations... ########
 
-
 $antreaInstallationFiles = @(
       "https://raw.githubusercontent.com/antrea-io/antrea/main/build/yamls/base/conf/antrea-cni.conflist" = "C:\etc\cni\net.d\10-antrea.conflist"
       "https://raw.githubusercontent.com/antrea-io/antrea/main/hack/windows/Install-OVS.ps1" =  "C:\k\antrea\Install-OVS.ps1"
@@ -27,7 +26,7 @@ foreach ($theFile in $antreaInstallationFiles) {
      # special logic for the host-local plugin...
      if ($theFile == "https://github.com/containernetworking/plugins/releases/download/v0.9.1/cni-plugins-windows-amd64-v0.9.1.tgz" ){
         tar -xvzf cni-plugins-windows-amd64-v0.9.1.tgz
-        cp ./host-local.exe "C:/opt/cbi/bin/host-local.exe"
+        cp ./host-local.exe "C:/opt/cni/bin/host-local.exe"
      }
      else {
          cp $theFile $antreaInstallationFiles[$theFile] -Force
