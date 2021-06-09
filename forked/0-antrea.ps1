@@ -37,7 +37,7 @@ $antreaInstallationFiles = @{
 
 foreach ($theURL in $antreaInstallationFiles.keys) {
   Write-Output "Downloading $theFile if not available..."
-  $outPath = $antreaInstallationFiles[$theFile]
+  $outPath = $antreaInstallationFiles[$theURL]
   if (!(Test-Path $outPath)) {
      Write-Output("OMG OMG OMG OMG ---> $outPath")
      curl.exe -LO $theURL
