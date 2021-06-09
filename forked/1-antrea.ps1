@@ -16,7 +16,8 @@ limitations under the License.
 
 # Create Folders
 # TODO just add this to the path somehow?
-$kubectl="C:/k/bin/kubectl.exe"
+# NVM its already on the f'ng path
+# $kubectl="C:/k/bin/kubectl.exe"
 
 $folders = @('C:\k\antrea','C:\var\log\antrea','C:\k\antrea\bin', 'C:\var\log\kube-proxy', 'C:\opt\cni\bin', 'C:\etc\cni\net.d')
 foreach ($f in $folders) {
@@ -47,13 +48,13 @@ $KubeConfigFile='C:\etc\kubernetes\kubelet.conf'
 
 # Setup kubo-proxy config file
 $KubeProxyConfig="C:\k\antrea\etc\kube-proxy.conf"
-$KubeAPIServer=$($kubectl --kubeconfig=$KubeConfigFile config view -o jsonpath='{.clusters[0].cluster.server}')
-$KubeProxyTOKEN=$($kubectl --kubeconfig=$KubeConfigFile get secrets -n kube-system -o jsonpath="{.items[?(@.metadata.annotations['kubernetes\.io/service-account\.name']=='kube-proxy-windows')].data.token}")
+$KubeAPIServer=$(kubectl --kubeconfig=$KubeConfigFile config view -o jsonpath='{.clusters[0].cluster.server}')
+$KubeProxyTOKEN=$(kubectl --kubeconfig=$KubeConfigFile get secrets -n kube-system -o jsonpath="{.items[?(@.metadata.annotations['kubernetes\.io/service-account\.name']=='kube-proxy-windows')].data.token}")
 $KubeProxyTOKEN=$([System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($KubeProxyTOKEN)))
-$kubectl config --kubeconfig=$KubeProxyConfig set-cluster kubernetes --server=$KubeAPIServer --insecure-skip-tls-verify
-$kubectl config --kubeconfig=$KubeProxyConfig set-credentials kube-proxy-windows --token=$KubeProxyTOKEN
-$kubectl config --kubeconfig=$KubeProxyConfig set-context kube-proxy-windows@kubernetes --cluster=kubernetes --user=kube-proxy-windows
-$kubectl config --kubeconfig=$KubeProxyConfig use-context kube-proxy-windows@kubernetes
+kubectl config --kubeconfig=$KubeProxyConfig set-cluster kubernetes --server=$KubeAPIServer --insecure-skip-tls-verify
+kubectl config --kubeconfig=$KubeProxyConfig set-credentials kube-proxy-windows --token=$KubeProxyTOKEN
+kubectl config --kubeconfig=$KubeProxyConfig set-context kube-proxy-windows@kubernetes --cluster=kubernetes --user=kube-proxy-windows
+kubectl config --kubeconfig=$KubeProxyConfig use-context kube-proxy-windows@kubernetes
 
 # Wait for antrea-agent token to be ready
 $AntreaToken=$null
