@@ -48,11 +48,9 @@ foreach ($theURL in $antreaInstallationFiles.keys) {
      } else {
         Write-Output("Nothing to do: $outPath exists in the right place already...")
      }
-
      Write-Output("$outPath ::: DETAILS ...")
-     ls $outPath
+     Get-ItemProperty $outPath
      Write-Output("$outPath ::: DONE VERIFYING")
-     ls $outPath
   }
 }
 
