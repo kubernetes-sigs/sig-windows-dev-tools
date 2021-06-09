@@ -39,15 +39,20 @@ foreach ($theURL in $antreaInstallationFiles.keys) {
   Write-Output "Downloading $theFile if not available..."
   $outPath = $antreaInstallationFiles[$theURL]
   if (!(Test-Path $outPath)) {
-     Write-Output("OMG OMG OMG OMG ---> $outPath")
+     Write-Output("Check / Acquire ---> $outPath")
      curl.exe -LO $theURL
      # special logic for the host-local plugin...
      if ($theURL -eq "https://github.com/containernetworking/plugins/releases/download/v0.9.1/cni-plugins-windows-amd64-v0.9.1.tgz" ){
         tar -xvzf cni-plugins-windows-amd64-v0.9.1.tgz
         cp ./host-local.exe "C:/opt/cni/bin/host-local.exe"
      } else {
-       Write-Output("Finished getting $outPath, its in the right place :)")
+        Write-Output("Nothing to do: $outPath exists in the right place already...")
      }
+
+     Write-Output("$outPath ::: DETAILS ...")
+     ls $outPath
+     Write-Output("$outPath ::: DONE VERIFYING")
+     ls $outPath
   }
 }
 
