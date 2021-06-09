@@ -28,5 +28,6 @@ all: 0-fetch-k8s 1-build-binaries 2-vagrant-up
 2-vagrant-up:
 	vagrant destroy -f && vagrant up
 
-3-e2e-test:
-	sonobuoy run --e2e-focus=...
+# TODO
+#3-e2e-test:
+#	sonobuoy run --e2e-focus=...
