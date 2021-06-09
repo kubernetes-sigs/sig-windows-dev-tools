@@ -58,20 +58,22 @@ Vagrant.configure(2) do |config|
 
     # winw1.vm.provision "file", source: settings['kubelet_path'] , destination: "C:/k/"
 
-    ## for Containerd support
-    winw1.vm.provision "shell", path: "sync/hyperv.ps1", privileged: true
+    ## uncomment the 'run' values if debugging CNI ....
+    winw1.vm.provision "shell", path: "sync/hyperv.ps1", privileged: true #, run: "never"
     winw1.vm.provision :reload
 
-    winw1.vm.provision "shell", path: "sync/containerd1.ps1", privileged: true
+    winw1.vm.provision "shell", path: "sync/containerd1.ps1", privileged: true #, run: "never"
     winw1.vm.provision :reload
 
-    winw1.vm.provision "shell", path: "sync/containerd2.ps1", privileged: true
-    winw1.vm.provision "shell", path: "forked/PrepareNode.ps1", privileged: true, args: "-KubernetesVersion v1.21.0 -ContainerRuntime containerD"
-    winw1.vm.provision "shell", path: "sync/kubejoin.ps1", privileged: true
+    winw1.vm.provision "shell", path: "sync/containerd2.ps1", privileged: true #, run: "never"
+
+    winw1.vm.provision "shell", path: "forked/PrepareNode.ps1", privileged: true, args: "-KubernetesVersion v1.21.0 -ContainerRuntime containerD", run: "never"
+
+    winw1.vm.provision "shell", path: "sync/kubejoin.ps1", privileged: true #, run: "never"
 
     # Experimental at the moment...
-    winw1.vm.provision "shell", path: "forked/0-antrea.ps1", privileged: true
-    winw1.vm.provision "shell", path: "forked/1-antrea.ps1", privileged: true
+    winw1.vm.provision "shell", path: "forked/0-antrea.ps1", privileged: true, run: "always"
+    winw1.vm.provision "shell", path: "forked/1-antrea.ps1", privileged: true, run: "always"
 
   end
   
