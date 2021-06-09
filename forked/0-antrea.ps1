@@ -21,7 +21,7 @@ $antreaInstallationFiles = @{
 
 foreach ($theFile in $antreaInstallationFiles) {
   Write-Output "Downloading $theFile if not available..."
-  outPath = $antreaInstallationFiles[$theFile]
+  $outPath = $antreaInstallationFiles[$theFile]
   if (!(Test-Path $outPath)) {
      Write-Output("OMG OMG OMG OMG ---> $outPath")
      Start-Sleep -s 15

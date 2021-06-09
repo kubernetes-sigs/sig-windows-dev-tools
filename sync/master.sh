@@ -106,7 +106,7 @@ function cni_antrea {
 }
 
 # flannel
-antrea
+cni_antrea
 
 
 ######## MAKE THE JOIN FILE FOR WINDOWS ##########
