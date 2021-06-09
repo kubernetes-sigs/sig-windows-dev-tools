@@ -125,6 +125,7 @@ sed -i 's#--token#--cri-socket "npipe:////./pipe/containerd-containerd" --token#
 
 ### NOW MAKE WINDOWS PROXY SECRETS...
 #### TODO Put these in a single file or something...
+
 cat << EOF > svcact2.yaml
 apiVersion: v1
 kind: ServiceAccount
@@ -146,6 +147,9 @@ roleRef:
   kind: ClusterRole
   name: node:kube-proxy
 subjects:
+- kind: Group
+  name: system:node
+  apiGroup: rbac.authorization.k8s.io
 - kind: Group
   name: system:nodes
   apiGroup: rbac.authorization.k8s.io
