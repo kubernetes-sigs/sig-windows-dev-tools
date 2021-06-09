@@ -9,30 +9,6 @@
         Add-MpPreference -ExclusionProcess $e
   }
 
-  # doublecheck to put Antrea downloaded bits into the right place... assume they are all in antrea/bin/ to start...
-  # TODO when downloading maybe we should put this in a C:/k/downloads/ folder
-  $antreaInstallationFiles = @(
-          "C:\k\antrea\bin\antrea-cni.exe" = "C:\opt\cni\bin\antrea.exe"
-          "C:\k\antrea\bin\host-local.exe" = "C:\opt\cni\bin\host-local.exe"
-          "C:\k\antrea\etc\antrea-cni.conflist" = "C:\etc\cni\net.d\10-antrea.conflist"
-  )
-  # i.e.
-  #     1) Check that antrea-cni.exe is available and then
-  #     2) cp "C:\k\antrea\bin\antrea-cni.exe" "C:\opt\cni\bin\antrea.exe"
-  foreach ($theFile in $antreaInstallationFiles) {
-      Write-Output "Checking if antrea $file is available before proceeding... "
-      if (!(Test-Path $theFile)) {
-         Write-Error("$theFile was missing, exiting !!!")
-         exit 1 # might be redundant
-      }
-      else {
-          cp $theFile $antreaInstallationFiles[$theFile] -Force
-      }
-  }
-
-  cp C:\k\antrea\bin\host-local.exe C:\opt\cni\bin\host-local.exe -Force
-  cp C:\k\antrea\etc\antrea-cni.conflist C:\etc\cni\net.d\10-antrea.conflist -Force
-
   # Get HostIP and set in kubeadm-flags.env
   [Environment]::SetEnvironmentVariable("NODE_NAME", (hostname).ToLower())
   $env:HostIP = (
