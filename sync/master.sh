@@ -122,3 +122,35 @@ EOF
 kubeadm token create --print-join-command >> /var/sync/kubejoin.ps1
 
 sed -i 's#--token#--cri-socket "npipe:////./pipe/containerd-containerd" --token#g' /var/sync/kubejoin.ps1
+
+### NOW MAKE WINDOWS PROXY SECRETS...
+#### TODO Put these in a single file or something...
+cat << EOF > svcact2.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    app: kube-proxy
+  name: kube-proxy-windows
+  namespace: kube-system
+EOF
+kubectl create -f svcact2.yaml
+
+cat << EOF > svcact.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: node:kube-proxy
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: node:kube-proxy
+subjects:
+- kind: Group
+  name: system:nodes
+  apiGroup: rbac.authorization.k8s.io
+- kind: ServiceAccount
+  name: kube-proxy-windows
+  namespace: kube-system
+EOF
+kubectl create -f svcact.yaml
