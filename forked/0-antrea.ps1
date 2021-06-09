@@ -27,10 +27,10 @@ mkdir -Force C:/k/antrea/bin/ #executables
 ######## ANTREA install files into the right locations... ########
 
 $antreaInstallationFiles = @{
-      "https://raw.githubusercontent.com/antrea-io/antrea/main/build/yamls/base/conf/antrea-cni.conflist" = "C:\etc\cni\net.d\10-antrea.conflist"
-      "https://raw.githubusercontent.com/antrea-io/antrea/main/hack/windows/Install-OVS.ps1" =  "C:\k\antrea\Install-OVS.ps1"
-      "https://raw.githubusercontent.com/antrea-io/antrea/main/hack/windows/helper.psm1" = "C:\k\antrea\helper.psm1"
-      "https://github.com/antrea-io/antrea/releases/download/v1.1.0/antrea-agent-windows-x86_64.exe" = "C:\opt\cni\bin\antrea.exe"
+      "https://raw.githubusercontent.com/antrea-io/antrea/main/build/yamls/base/conf/antrea-cni.conflist" = "C:/etc/cni/net.d/10-antrea.conflist"
+      "https://raw.githubusercontent.com/antrea-io/antrea/main/hack/windows/Install-OVS.ps1" =  "C:/k/antrea/Install-OVS.ps1"
+      "https://raw.githubusercontent.com/antrea-io/antrea/main/hack/windows/helper.psm1" = "C:/k/antrea/helper.psm1"
+      "https://github.com/antrea-io/antrea/releases/download/v1.1.0/antrea-agent-windows-x86_64.exe" = "C:/opt/cni/bin/antrea.exe"
       "https://github.com/containernetworking/plugins/releases/download/v0.9.1/cni-plugins-windows-amd64-v0.9.1.tgz" = "C:\k\antrea\bin"
       "https://dl.k8s.io/release/v1.21.0/bin/windows/amd64/kubectl.exe" = "C:/k/bin/kubectl.exe"
 }
