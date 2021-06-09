@@ -35,21 +35,18 @@ $antreaInstallationFiles = @{
       "https://dl.k8s.io/release/v1.21.0/bin/windows/amd64/kubectl.exe" = "C:/k/bin/kubectl.exe"
 }
 
-foreach ($theFile in $antreaInstallationFiles) {
+foreach ($theURL in $antreaInstallationFiles.keys) {
   Write-Output "Downloading $theFile if not available..."
   $outPath = $antreaInstallationFiles[$theFile]
   if (!(Test-Path $outPath)) {
      Write-Output("OMG OMG OMG OMG ---> $outPath")
-     Start-Sleep -s 15
-
-     curl.exe -LO $theFile
+     curl.exe -LO $theURL
      # special logic for the host-local plugin...
-     if ($theFile -eq "https://github.com/containernetworking/plugins/releases/download/v0.9.1/cni-plugins-windows-amd64-v0.9.1.tgz" ){
+     if ($theURL -eq "https://github.com/containernetworking/plugins/releases/download/v0.9.1/cni-plugins-windows-amd64-v0.9.1.tgz" ){
         tar -xvzf cni-plugins-windows-amd64-v0.9.1.tgz
         cp ./host-local.exe "C:/opt/cni/bin/host-local.exe"
-     }
-     else {
-         cp $theFile $antreaInstallationFiles[$theFile] -Force
+     } else {
+       Write-Output("Finished getting $outPath, its in the right place :)")
      }
   }
 }
