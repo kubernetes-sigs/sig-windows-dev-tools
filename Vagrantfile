@@ -29,8 +29,8 @@ Vagrant.configure(2) do |config|
     master.vm.network :private_network, ip:"10.20.30.10"
     master.vm.provider :virtualbox do |vb|
     master.vm.synced_folder "./sync", "/var/sync"
-      vb.memory = 4096
-      vb.cpus = 2
+      vb.memory = 8192
+      vb.cpus = 4
     end
     master.vm.provision :shell, privileged: false, path: "sync/master.sh"
   end

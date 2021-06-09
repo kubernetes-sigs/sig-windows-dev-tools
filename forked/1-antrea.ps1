@@ -44,13 +44,15 @@
   kubectl config --kubeconfig=$KubeProxyConfig use-context kube-proxy-windows@kubernetes
   # Wait for antrea-agent token to be ready
   $AntreaToken=$null
-  $LoopCount=1000
+  $LoopCount=5
   do {
       $LoopCount=$LoopCount-1
       if ($LoopCount -eq 0) {
           break
       }
-      sleep 2
+      Write-Output "Trying to set antrea token ~ via getting secrets from kubeconfig file"
+      Write-Output $LoopCount
+      sleep 120
       $AntreaToken=$(kubectl --kubeconfig=$KubeConfigFile get secrets -n kube-system -o jsonpath="{.items[?(@.metadata.annotations['kubernetes\.io/service-account\.name']=='antrea-agent')].data.token}")
   } while ($AntreaToken -eq $null)
   # Download kube-proxy in advance to avoid download failure in Install-AntreaAgent.
