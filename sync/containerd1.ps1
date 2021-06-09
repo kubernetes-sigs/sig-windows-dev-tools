@@ -13,15 +13,15 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 #>
+Write-Output "### Creating C:\k"
+mkdir C:\k\ -Force
+cp "C:/sync/bin/kubelet.exe" "C:/k/kubelet.exe"
 
 $ProgressPreference = 'SilentlyContinue'
 
 #Write-Output "### Enabling Hyper-V-PowerShell-Module"
 #Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V-Management-PowerShell 
 
-Write-Output "### Creating C:\k"
-
-mkdir 'C:\k'
 
 cd 'C:\k'
 

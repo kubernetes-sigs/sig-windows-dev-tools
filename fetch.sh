@@ -1,4 +1,4 @@
-if [[ -d kubernetes ]] ; then
+if [[ -d "kubernetes" ]] ; then
 	echo "kubernetes/ exists, doing nothing..."
 	exit 0
 fi

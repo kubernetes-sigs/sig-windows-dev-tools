@@ -56,7 +56,7 @@ Vagrant.configure(2) do |config|
     # and so this isnt used... it always downloads them...
     # winw1.vm.provision "file", source: settings['kubelet_path'] , destination: "C:/k/bin"
 
-    winw1.vm.provision "file", source: settings['kubelet_path'] , destination: "C:/k/"
+    # winw1.vm.provision "file", source: settings['kubelet_path'] , destination: "C:/k/"
 
     ## for Containerd support
     winw1.vm.provision "shell", path: "sync/hyperv.ps1", privileged: true

@@ -88,9 +88,10 @@ if ($ContainerRuntime -eq "Docker") {
     New-HnsNetwork -Type NAT -Name nat
 }
 
-Write-Host "Registering wins service"
-wins.exe srv app run --register
-start-service rancher-wins
+# Who needs wins were on the cusp of priveliged containers
+# Write-Host "Registering wins service"
+# wins.exe srv app run --register
+# start-service rancher-wins
 
 mkdir -force C:\var\log\kubelet
 mkdir -force C:\var\lib\kubelet\etc\kubernetes
