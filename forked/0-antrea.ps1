@@ -30,19 +30,19 @@ mkdir -Force C:/k/antrea/etc/ # for antrea-agent.conf
 $antreaInstallationFiles = @{
       "https://raw.githubusercontent.com/antrea-io/antrea/main/build/yamls/base/conf/antrea-cni.conflist" = "C:/etc/cni/net.d/10-antrea.conflist"
       "https://raw.githubusercontent.com/antrea-io/antrea/main/hack/windows/Install-OVS.ps1" =  "C:/k/antrea/Install-OVS.ps1"
-      "https://raw.githubusercontent.com/antrea-io/antrea/main/hack/windows/Helper.psm1" = "C:/k/antrea/helper.psm1"
+      "https://raw.githubusercontent.com/antrea-io/antrea/main/hack/windows/Helper.psm1" = "C:/k/antrea/Helper.psm1"
       "https://github.com/antrea-io/antrea/releases/download/v1.1.0/antrea-agent-windows-x86_64.exe" = "C:/k/antrea/bin/antrea-agent.exe"
-      "https://github.com/containernetworking/plugins/releases/download/v0.9.1/cni-plugins-windows-amd64-v0.9.1.tgz" = "C:\k\antrea\bin"
+      "https://github.com/containernetworking/plugins/releases/download/v0.9.1/cni-plugins-windows-amd64-v0.9.1.tgz" = "C:/k/antrea/bin/cni-plugins-windows-amd64-v0.9.1.tgz"
       "https://dl.k8s.io/release/v1.21.0/bin/windows/amd64/kubectl.exe" = "C:/k/bin/kubectl.exe"
       "https://raw.githubusercontent.com/antrea-io/antrea/main/build/yamls/windows/base/conf/antrea-agent.conf" = "C:/k/antrea/conf/antrea-agent.conf"
 }
 
 foreach ($theURL in $antreaInstallationFiles.keys) {
-  Write-Output "Downloading $theFile if not available..."
   $outPath = $antreaInstallationFiles[$theURL]
+  Write-Output("1 - checking $outPath ... ")
   if (!(Test-Path $outPath)) {
-     Write-Output("Check / Acquire ---> $theURL writing to  $outPath")
-     curl.exe -LO $theURL -o $outPath
+     Write-Output("2 - Acquiring ---> $theURL writing to  $outPath")
+     curl.exe $theURL -o $outPath
      # special logic for the host-local plugin...
      if ($theURL -eq "https://github.com/containernetworking/plugins/releases/download/v0.9.1/cni-plugins-windows-amd64-v0.9.1.tgz" ){
         tar -xvzf cni-plugins-windows-amd64-v0.9.1.tgz
@@ -52,7 +52,12 @@ foreach ($theURL in $antreaInstallationFiles.keys) {
      }
      Write-Output("$outPath ::: DETAILS ...")
      Get-ItemProperty $outPath
+     ls $outPath
      Write-Output("$outPath ::: DONE VERIFYING")
+  }
+  if (!(Test-Path $outPath)) {
+    Write-Error "That download totally failed $outPath is not created...."
+    exit 1
   }
 }
 

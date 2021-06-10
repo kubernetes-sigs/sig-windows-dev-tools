@@ -75,10 +75,12 @@ do {
 } while ($AntreaToken -eq $null)
 
 # Install antrea-agent & ovs
-if (!(Test-Path C:/k/antrea/helper.psm1)) {
-    Write-Error "Failing because C:/k/antrea/helper.psm1 is not available !"
+$antrea_helper="C:/k/antrea/Helper.psm1"
+if (!(Test-Path $antrea_helper)) {
+    Write-Error "Couldnt find Helper.psm1 anywhere !!!"
 }
-Import-Module C:/k/antrea/helper.psm1
+Import-Module $antrea_helper
+
 & Install-AntreaAgent -KubernetesVersion "v1.21.1" -KubernetesHome "c:/k" -KubeConfig "C:/etc/kubernetes/kubelet.conf" -AntreaVersion "v0.13.2" -AntreaHome "c:/k/antrea"
 New-KubeProxyServiceInterface
 & C:/k/antrea/Install-OVS.ps1 -ImportCertificate $false -LocalFile c:/k/antrea/ovs-win64.zip
