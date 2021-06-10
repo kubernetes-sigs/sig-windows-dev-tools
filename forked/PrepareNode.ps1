@@ -119,6 +119,8 @@ $global:KubeletArgs = $FileContent.TrimStart(''KUBELET_KUBEADM_ARGS='').Trim(''"
 
 $global:containerRuntime = {{CONTAINER_RUNTIME}}
 
+# TODO: This is useless because we only support containerd in this repo.
+# Lets delete at some point upstream and delete this also
 if ($global:containerRuntime -eq "Docker") {
     $netId = docker network ls -f name=host --format "{{ .ID }}"
 

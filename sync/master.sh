@@ -102,6 +102,7 @@ function cni_flannel {
 }
 
 function cni_antrea {
+  curl -s -L https://github.com/kubernetes-sigs/sig-windows-tools/releases/latest/download/kube-proxy.yml | sed 's/VERSION/v1.21.0/g' | kubectl apply -f -
   kubectl apply -f https://github.com/antrea-io/antrea/releases/download/v0.13.2/antrea.yml
 }
 
@@ -135,9 +136,7 @@ metadata:
   name: kube-proxy-windows
   namespace: kube-system
 EOF
-kubectl create -f svcact2.yaml
-
-cat << EOF > svcact.yaml
+---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
@@ -145,7 +144,7 @@ metadata:
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: node:kube-proxy
+  name: system:node-proxier
 subjects:
 - kind: Group
   name: system:node
@@ -156,5 +155,48 @@ subjects:
 - kind: ServiceAccount
   name: kube-proxy-windows
   namespace: kube-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: node:god2
+  namespace: kube-system
+subjects:
+- kind: User
+  name: system:node:winw1
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: ClusterRole
+  name: cluster-admin
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: node:god3
+  namespace: kube-system
+subjects:
+- kind: Group
+  name: system:nodes
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: ClusterRole
+  name: cluster-admin
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: node:god4
+  namespace: kube-system
+subjects:
+- kind: User
+  name: system:serviceaccount:kube-system:kube-proxy-windows
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: ClusterRole
+  name: cluster-admin
+  apiGroup: rbac.authorization.k8s.io
 EOF
+
 kubectl create -f svcact.yaml
