@@ -101,7 +101,7 @@ Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled False
 $nssm = (Get-Command nssm).Source
 & $nssm set Kubelet start SERVICE_AUTO_START
 & nssm install kube-proxy "c:/k/kube-proxy.exe" "--proxy-mode=userspace --kubeconfig=$KubeProxyConfig --log-dir=c:/var/log/kube-proxy --logtostderr=false --alsologtostderr"
-& nssm install antrea-agent "c:/k/antrea/bin/antrea-agent.exe" "--config=c:/k/antrea/etc/antrea-agent.conf --logtostderr=false --log_dir=c:/var/log/antrea --alsologtostderr --log_file_max_size=100 --log_file_max_num=4"
+& nssm install antrea-agent "C:/k/antrea/bin/antrea-agent.exe" "--config=C:/k/antrea/etc/antrea-agent.conf --logtostderr=false --log_dir=c:/var/log/antrea --alsologtostderr --log_file_max_size=100 --log_file_max_num=4"
 & nssm set antrea-agent DependOnService kube-proxy ovs-vswitchd
 & nssm set antrea-agent Start SERVICE_DELAYED_START
 # Start Services
