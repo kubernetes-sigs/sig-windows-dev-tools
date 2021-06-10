@@ -127,7 +127,7 @@ sed -i 's#--token#--cri-socket "npipe:////./pipe/containerd-containerd" --token#
 ### NOW MAKE WINDOWS PROXY SECRETS...
 #### TODO Put these in a single file or something...
 
-cat << EOF > svcact2.yaml
+cat << EOF > kube-proxy-and-antrea.yaml
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -135,7 +135,6 @@ metadata:
     app: kube-proxy
   name: kube-proxy-windows
   namespace: kube-system
-EOF
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -199,4 +198,4 @@ roleRef:
   apiGroup: rbac.authorization.k8s.io
 EOF
 
-kubectl create -f svcact.yaml
+kubectl create -f kube-proxy-and-antrea.yaml
