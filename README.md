@@ -23,6 +23,11 @@ in using or contributing to the ongoing Kubernetes on Windows story, which is ra
 viable alternative to linux with the recent introduction of Windows HostProcess containers and windows support for NetworkPolicies + Containerd integration.
 
 ## Prerequisites
+
+- vagrant
+- vagrant reload plugin
+- some vagrant provider (we only have virtualbox automated here, but these recipes have been used with others, like HyperV)
+
 You need the `reload` plugin for vagrant.
 ```
 vagrant plugin install vagrant-reload
