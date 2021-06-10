@@ -47,7 +47,7 @@ Set-Content $file $new
 $KubeConfigFile='C:\etc\kubernetes\kubelet.conf'
 
 # Setup kubo-proxy config file
-$KubeProxyConfig="C:\k\antrea\etc\kube-proxy.conf"
+$KubeProxyConfig="C:/k/antrea/etc/kube-proxy.conf"
 $KubeAPIServer=$(kubectl --kubeconfig=$KubeConfigFile config view -o jsonpath='{.clusters[0].cluster.server}')
 $KubeProxyTOKEN=$(kubectl --kubeconfig=$KubeConfigFile get secrets -n kube-system -o jsonpath="{.items[?(@.metadata.annotations['kubernetes\.io/service-account\.name']=='kube-proxy-windows')].data.token}")
 $KubeProxyTOKEN=$([System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($KubeProxyTOKEN)))
@@ -62,6 +62,11 @@ kubectl config --kubeconfig=$KubeProxyConfig set-cluster kubernetes --server=$Ku
 kubectl config --kubeconfig=$KubeProxyConfig set-credentials kube-proxy-windows --token=$KubeProxyTOKEN
 kubectl config --kubeconfig=$KubeProxyConfig set-context kube-proxy-windows@kubernetes --cluster=kubernetes --user=kube-proxy-windows
 kubectl config --kubeconfig=$KubeProxyConfig use-context kube-proxy-windows@kubernetes
+if (!(Test-Path $KubeProxyConfig)) {
+    Write-Output "$KubeProxyConfig  is missing !!!"
+    Write-Error "FATAL ERROR, CANNOT START ANTREA WITHOUT A VALID KUBE PROXY CONFIGURATION !!!"
+    exit 5
+}
 
 # Wait for antrea-agent token to be ready
 $AntreaToken=$null
@@ -105,4 +110,5 @@ $nssm = (Get-Command nssm).Source
 # Start Services
 start-service kubelet
 start-service kube-proxy
+# Must happen *after* kube-proxy comes online.... so internal service endpoint is accessible to antrea-agent.
 start-service antrea-agent
