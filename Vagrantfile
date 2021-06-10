@@ -54,26 +54,26 @@ Vagrant.configure(2) do |config|
     # I think this is invalid... (jay 6/7)
     # the reason being that PrepareNode.ps1 seems to check C:/k/ for the contents of the files,
     # and so this isnt used... it always downloads them...
-    # winw1.vm.provision "file", source: settings['kubelet_path'] , destination: "C:/k/bin"
+    winw1.vm.provision "file", source: settings['kubelet_path'] , destination: "C:/k/bin"
 
-    # winw1.vm.provision "file", source: settings['kubelet_path'] , destination: "C:/k/"
+    winw1.vm.provision "file", source: settings['kubelet_path'] , destination: "C:/k/"
 
     ## uncomment the 'run' values if debugging CNI ....
 
-    #winw1.vm.provision "shell", path: "sync/hyperv.ps1", privileged: true #, run: "never"
-    #winw1.vm.provision :reload
+    winw1.vm.provision "shell", path: "sync/hyperv.ps1", privileged: true #, run: "never"
+    winw1.vm.provision :reload
 
-    #winw1.vm.provision "shell", path: "sync/containerd1.ps1", privileged: true #, run: "never"
-    #winw1.vm.provision :reload
+    winw1.vm.provision "shell", path: "sync/containerd1.ps1", privileged: true #, run: "never"
+    winw1.vm.provision :reload
 
-   # winw1.vm.provision "shell", path: "sync/containerd2.ps1", privileged: true #, run: "never"
+    winw1.vm.provision "shell", path: "sync/containerd2.ps1", privileged: true #, run: "never"
 
-  #  winw1.vm.provision "shell", path: "forked/PrepareNode.ps1", privileged: true, args: "-KubernetesVersion v1.21.0 -ContainerRuntime containerD" #, run: "never"
+    winw1.vm.provision "shell", path: "forked/PrepareNode.ps1", privileged: true, args: "-KubernetesVersion v1.21.0 -ContainerRuntime containerD" #, run: "never"
 
- #   winw1.vm.provision "shell", path: "sync/kubejoin.ps1", privileged: true #, run: "never"
+    winw1.vm.provision "shell", path: "sync/kubejoin.ps1", privileged: true #, run: "never"
 
     # Experimental at the moment...
-#    winw1.vm.provision "shell", path: "forked/0-antrea.ps1", privileged: true #, run: "always"
+    winw1.vm.provision "shell", path: "forked/0-antrea.ps1", privileged: true #, run: "always"
     winw1.vm.provision "shell", path: "forked/1-antrea.ps1", privileged: true #, run: "always"
 
   end
