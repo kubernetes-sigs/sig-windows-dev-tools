@@ -1,4 +1,27 @@
 # KubernetesOnWindows
+
+This is a fully batteries included development for Windows on Kubernetes including:
+- vagrant file for launching a two node cluster
+- the lates containerd
+- NetworkPolicy support for windows and linux provided by antrea
+- Fully built from source (K8s main branch) Windows binaries for kube-proxy.exe and kubelet.exe
+
+Soon to be integrated into kubernetes-sigs/windows-dev-environment !
+
+We welcome contributions, especially we'd love to see:
+- More CNI providers (calico, cillium, ...)
+- More Container Runtime ideas
+- More vagrant infrastructures (Vsphere, VMWare Fusion, EC2, GCE, and so on)
+- E2Es or scripts which excersize privileged containers or LDAP / AD
+- CSI or Other storage/volume add ons
+- other ideas !
+
+# Goal
+
+Our goal it to make Windows ridiculously easy to contribute to, play with, and learn about for anyone interested
+in using or contributing to the ongoing Kubernetes on Windows story, which is rapidly becoming an increasingly
+viable alternative to linux with the recent introduction of Windows HostProcess containers and windows support for NetworkPolicies + Containerd integration.
+
 ## Prerequisites
 You need the `reload` plugin for vagrant.
 ```
