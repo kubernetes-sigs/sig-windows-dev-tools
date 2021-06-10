@@ -21,7 +21,7 @@ tar C C:/nssm/ -xvf ./nssm-2.24.zip --strip-components 2 */$arch/*.exe
 Remove-Item -Force ./nssm-2.24.zip
 
 # Install antrea: CNI Provider
-mkdir -Force C:/k/
+mkdir -Force C:/k/bin/
 mkdir -Force C:/k/antrea/ # scripts
 mkdir -Force C:/k/antrea/bin/ #executables
 mkdir -Force C:/k/antrea/etc/ # for antrea-agent.conf
@@ -44,7 +44,7 @@ foreach ($theURL in $antreaInstallationFiles.keys) {
      curl.exe -L $theURL -o $outPath
      # special logic for the host-local plugin...
      if ($theURL -eq "https://github.com/containernetworking/plugins/releases/download/v0.9.1/cni-plugins-windows-amd64-v0.9.1.tgz" ){
-        tar -xvzf cni-plugins-windows-amd64-v0.9.1.tgz
+        tar -xvzf C:/k/antrea/bin/cni-plugins-windows-amd64-v0.9.1.tgz
         cp ./host-local.exe "C:/opt/cni/bin/host-local.exe"
      } else {
         Write-Output("Nothing to do: $outPath exists in the right place already...")

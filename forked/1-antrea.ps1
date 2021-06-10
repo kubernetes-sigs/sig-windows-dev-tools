@@ -56,6 +56,9 @@ $KubeProxyTOKEN=$([System.Text.Encoding]::UTF8.GetString([System.Convert]::FromB
 kubectl config --kubeconfig=$KubeProxyConfig set-cluster kubernetes --server=$KubeAPIServer --insecure-skip-tls-verify
 
 # Now we set the defaults up...
+# Remember: Kube proxy needs to be happy for antrea to work, because
+# Antrea will attempt to access the APIServer through the kube proxy
+# Provisioned access point.
 kubectl config --kubeconfig=$KubeProxyConfig set-credentials kube-proxy-windows --token=$KubeProxyTOKEN
 kubectl config --kubeconfig=$KubeProxyConfig set-context kube-proxy-windows@kubernetes --cluster=kubernetes --user=kube-proxy-windows
 kubectl config --kubeconfig=$KubeProxyConfig use-context kube-proxy-windows@kubernetes
