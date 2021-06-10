@@ -83,7 +83,13 @@ Import-Module $antrea_helper
 
 & Install-AntreaAgent -KubernetesVersion "v1.21.1" -KubernetesHome "c:/k" -KubeConfig "C:/etc/kubernetes/kubelet.conf" -AntreaVersion "v0.13.2" -AntreaHome "c:/k/antrea"
 New-KubeProxyServiceInterface
-& C:/k/antrea/Install-OVS.ps1 -ImportCertificate $false -LocalFile c:/k/antrea/ovs-win64.zip
+
+# If you are doing this in production, you want to use the LocalFile option and
+# and you may want to run a signed OVS copy provided by a vendor
+# C:/k/antrea/Install-OVS.ps1 -ImportCertificate $false -LocalFile c:/k/antrea/ovs-win64.zip
+
+# ... Note this will download an OVS installation from the internet and bootstrap it...
+& C:/k/antrea/Install-OVS.ps1 -ImportCertificate $false
 Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled False
 
 # Setup Services
