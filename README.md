@@ -28,23 +28,31 @@ viable alternative to linux with the recent introduction of Windows HostProcess 
 - vagrant reload plugin
 - some vagrant provider (we only have virtualbox automated here, but these recipes have been used with others, like HyperV)
 
-You need the `reload` plugin for vagrant.
+# Lets run it !
+
+Ok lets get started... 
+
+## 1) Pre-Flight checks...
+
+For the happy path, just:
+
+1) Install vagrant, and then vagrant-reload
 ```
 vagrant plugin install vagrant-reload
 ```
 
-If your system has less than 16 gb ram, adjust the `Vagrantfile`:
+2) Modify cpu/memory.    We advice 8GB RAM for windows but,  If your system has less than 16 gb ram, adjust the `Vagrantfile`:
 ```
     winw1.vm.provider :virtualbox do |vb|
       vb.memory = 4096
 ```
 change the `4096` to `2048`.
 
-## How to run !
+## 2) Run it !
 
 There are two use cases for these windows k8s dev environments: Quik testing, and testing k8s from source.
 
-### Testing from source: make
+## 3) Testing from source? make
 
 To test from source, run `make all`.  This will
 - clone down k8s from github. If you have the k/k repo locally you can `make path=path_to_k/k all` 
