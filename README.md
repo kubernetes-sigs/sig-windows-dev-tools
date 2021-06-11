@@ -1,9 +1,5 @@
 # KubernetesOnWindows
 
-```
-eat your beans and fix it
-```
-
 This is a fully batteries-included development for Windows on Kubernetes, including:
 - Vagrant file for launching a two-node cluster
 - the latest containerd
