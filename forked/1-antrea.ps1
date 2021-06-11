@@ -53,7 +53,7 @@ $KubeProxyTOKEN=$(kubectl --kubeconfig=$KubeConfigFile get secrets -n kube-syste
 $KubeProxyTOKEN=$([System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($KubeProxyTOKEN)))
 
 # This writes out a kubeconfig file... i think !
-kubectl config --kubeconfig=$KubeProxyConfig set-cluster kubernetes --server=$KubeAPIServer --insecure-skip-tls-verify
+kubectl config --kubeconfig=$KubeProxyConfig set-cluster kubernetes --server=$KubeAPIServer --insecure-skip-tls-verifycd
 
 # Now we set the defaults up...
 # Remember: Kube proxy needs to be happy for antrea to work, because
@@ -80,7 +80,7 @@ do {
   Write-Output $LoopCount
   sleep 120
   $AntreaToken=$(kubectl --kubeconfig=$KubeConfigFile get secrets -n kube-system -o jsonpath="{.items[?(@.metadata.annotations['kubernetes\.io/service-account\.name']=='antrea-agent')].data.token}")
-} while ($AntreaToken -eq $null)
+} while ($null -eq $AntreaToken)
 
 # Install antrea-agent & ovs
 $antrea_helper="C:/k/antrea/Helper.psm1"

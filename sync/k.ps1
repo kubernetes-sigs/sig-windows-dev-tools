@@ -13,12 +13,20 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 #>
+Param(
+    [parameter(Mandatory = $true, HelpMessage="Kubernetes version to use")]
+    [string] $KubernetesVersion
+)
+$ErrorActionPreference = 'Stop'
+Write-Output "Kubernetes Version $KubernetesVersion"
 
 dism /online /get-features
 curl.exe -LO https://github.com/kubernetes-sigs/sig-windows-tools/releases/latest/download/Install-Containerd.ps1
 .\Install-Containerd.ps1
 ctr.exe version
+
 New-Item -ItemType Directory -Force -Path C:\k
-cd C:\k
+Set-Location C:\k
+
 curl.exe -LO https://github.com/kubernetes-sigs/sig-windows-tools/releases/latest/download/PrepareNode.ps1
-PowerShell .\PrepareNode.ps1 -KubernetesVersion v1.20.4 -ContainerRuntime containerD
+PowerShell .\PrepareNode.ps1 -KubernetesVersion v$KubernetesVersion -ContainerRuntime containerD

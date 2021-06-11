@@ -19,6 +19,7 @@ limitations under the License.
 
 require 'yaml'
 settings = YAML.load_file 'sync/variables.yaml'
+kubernetes_version = settings['kubernetes_version']
 
 Vagrant.configure(2) do |config|
 
@@ -32,7 +33,7 @@ Vagrant.configure(2) do |config|
       vb.memory = 8192
       vb.cpus = 4
     end
-    master.vm.provision :shell, privileged: false, path: "sync/master.sh"
+    master.vm.provision :shell, privileged: false, path: "sync/master.sh", args: kubernetes_version
   end
 
   # WINDOWS WORKER (win server 2019)
@@ -40,10 +41,10 @@ Vagrant.configure(2) do |config|
     winw1.vm.host_name = "winw1"
     winw1.vm.box = "StefanScherer/windows_2019"  
     winw1.vm.provider :virtualbox do |vb|
-    vb.memory = 8192
-    vb.cpus = 4
-    # use rdp to access a GUI if you need it !
-    vb.gui = false
+      vb.memory = 8192
+      vb.cpus = 4
+      # use rdp to access a GUI if you need it !
+      vb.gui = false
     end
     winw1.vm.network :private_network, ip:"10.20.30.11"
     winw1.vm.synced_folder ".", "/vagrant", disabled:true
@@ -54,8 +55,8 @@ Vagrant.configure(2) do |config|
     # I think this is invalid... (jay 6/7)
     # the reason being that PrepareNode.ps1 seems to check C:/k/ for the contents of the files,
     # and so this isnt used... it always downloads them...
-    winw1.vm.provision "file", source: settings['kubelet_path'] , destination: "C:/k/bin/kubelet.exe"
-    winw1.vm.provision "file", source: settings['kubelet_path'] , destination: "C:/k/bin/kube-proxy.exe"
+    #winw1.vm.provision "file", source: settings['kubelet_path'] , destination: "C:/k/bin/kubelet.exe"
+    winw1.vm.provision "file", source: settings['kubeproxy_path'] , destination: "C:/k/bin/kube-proxy.exe"
 
     ## uncomment the 'run' values if debugging CNI ....
 
@@ -67,7 +68,7 @@ Vagrant.configure(2) do |config|
 
     winw1.vm.provision "shell", path: "sync/containerd2.ps1", privileged: true #, run: "never"
 
-    winw1.vm.provision "shell", path: "forked/PrepareNode.ps1", privileged: true, args: "-KubernetesVersion v1.21.0 -ContainerRuntime containerD" #, run: "never"
+    winw1.vm.provision "shell", path: "forked/PrepareNode.ps1", privileged: true, args: "-KubernetesVersion #{kubernetes_version} -ContainerRuntime containerD" #, run: "never"
 
     winw1.vm.provision "shell", path: "sync/kubejoin.ps1", privileged: true #, run: "never"
 

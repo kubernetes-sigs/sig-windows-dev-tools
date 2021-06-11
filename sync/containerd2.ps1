@@ -13,9 +13,11 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 #>
+Write-Output "###############################"
+Write-Output "STARTING with 'containerd2.ps1'"
 
 Write-Output "### Running 'Install-Containerd.ps1'"
-
 PowerShell "C:\k\Install-Containerd.ps1"
 
-Write-Output "### done with 'containerd1.ps1'"
+Write-Output "DONE with 'containerd2.ps1'"
+Write-Output "###############################"

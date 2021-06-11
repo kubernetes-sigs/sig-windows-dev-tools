@@ -1,3 +1,4 @@
+#!/bin/bash
 : '
 Copyright 2021 The Kubernetes Authors.
 
@@ -13,6 +14,8 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 '
+K8SVERSION=${1-1.21.0}
+echo "Using $K8SVERSION as the Kubernetes version"
 
 # Add GDP keys and repositories for both Docker and Kubernetes
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
@@ -22,7 +25,6 @@ cat << EOF | sudo tee /etc/apt/sources.list.d/kubernetes.list
 deb https://apt.kubernetes.io/ kubernetes-xenial main
 EOF
 sudo apt-get update
-
 
 #disable swap
 swapoff -a
@@ -48,7 +50,7 @@ sudo sysctl --system
 
 
 #Install Docker and Kubernetes, hold versions
-sudo apt-get install -y docker-ce=5:20.10.5~3-0~ubuntu-$(lsb_release -cs) kubelet=1.20.4-00 kubeadm=1.20.4-00 kubectl=1.20.4-00
+sudo apt-get install -y docker-ce=5:20.10.5~3-0~ubuntu-$(lsb_release -cs) kubelet=$K8SVERSION-00 kubeadm=$K8SVERSION-00 kubectl=$K8SVERSION-00
 sudo apt-mark hold docker-ce kubelet kubeadm kubectl
 
 
@@ -70,7 +72,7 @@ sudo systemctl restart containerd
   #cat <<EOF | sudo tee kubeadm-config.yaml
   #kind: ClusterConfiguration
   #apiVersion: kubeadm.k8s.io/v1beta2
-  #kubernetesVersion: v1.21.0
+  #kubernetesVersion: v$K8SVERSION
   #networking:
   #  podSubnet: "10.244.0.0/16"
   #---
@@ -97,31 +99,27 @@ function cni_flannel {
   sed -i 's/"Type": "vxlan"/"Type": "vxlan","VNI": 4096,"Port": 4789/' /tmp/kube-flannel.yml
   kubectl apply -f /tmp/kube-flannel.yml
 
-  curl -s -L https://github.com/kubernetes-sigs/sig-windows-tools/releases/latest/download/kube-proxy.yml | sed 's/VERSION/v1.21.0/g' | kubectl apply -f -
+  curl -s -L https://github.com/kubernetes-sigs/sig-windows-tools/releases/latest/download/kube-proxy.yml | sed "s/VERSION/v$K8SVERSION/g" | kubectl apply -f -
   kubectl apply -f https://github.com/kubernetes-sigs/sig-windows-tools/releases/latest/download/flannel-overlay.yml
 }
 
 function cni_antrea {
-  curl -s -L https://github.com/kubernetes-sigs/sig-windows-tools/releases/latest/download/kube-proxy.yml | sed 's/VERSION/v1.21.0/g' | kubectl apply -f -
+  curl -s -L https://github.com/kubernetes-sigs/sig-windows-tools/releases/latest/download/kube-proxy.yml | sed "s/VERSION/v$K8SVERSION/g" | kubectl apply -f -
   kubectl apply -f https://github.com/antrea-io/antrea/releases/download/v0.13.2/antrea.yml
 }
 
 # flannel
 cni_antrea
 
-
 ######## MAKE THE JOIN FILE FOR WINDOWS ##########
 ######## MAKE THE JOIN FILE FOR WINDOWS ##########
 ######## MAKE THE JOIN FILE FOR WINDOWS ##########
 rm -f /var/sync/kubejoin.ps1
-
 cat << EOF > /var/sync/kubejoin.ps1
 \$env:path += ";C:\Program Files\containerd"
 [Environment]::SetEnvironmentVariable("Path", \$env:Path, [System.EnvironmentVariableTarget]::Machine)
 EOF
-
 kubeadm token create --print-join-command >> /var/sync/kubejoin.ps1
-
 sed -i 's#--token#--cri-socket "npipe:////./pipe/containerd-containerd" --token#g' /var/sync/kubejoin.ps1
 
 ### NOW MAKE WINDOWS PROXY SECRETS...

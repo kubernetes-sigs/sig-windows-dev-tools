@@ -13,19 +13,19 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 #>
+Write-Output "#########################"
+Write-Output "STARTING with 'hyperv.ps1'"
 
 $ProgressPreference = 'SilentlyContinue'
 
 Write-Output "### Installing Nuget"
-
 Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201  -Force
 
 Write-Output "### Using dism: enabling Hyper-V"
-
 dism -online -enable-feature -featurename:Microsoft-Hyper-V -all -NoRestart
 
 Write-Output "### Installing Containers"
-
 Install-WindowsFeature Containers
 
-Write-Output "done with 'hyperv.ps1'"
+Write-Output "DONE with 'hyperv.ps1'"
+Write-Output "#########################"

@@ -20,13 +20,16 @@ all: 0-fetch-k8s 1-build-binaries 2-vagrant-up
 	chmod +x fetch.sh
 	echo $(path)
 	./fetch.sh $(path)
+0: 0-fetch-k8s
 
 1-build-binaries:
 	chmod +x build.sh
 	./build.sh $(path)
+1: 1-build-binaries
 
 2-vagrant-up:
 	vagrant destroy -f && vagrant up
+2: 2-vagrant-up
 
 # TODO
 #3-e2e-test:

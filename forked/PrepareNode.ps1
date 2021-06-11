@@ -87,7 +87,18 @@ mkdir -force "$global:KubernetesPath"
 $env:Path += ";$global:KubernetesPath"
 [Environment]::SetEnvironmentVariable("Path", $env:Path, [System.EnvironmentVariableTarget]::Machine)
 
-DownloadFile $kubeletBinPath https://dl.k8s.io/$KubernetesVersion/bin/windows/amd64/kubelet.exe
+# DownloadFile $kubeletBinPath https://dl.k8s.io/$KubernetesVersion/bin/windows/amd64/kubelet.exe
+# We replaced this ↑ with that ↓
+Write-Output "Deciding source to use for Kubelet.exe ..."
+$HomeGrownKubelet = "c:\sync\bin\kubelet.exe"
+if (Test-Path -Path $HomeGrownKubelet -PathType Leaf) {
+    Write-Output "Found $HomeGrownKubelet, copyin ..."
+    Copy-Item -Path $HomeGrownKubelet -Destination $kubeletBinPath -Force
+} else {
+    Write-Output "Didn't find $HomeGrownKubelet, downloading ..."
+    DownloadFile $kubeletBinPath https://dl.k8s.io/$KubernetesVersion/bin/windows/amd64/kubelet.exe
+}
+
 DownloadFile "$global:KubernetesPath\kubeadm.exe" https://dl.k8s.io/$KubernetesVersion/bin/windows/amd64/kubeadm.exe
 DownloadFile "$global:KubernetesPath\wins.exe" https://github.com/rancher/wins/releases/download/v0.0.4/wins.exe
 

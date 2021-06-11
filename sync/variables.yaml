@@ -1,3 +1,4 @@
 --- 
 kubelet_path:  "./sync/bin/kubelet.exe"
 kubeproxy_path:  "./sync/bin/kube-proxy.exe"
+kubernetes_version:  "1.21.0"
