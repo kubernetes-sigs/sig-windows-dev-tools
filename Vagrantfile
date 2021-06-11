@@ -40,22 +40,20 @@ Vagrant.configure(2) do |config|
   config.vm.define :winw1 do |winw1|
     winw1.vm.host_name = "winw1"
     winw1.vm.box = "StefanScherer/windows_2019"  
-    winw1.vm.provider :virtualbox do |vb|
-      vb.memory = 8192
-      vb.cpus = 4
-      # use rdp to access a GUI if you need it !
-      vb.gui = false
-    end
     winw1.vm.network :private_network, ip:"10.20.30.11"
     winw1.vm.synced_folder ".", "/vagrant", disabled:true
     winw1.vm.synced_folder "./sync", "c:\\sync"
+    winw1.vm.provider :virtualbox do |vb|
+      vb.memory = 8192
+      vb.cpus = 4
+      vb.gui = false
+    end
 
-    ## Copy exe files into windows node
-
-    # I think this is invalid... (jay 6/7)
-    # the reason being that PrepareNode.ps1 seems to check C:/k/ for the contents of the files,
-    # and so this isnt used... it always downloads them...
-    #winw1.vm.provision "file", source: settings['kubelet_path'] , destination: "C:/k/bin/kubelet.exe"
+    # Copy exe files into windows node
+      # I think this is invalid... (jay 6/7)
+      # the reason being that PrepareNode.ps1 seems to check C:/k/ for the contents of the files,
+      # and so this isnt used... it always downloads them...
+      #winw1.vm.provision "file", source: settings['kubelet_path'] , destination: "C:/k/bin/kubelet.exe"
     winw1.vm.provision "file", source: settings['kubeproxy_path'] , destination: "C:/k/bin/kube-proxy.exe"
 
     ## uncomment the 'run' values if debugging CNI ....

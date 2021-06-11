@@ -53,7 +53,7 @@ $KubeProxyTOKEN=$(kubectl --kubeconfig=$KubeConfigFile get secrets -n kube-syste
 $KubeProxyTOKEN=$([System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($KubeProxyTOKEN)))
 
 # This writes out a kubeconfig file... i think !
-kubectl config --kubeconfig=$KubeProxyConfig set-cluster kubernetes --server=$KubeAPIServer --insecure-skip-tls-verifycd
+kubectl config --kubeconfig=$KubeProxyConfig set-cluster kubernetes --server=$KubeAPIServer --insecure-skip-tls-verify
 
 # Now we set the defaults up...
 # Remember: Kube proxy needs to be happy for antrea to work, because
@@ -106,7 +106,7 @@ $nssm = (Get-Command nssm).Source
 & nssm install kube-proxy "c:/k/kube-proxy.exe" "--proxy-mode=userspace --kubeconfig=$KubeProxyConfig --log-dir=c:/var/log/kube-proxy --logtostderr=false --alsologtostderr"
 & nssm install antrea-agent "C:/k/antrea/bin/antrea-agent.exe" "--config=C:/k/antrea/etc/antrea-agent.conf --logtostderr=false --log_dir=c:/var/log/antrea --alsologtostderr --log_file_max_size=100 --log_file_max_num=4"
 & nssm set antrea-agent DependOnService kube-proxy ovs-vswitchd
-& nssm set antrea-agent Start SERVICE_DELAYED_START
+& nssm set antrea-agent Start SERVICE_DELAYED_AUTO_START
 # Start Services
 start-service kubelet
 start-service kube-proxy

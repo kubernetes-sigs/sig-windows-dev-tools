@@ -14,10 +14,13 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 '
+KUBERNETESVERSION=${1-1.21.0}
+echo "Using $KUBERNETESVERSION as the Kubernetes version"
+
 if [[ -d "kubernetes" ]] ; then
 	echo "kubernetes/ exists, doing nothing..."
 	exit 0
 fi
 
 echo "clone kubernetes..."
-git clone https://github.com/kubernetes/kubernetes.git
+git clone https://github.com/kubernetes/kubernetes.git --branch v$KUBERNETESVERSION
