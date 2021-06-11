@@ -110,5 +110,9 @@ $nssm = (Get-Command nssm).Source
 # Start Services
 start-service kubelet
 start-service kube-proxy
+Write-Output("...sleeping for a second before smoke testing...")
+sleep 5
 # Must happen *after* kube-proxy comes online.... so internal service endpoint is accessible to antrea-agent.
-start-service antrea-agent
+Get-Service *kube*
+Get-Service *antrea*
+Get-Service *ovs*
