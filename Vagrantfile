@@ -54,9 +54,8 @@ Vagrant.configure(2) do |config|
     # I think this is invalid... (jay 6/7)
     # the reason being that PrepareNode.ps1 seems to check C:/k/ for the contents of the files,
     # and so this isnt used... it always downloads them...
-    winw1.vm.provision "file", source: settings['kubelet_path'] , destination: "C:/k/bin"
-
-    winw1.vm.provision "file", source: settings['kubelet_path'] , destination: "C:/k/"
+    winw1.vm.provision "file", source: settings['kubelet_path'] , destination: "C:/k/bin/kubelet.exe"
+    winw1.vm.provision "file", source: settings['kubelet_path'] , destination: "C:/k/bin/kube-proxy.exe"
 
     ## uncomment the 'run' values if debugging CNI ....
 
