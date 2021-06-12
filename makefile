@@ -22,7 +22,7 @@ all: 0-fetch-k8s 1-build-binaries 2-vagrant-up
 2: 2-vagrant-up
 
 0-fetch-k8s:
-	chmod +x fetch.shmake 
+	chmod +x fetch.sh
 	./fetch.sh $(kubernetes-version)
 
 1-build-binaries:
