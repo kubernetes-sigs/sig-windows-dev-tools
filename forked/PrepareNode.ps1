@@ -36,13 +36,15 @@ PS> .\PrepareNode.ps1 -KubernetesVersion v1.19.3 -ContainerRuntime containerD
 #>
 
 Param(
-    [parameter(Mandatory = $true, HelpMessage="Kubernetes version to use")]
-    [string] $KubernetesVersion,
+    [parameter(HelpMessage="Kubernetes version to use")]
+    [string] $KubernetesVersion = "1.21.0",
+
     [parameter(HelpMessage="Container runtime that Kubernets will use")]
     [ValidateSet("containerD", "Docker")]
     [string] $ContainerRuntime = "Docker"
 )
 $ErrorActionPreference = 'Stop'
+Write-Output "Using Kubernetes version '$KubernetesVersion'"
 
 function DownloadFile($destination, $source) {
     if (Test-Path -Path $destination) {

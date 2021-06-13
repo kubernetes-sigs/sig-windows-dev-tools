@@ -13,6 +13,18 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 #>
+Param(
+    [parameter(HelpMessage="Kubernetes version to use")]
+    [string] $KubernetesVersion = "1.21.0",
+
+    [parameter(HelpMessage="Container runtime that Kubernets will use")]
+    [ValidateSet("containerD", "Docker")]
+    [string] $ContainerRuntime = "Docker"
+)
+$ErrorActionPreference = 'Stop'
+Write-Output "Using Kubernetes version '$KubernetesVersion'"
+
+
 
 # Create Folders
 # TODO just add this to the path somehow?
@@ -89,7 +101,7 @@ if (!(Test-Path $antrea_helper)) {
 }
 Import-Module $antrea_helper
 
-& Install-AntreaAgent -KubernetesVersion "v1.21.1" -KubernetesHome "c:/k" -KubeConfig "C:/etc/kubernetes/kubelet.conf" -AntreaVersion "v0.13.2" -AntreaHome "c:/k/antrea"
+& Install-AntreaAgent -KubernetesVersion "v$KubernetesVersion" -KubernetesHome "c:/k" -KubeConfig "C:/etc/kubernetes/kubelet.conf" -AntreaVersion "v0.13.2" -AntreaHome "c:/k/antrea"
 New-KubeProxyServiceInterface
 
 # If you are doing this in production, you want to use the LocalFile option and

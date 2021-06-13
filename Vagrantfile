@@ -68,7 +68,7 @@ Vagrant.configure(2) do |config|
 
     # Experimental at the moment...
     winw1.vm.provision "shell", path: "forked/0-antrea.ps1", privileged: true #, run: "always"
-    winw1.vm.provision "shell", path: "forked/1-antrea.ps1", privileged: true #, run: "always"
+    winw1.vm.provision "shell", path: "forked/1-antrea.ps1", privileged: true, args: "-KubernetesVersion #{kubernetes_version}" #, run: "always"
 
   end
   

@@ -20,10 +20,7 @@ curl.exe -LO https://k8stestinfrabinaries.blob.core.windows.net/nssm-mirror/nssm
 tar C C:/nssm/ -xvf ./nssm-2.24.zip --strip-components 2 */$arch/*.exe
 Remove-Item -Force ./nssm-2.24.zip
 
-
-
 # Install antrea: CNI Provider
-
 mkdir -Force C:/k/
 mkdir -Force C:/k/antrea/ # scripts
 mkdir -Force C:/k/antrea/bin/ #executables
