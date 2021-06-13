@@ -1,5 +1,5 @@
 sync/config
-sync/bin
-sync/kubejoin.ps1
+sync/windows/bin
+sync/linux/bin
 kubernetes
 .vagrant/

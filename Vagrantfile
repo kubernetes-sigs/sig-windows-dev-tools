@@ -18,7 +18,7 @@ limitations under the License.
 =end
 
 require 'yaml'
-settings = YAML.load_file 'sync/variables.yaml'
+settings = YAML.load_file 'sync/shared/variables.yaml'
 kubernetes_version = settings['kubernetes_version']
 
 Vagrant.configure(2) do |config|
@@ -29,11 +29,12 @@ Vagrant.configure(2) do |config|
     master.vm.box = "ubuntu/focal64"
     master.vm.network :private_network, ip:"10.20.30.10"
     master.vm.provider :virtualbox do |vb|
-    master.vm.synced_folder "./sync", "/var/sync"
+    master.vm.synced_folder "./sync/shared", "/var/sync/shared"
+    master.vm.synced_folder "./sync/linux", "/var/sync/linux"
       vb.memory = 8192
       vb.cpus = 4
     end
-    master.vm.provision :shell, privileged: false, path: "sync/master.sh", args: kubernetes_version
+    master.vm.provision :shell, privileged: false, path: "sync/linux/master.sh", args: kubernetes_version
   end
 
   # WINDOWS WORKER (win server 2019)
@@ -42,7 +43,8 @@ Vagrant.configure(2) do |config|
     winw1.vm.box = "StefanScherer/windows_2019"  
     winw1.vm.network :private_network, ip:"10.20.30.11"
     winw1.vm.synced_folder ".", "/vagrant", disabled:true
-    winw1.vm.synced_folder "./sync", "c:\\sync"
+    winw1.vm.synced_folder "./sync/shared", "c:\\sync\\shared"
+    winw1.vm.synced_folder "./sync/windows", "c:\\sync\\windows"
     winw1.vm.provider :virtualbox do |vb|
       vb.memory = 8192
       vb.cpus = 4
@@ -54,17 +56,17 @@ Vagrant.configure(2) do |config|
 
     ## uncomment the 'run' values if debugging CNI ....
 
-    winw1.vm.provision "shell", path: "sync/hyperv.ps1", privileged: true #, run: "never"
+    winw1.vm.provision "shell", path: "sync/windows/hyperv.ps1", privileged: true #, run: "never"
     winw1.vm.provision :reload
 
-    winw1.vm.provision "shell", path: "sync/containerd1.ps1", privileged: true #, run: "never"
+    winw1.vm.provision "shell", path: "sync/windows/containerd1.ps1", privileged: true #, run: "never"
     winw1.vm.provision :reload
 
-    winw1.vm.provision "shell", path: "sync/containerd2.ps1", privileged: true #, run: "never"
+    winw1.vm.provision "shell", path: "sync/windows/containerd2.ps1", privileged: true #, run: "never"
 
     winw1.vm.provision "shell", path: "forked/PrepareNode.ps1", privileged: true, args: "-KubernetesVersion #{kubernetes_version} -ContainerRuntime containerD" #, run: "never"
 
-    winw1.vm.provision "shell", path: "sync/kubejoin.ps1", privileged: true #, run: "never"
+    winw1.vm.provision "shell", path: "sync/shared/kubejoin.ps1", privileged: true #, run: "never"
 
     # Experimental at the moment...
     winw1.vm.provision "shell", path: "forked/0-antrea.ps1", privileged: true #, run: "always"

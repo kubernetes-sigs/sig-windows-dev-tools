@@ -19,18 +19,19 @@ KUBERNETESVERSION=${1-1.21.0}
 echo "Using $KUBERNETESVERSION as the Kubernetes version"
 
 build_binaries () {
-    echo "building kube from $1"
-    startDir=`pwd`
-    pushd $1
-	    if [[ -d ./_output/dockerized/bin/windows/amd64/ ]]; then
-		echo "skipping compilation of windows bits... _output is present"
-	    else
-	    	./build/run.sh make kubelet KUBE_BUILD_PLATFORMS=windows/amd64
-	    	./build/run.sh make kube-proxy KUBE_BUILD_PLATFORMS=windows/amd64
-            fi
-	    echo "Copying files to sync"
-	    cp -r ./_output/dockerized/bin/windows/amd64/ $startDir/sync/bin
-    popd
+	echo "building kube from $1"
+	startDir=`pwd`
+	pushd $1
+	if [[ -d ./_output/dockerized/bin/windows/amd64/ ]]; then
+	echo "skipping compilation of windows bits... _output is present"
+	else
+		./build/run.sh make kubelet KUBE_BUILD_PLATFORMS=windows/amd64
+		./build/run.sh make kube-proxy KUBE_BUILD_PLATFORMS=windows/amd64
+	fi
+	echo "Copying files to sync"
+	cp ./_output/dockerized/bin/windows/amd64/kubelet.exe $startDir/sync/windows/bin
+	cp ./_output/dockerized/bin/windows/amd64/kube-proxy.exe $startDir/sync/windows/bin
+	popd
 }
 
 cleanup () {

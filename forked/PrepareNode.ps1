@@ -92,7 +92,7 @@ $env:Path += ";$global:KubernetesPath"
 # DownloadFile $kubeletBinPath https://dl.k8s.io/$KubernetesVersion/bin/windows/amd64/kubelet.exe
 # We replaced this ↑ with that ↓
 Write-Output "Deciding source to use for Kubelet.exe ..."
-$HomeGrownKubelet = "c:\sync\bin\kubelet.exe"
+$HomeGrownKubelet = "c:\sync\windows\bin\kubelet.exe"
 if (Test-Path -Path $HomeGrownKubelet -PathType Leaf) {
     Write-Output "Found $HomeGrownKubelet, copyin ..."
     Copy-Item -Path $HomeGrownKubelet -Destination $kubeletBinPath -Force
