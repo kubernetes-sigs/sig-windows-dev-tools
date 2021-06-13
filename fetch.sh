@@ -18,9 +18,17 @@ KUBERNETESVERSION=${1-1.21.0}
 echo "Using $KUBERNETESVERSION as the Kubernetes version"
 
 if [[ -d "kubernetes" ]] ; then
-	echo "kubernetes/ exists, doing nothing..."
-	exit 0
+	echo "kubernetes/ exists, not cloning..."
+else
+  echo "clone kubernetes..."
+  git clone https://github.com/kubernetes/kubernetes.git --branch v$KUBERNETESVERSION
+
 fi
 
-echo "clone kubernetes..."
-git clone https://github.com/kubernetes/kubernetes.git --branch v$KUBERNETESVERSION
+# BELOW THIS LINE ADD YOUR CUSTOM BUILD LOGIC #########
+# FOR EXAMPLE
+# pushd kubernetes
+# git fetch origin refs/pull/97812/head:antonio
+# git checkout -b antonio
+# rm -rf _output
+# pop
