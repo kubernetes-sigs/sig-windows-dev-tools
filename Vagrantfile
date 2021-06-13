@@ -23,18 +23,18 @@ kubernetes_version = settings['kubernetes_version']
 
 Vagrant.configure(2) do |config|
 
-  # LINUX MASTER
-  config.vm.define :master do |master|
-    master.vm.host_name = "master"
-    master.vm.box = "ubuntu/focal64"
-    master.vm.network :private_network, ip:"10.20.30.10"
-    master.vm.provider :virtualbox do |vb|
-    master.vm.synced_folder "./sync/shared", "/var/sync/shared"
-    master.vm.synced_folder "./sync/linux", "/var/sync/linux"
+  # LINUX Control Plane
+  config.vm.define :controlplane do |controlplane|
+    controlplane.vm.host_name = "controlplane"
+    controlplane.vm.box = "ubuntu/focal64"
+    controlplane.vm.network :private_network, ip:"10.20.30.10"
+    controlplane.vm.provider :virtualbox do |vb|
+    controlplane.vm.synced_folder "./sync/shared", "/var/sync/shared"
+    controlplane.vm.synced_folder "./sync/linux", "/var/sync/linux"
       vb.memory = 8192
       vb.cpus = 4
     end
-    master.vm.provision :shell, privileged: false, path: "sync/linux/master.sh", args: kubernetes_version
+    controlplane.vm.provision :shell, privileged: false, path: "sync/linux/controlplaneplane.sh", args: kubernetes_version
   end
 
   # WINDOWS WORKER (win server 2019)
@@ -43,8 +43,8 @@ Vagrant.configure(2) do |config|
     winw1.vm.box = "StefanScherer/windows_2019"  
     winw1.vm.network :private_network, ip:"10.20.30.11"
     winw1.vm.synced_folder ".", "/vagrant", disabled:true
-    winw1.vm.synced_folder "./sync/shared", "c:\\sync\\shared"
-    winw1.vm.synced_folder "./sync/windows", "c:\\sync\\windows"
+    winw1.vm.synced_folder "./sync/shared", "C:\\sync\\shared"
+    winw1.vm.synced_folder "./sync/windows", "C:\\sync\\windows"
     winw1.vm.provider :virtualbox do |vb|
       vb.memory = 8192
       vb.cpus = 4
