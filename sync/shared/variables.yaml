@@ -1,5 +1,6 @@
 --- 
 kubelet_path:  "./sync/windows/bin/kubelet.exe"
 kubeproxy_path:  "./sync/windows/bin/kube-proxy.exe"
-kubernetes_version:  "1.21.0"
+kubernetes_version_linux:  "1.21.0"
+kubernetes_version_windows:  "1.21.0"
 kubernetes_version_build: "1.21.0"

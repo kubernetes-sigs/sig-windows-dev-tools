@@ -19,7 +19,8 @@ limitations under the License.
 
 require 'yaml'
 settings = YAML.load_file 'sync/shared/variables.yaml'
-kubernetes_version = settings['kubernetes_version']
+kubernetes_version_linux = settings['kubernetes_version_linux']
+kubernetes_version_windows = settings['kubernetes_version_windows']
 
 Vagrant.configure(2) do |config|
 
@@ -34,7 +35,7 @@ Vagrant.configure(2) do |config|
       vb.memory = 8192
       vb.cpus = 4
     end
-    controlplane.vm.provision :shell, privileged: false, path: "sync/linux/controlplaneplane.sh", args: kubernetes_version
+    controlplane.vm.provision :shell, privileged: false, path: "sync/linux/controlplane.sh", args: "#{kubernetes_version_linux}"
   end
 
   # WINDOWS WORKER (win server 2019)
@@ -64,13 +65,13 @@ Vagrant.configure(2) do |config|
 
     winw1.vm.provision "shell", path: "sync/windows/containerd2.ps1", privileged: true #, run: "never"
 
-    winw1.vm.provision "shell", path: "forked/PrepareNode.ps1", privileged: true, args: "-KubernetesVersion #{kubernetes_version} -ContainerRuntime containerD" #, run: "never"
+    winw1.vm.provision "shell", path: "forked/PrepareNode.ps1", privileged: true, args: "-KubernetesVersion #{kubernetes_version_windows} -ContainerRuntime containerD" #, run: "never"
 
     winw1.vm.provision "shell", path: "sync/shared/kubejoin.ps1", privileged: true #, run: "never"
 
     # Experimental at the moment...
     winw1.vm.provision "shell", path: "forked/0-antrea.ps1", privileged: true #, run: "always"
-    winw1.vm.provision "shell", path: "forked/1-antrea.ps1", privileged: true, args: "-KubernetesVersion #{kubernetes_version}" #, run: "always"
+    winw1.vm.provision "shell", path: "forked/1-antrea.ps1", privileged: true, args: "-KubernetesVersion #{kubernetes_version_windows}" #, run: "always"
 
   end
   
