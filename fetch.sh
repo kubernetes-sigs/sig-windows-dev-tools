@@ -15,7 +15,18 @@ See the License for the specific language governing permissions and
 limitations under the License.
 '
 set -e
-KUBERNETESVERSION=${1-1.21.0}
+variables_file="sync/shared/variables.yaml"
+
+# kubernetes version can be passed as param, else it will be read from variables_file, if that doesnt exists it uses the default "1.21.0"
+kubernetes_version=${1}
+if [ -z "$kubernetes_version" ]; then
+  if [ -f variables_file ]; then
+    $kubernetes_version=$(awk '/kubernetes_version_build/ {print $2}' $variables_file | sed -e 's/^"//' -e 's/"$//'); #read param ffrom file
+  else 
+    $kubernetes="1.21.1"
+  fi
+fi
+
 echo "Using $KUBERNETESVERSION as the Kubernetes version"
 
 if [[ -d "kubernetes" ]] ; then
@@ -23,7 +34,6 @@ if [[ -d "kubernetes" ]] ; then
 else
   echo "clone kubernetes..."
   git clone https://github.com/kubernetes/kubernetes.git --branch v$KUBERNETESVERSION
-
 fi
 
 # BELOW THIS LINE ADD YOUR CUSTOM BUILD LOGIC #########
