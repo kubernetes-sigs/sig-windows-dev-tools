@@ -101,6 +101,15 @@ if (Test-Path -Path $HomeGrownKubelet -PathType Leaf) {
     DownloadFile $kubeletBinPath https://dl.k8s.io/$KubernetesVersion/bin/windows/amd64/kubelet.exe
 }
 
+# Copying the self-built bins to windows
+# TODO does this even overwrite the kube-proxy.exe? where does kube-proxy.exe come from if we dont copy it here?
+$SelfBuiltKubeProxyPath = "c:\sync\bin\kube-proxy.exe"
+$KubeProxyPath = "C:\k\bin\kube-proxy.exe"
+if ($OverwriteBins) {
+    Write-Output "Copying $SelfBuiltKubeletPath"
+    Copy-Item -Path "$KubeProxyPath" -Destination $SelfBuiltKubeProxyPath -Force
+}
+
 DownloadFile "$global:KubernetesPath\kubeadm.exe" https://dl.k8s.io/$KubernetesVersion/bin/windows/amd64/kubeadm.exe
 DownloadFile "$global:KubernetesPath\wins.exe" https://github.com/rancher/wins/releases/download/v0.0.4/wins.exe
 
