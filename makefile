@@ -13,7 +13,6 @@
 # limitations under the License.
 
 path ?= kubernetes
-kubernetes-version ?= 1.21.0
 
 all: 0-fetch-k8s 1-build-binaries 2-vagrant-up
 
@@ -23,7 +22,7 @@ all: 0-fetch-k8s 1-build-binaries 2-vagrant-up
 
 0-fetch-k8s:
 	chmod +x fetch.sh
-	./fetch.sh $(kubernetes-version)
+	./fetch.sh
 
 1-build-binaries:
 	chmod +x build.sh
