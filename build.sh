@@ -28,9 +28,17 @@ build_binaries () {
 		./build/run.sh make kubelet KUBE_BUILD_PLATFORMS=windows/amd64
 		./build/run.sh make kube-proxy KUBE_BUILD_PLATFORMS=windows/amd64
 	fi
+	# TODO maybe build a function ...
 	echo "Copying files to sync"
-	cp ./_output/dockerized/bin/windows/amd64/kubelet.exe $startDir/sync/windows/bin
-	cp ./_output/dockerized/bin/windows/amd64/kube-proxy.exe $startDir/sync/windows/bin
+	#win
+	mkdir -p $startDir/sync/windows/bin
+	cp -f ./_output/dockerized/bin/windows/amd64/kubelet.exe $startDir/sync/windows/bin
+	cp -f ./_output/dockerized/bin/windows/amd64/kube-proxy.exe $startDir/sync/windows/bin
+	#linux
+	mkdir -p $startDir/sync/linux/bin
+	cp -f ./_output/dockerized/bin/linux/amd64/kubelet $startDir/sync/linux/bin
+	cp -f ./_output/dockerized/bin/linux/amd64/kubectl $startDir/sync/linux/bin
+	cp -f ./_output/dockerized/bin/linux/amd64/kubeadm $startDir/sync/linux/bin
 	popd
 }
 

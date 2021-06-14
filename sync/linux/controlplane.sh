@@ -14,8 +14,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 '
 set -e
-KUBERNETESVERSION=${1-1.21.0}
-echo "Using $KUBERNETESVERSION as the Kubernetes version"
+kubernetes_version=${1-1.21.0}
+echo "Using $kubernetes_version as the Kubernetes version"
 
 # Add GDP keys and repositories for both Docker and Kubernetes
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
@@ -51,7 +51,7 @@ sudo sysctl --system
 
 
 #Install Docker and Kubernetes, hold versions
-sudo apt-get install -y docker-ce=5:20.10.5~3-0~ubuntu-$(lsb_release -cs) kubelet=$KUBERNETESVERSION-00 kubeadm=$KUBERNETESVERSION-00 kubectl=$KUBERNETESVERSION-00
+sudo apt-get install -y docker-ce=5:20.10.5~3-0~ubuntu-$(lsb_release -cs) kubelet=$kubernetes_version-00 kubeadm=$kubernetes_version-00 kubectl=$kubernetes_version-00
 sudo apt-mark hold docker-ce kubelet kubeadm kubectl
 
 
@@ -73,7 +73,7 @@ sudo systemctl restart containerd
   #cat <<EOF | sudo tee kubeadm-config.yaml
   #kind: ClusterConfiguration
   #apiVersion: kubeadm.k8s.io/v1beta2
-  #kubernetesVersion: v$KUBERNETESVERSION
+  #kubernetes_version: v$kubernetes_version
   #networking:
   #  podSubnet: "10.244.0.0/16"
   #---
@@ -100,12 +100,12 @@ function cni_flannel {
   sed -i 's/"Type": "vxlan"/"Type": "vxlan","VNI": 4096,"Port": 4789/' /tmp/kube-flannel.yml
   kubectl apply -f /tmp/kube-flannel.yml
 
-  curl -s -L https://github.com/kubernetes-sigs/sig-windows-tools/releases/latest/download/kube-proxy.yml | sed "s#VERSION#v$KUBERNETESVERSION#g" | kubectl apply -f -
+  curl -s -L https://github.com/kubernetes-sigs/sig-windows-tools/releases/latest/download/kube-proxy.yml | sed "s#VERSION#v$kubernetes_version#g" | kubectl apply -f -
   kubectl apply -f https://github.com/kubernetes-sigs/sig-windows-tools/releases/latest/download/flannel-overlay.yml
 }
 
 function cni_antrea {
-  curl -s -L https://github.com/kubernetes-sigs/sig-windows-tools/releases/latest/download/kube-proxy.yml | sed "s#VERSION#v$KUBERNETESVERSION#g" | kubectl apply -f -
+  curl -s -L https://github.com/kubernetes-sigs/sig-windows-tools/releases/latest/download/kube-proxy.yml | sed "s#VERSION#v$kubernetes_version#g" | kubectl apply -f -
   kubectl apply -f https://github.com/antrea-io/antrea/releases/download/v0.13.2/antrea.yml
 }
 

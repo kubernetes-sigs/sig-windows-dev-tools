@@ -1,5 +1,5 @@
 sync/config
-sync/windows/bin
-sync/linux/bin
+sync/windows/bin/
+sync/linux/bin/
 kubernetes
 .vagrant/

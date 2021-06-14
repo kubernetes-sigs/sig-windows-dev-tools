@@ -52,7 +52,7 @@ Vagrant.configure(2) do |config|
       vb.gui = false
     end
 
-    #THIS this now happens in /forked/PrepareNode.ps1
+    #THIS  now happens in /forked/PrepareNode.ps1
     #winw1.vm.provision "file", source: settings['kubelet_path'] , destination: "C:/k/kubelet.exe"
     #winw1.vm.provision "file", source: settings['kubeproxy_path'] , destination: "C:/k/kube-proxy.exe"
 
