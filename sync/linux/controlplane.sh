@@ -16,6 +16,8 @@ limitations under the License.
 set -e
 kubernetes_version=${1-1.21.0}
 echo "Using $kubernetes_version as the Kubernetes version"
+overwrite_bins=${2-false}
+echo "Overwriting bins is set to '$overwrite_bins'"
 
 # Add GDP keys and repositories for both Docker and Kubernetes
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
@@ -54,6 +56,15 @@ sudo sysctl --system
 sudo apt-get install -y docker-ce=5:20.10.5~3-0~ubuntu-$(lsb_release -cs) kubelet=$kubernetes_version-00 kubeadm=$kubernetes_version-00 kubectl=$kubernetes_version-00
 sudo apt-mark hold docker-ce kubelet kubeadm kubectl
 
+
+if $overwrite_bins ; then
+  echo "overwriting binaries ..."
+  for BIN in kubeadm kubectl kubelet
+  do
+      echo "=> $BIN" 
+      sudo cp /var/sync/linux/bin/$BIN /bin/ -f
+  done
+fi
 
 # #bridged traffic to iptables is enabled for kube-router:
 # echo "net.bridge.bridge-nf-call-iptables=1" | sudo tee -a /etc/sysctl.conf

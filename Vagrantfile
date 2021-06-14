@@ -21,6 +21,7 @@ require 'yaml'
 settings = YAML.load_file 'sync/shared/variables.yaml'
 kubernetes_version_linux = settings['kubernetes_version_linux']
 kubernetes_version_windows = settings['kubernetes_version_windows']
+overwrite_linux = settings['overwrite_linux']
 
 Vagrant.configure(2) do |config|
 
@@ -35,7 +36,7 @@ Vagrant.configure(2) do |config|
       vb.memory = 8192
       vb.cpus = 4
     end
-    controlplane.vm.provision :shell, privileged: false, path: "sync/linux/controlplane.sh", args: "#{kubernetes_version_linux}"
+    controlplane.vm.provision :shell, privileged: false, path: "sync/linux/controlplane.sh", args: "#{kubernetes_version_linux} #{overwrite_linux}"
   end
 
   # WINDOWS WORKER (win server 2019)
