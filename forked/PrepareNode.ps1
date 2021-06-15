@@ -41,10 +41,13 @@ Param(
 
     [parameter(HelpMessage="Container runtime that Kubernets will use")]
     [ValidateSet("containerD", "Docker")]
-    [string] $ContainerRuntime = "Docker"
+    [string] $ContainerRuntime = "Docker",
+
+    [parameter(HelpMessage="Allows to overwrite bins with self-built ones")]
+    [switch] $OverwriteBins
 )
 $ErrorActionPreference = 'Stop'
-Write-Output "Using Kubernetes version '$KubernetesVersion'"
+Write-Output "Overwriting bins is set to '$OverwriteBins'"
 
 function DownloadFile($destination, $source) {
     if (Test-Path -Path $destination) {
@@ -92,22 +95,24 @@ $env:Path += ";$global:KubernetesPath"
 # DownloadFile $kubeletBinPath https://dl.k8s.io/$KubernetesVersion/bin/windows/amd64/kubelet.exe
 # We replaced this ↑ with that ↓
 Write-Output "Deciding source to use for Kubelet.exe ..."
-$HomeGrownKubelet = "c:\sync\windows\bin\kubelet.exe"
-if (Test-Path -Path $HomeGrownKubelet -PathType Leaf) {
-    Write-Output "Found $HomeGrownKubelet, copyin ..."
-    Copy-Item -Path $HomeGrownKubelet -Destination $kubeletBinPath -Force
+$SelfBuiltKubeletSource = "C:\sync\windows\bin\kubelet.exe"
+if ((Test-Path -Path $SelfBuiltKubeletSource -PathType Leaf) -and ($OverwriteBins)) {
+    New-Item -ItemType File -Path $kubeletBinPath -Force
+    Write-Output "Found $SelfBuiltKubeletSource, copyin ..."
+    Copy-Item  $SelfBuiltKubeletSource -Destination $kubeletBinPath -Force
 } else {
-    Write-Output "Didn't find $HomeGrownKubelet, downloading ..."
+    Write-Output "Didn't find $SelfBuiltKubeletSource, downloading ..."
     DownloadFile $kubeletBinPath https://dl.k8s.io/$KubernetesVersion/bin/windows/amd64/kubelet.exe
 }
 
 # Copying the self-built bins to windows
 # TODO does this even overwrite the kube-proxy.exe? where does kube-proxy.exe come from if we dont copy it here?
-$SelfBuiltKubeProxyPath = "c:\sync\bin\kube-proxy.exe"
+$SelfBuiltKubeProxySource = "C:\sync\windows\bin\kube-proxy.exe"
 $KubeProxyPath = "C:\k\bin\kube-proxy.exe"
 if ($OverwriteBins) {
+    New-Item -ItemType File -Path $KubeProxyPath -Force
     Write-Output "Copying $SelfBuiltKubeletPath"
-    Copy-Item -Path "$KubeProxyPath" -Destination $SelfBuiltKubeProxyPath -Force
+    Copy-Item  $SelfBuiltKubeProxySource  -Destination $KubeProxyPath -Force
 }
 
 DownloadFile "$global:KubernetesPath\kubeadm.exe" https://dl.k8s.io/$KubernetesVersion/bin/windows/amd64/kubeadm.exe
@@ -120,8 +125,8 @@ if ($ContainerRuntime -eq "Docker") {
     Write-Host "Creating Docker host network"
     docker network create -d nat host
 } elseif ($ContainerRuntime -eq "containerD") {
-    DownloadFile "c:\k\hns.psm1" https://github.com/Microsoft/SDN/raw/master/Kubernetes/windows/hns.psm1
-    Import-Module "c:\k\hns.psm1"
+    DownloadFile "C:\k\hns.psm1" https://github.com/Microsoft/SDN/raw/master/Kubernetes/windows/hns.psm1
+    Import-Module "C:\k\hns.psm1"
     # TODO(marosset): check if network already exists before creatation
     New-HnsNetwork -Type NAT -Name nat
 }

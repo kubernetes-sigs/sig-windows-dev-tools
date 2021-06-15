@@ -1,3 +1,3 @@
 $env:path += ";C:\Program Files\containerd"
 [Environment]::SetEnvironmentVariable("Path", $env:Path, [System.EnvironmentVariableTarget]::Machine)
-kubeadm join 10.20.30.10:6443 --cri-socket "npipe:////./pipe/containerd-containerd" --token ms64st.11h754wjkx5vy4hb --discovery-token-ca-cert-hash sha256:9f0d06e18be74825ae4fbcf1e5c7f6e9a0912bc62715c5914146a878488baa91 
+kubeadm join 10.20.30.10:6443 --cri-socket "npipe:////./pipe/containerd-containerd" --token ariivt.cftklu90vqp5mqau --discovery-token-ca-cert-hash sha256:ccf13900552a0c15b566e61ee13b8a820270e761ba4c2657798cfba4a7e7dd50 

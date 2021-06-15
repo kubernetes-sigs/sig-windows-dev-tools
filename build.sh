@@ -25,6 +25,10 @@ build_binaries () {
 	else
 		./build/run.sh make kubelet KUBE_BUILD_PLATFORMS=windows/amd64
 		./build/run.sh make kube-proxy KUBE_BUILD_PLATFORMS=windows/amd64
+
+		./build/run.sh make kubelet KUBE_BUILD_PLATFORMS=linux/amd64
+		./build/run.sh make kubectl KUBE_BUILD_PLATFORMS=linux/amd64
+		./build/run.sh make kubeadm KUBE_BUILD_PLATFORMS=linux/amd64
 	fi
 	# TODO maybe build a function ...
 	echo "Copying files to sync"

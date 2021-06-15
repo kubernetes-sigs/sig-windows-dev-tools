@@ -21,7 +21,8 @@ require 'yaml'
 settings = YAML.load_file 'sync/shared/variables.yaml'
 kubernetes_version_linux = settings['kubernetes_version_linux']
 kubernetes_version_windows = settings['kubernetes_version_windows']
-overwrite_linux = settings['overwrite_linux']
+overwrite_linux = settings['overwrite_linux_bins']
+overwrite_windows = settings['overwrite_windows_bins'] ? "-OverwriteBins" : ""
 
 Vagrant.configure(2) do |config|
 
@@ -67,7 +68,7 @@ Vagrant.configure(2) do |config|
 
     winw1.vm.provision "shell", path: "sync/windows/containerd2.ps1", privileged: true #, run: "never"
 
-    winw1.vm.provision "shell", path: "forked/PrepareNode.ps1", privileged: true, args: "-KubernetesVersion #{kubernetes_version_windows} -ContainerRuntime containerD" #, run: "never"
+    winw1.vm.provision "shell", path: "forked/PrepareNode.ps1", privileged: true, args: "-KubernetesVersion #{kubernetes_version_windows} -ContainerRuntime containerD #{overwrite_windows }" #, run: "never"
 
     winw1.vm.provision "shell", path: "sync/shared/kubejoin.ps1", privileged: true #, run: "never"
 
