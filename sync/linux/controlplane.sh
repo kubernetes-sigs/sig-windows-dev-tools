@@ -94,7 +94,11 @@ sudo systemctl restart containerd
   #EOF
 # RIGHT NOW we NEED to use ApiSErverAdvertiseAddress... but not sure how to do that equivalent in kubeadm.
 
-sudo kubeadm init --apiserver-advertise-address=10.20.30.10 --pod-network-cidr=10.244.0.0/16
+# k8s.gcr.io/pause:3.2
+# k8s.gcr.io/etcd:3.4.13-0
+# k8s.gcr.io/coredns:1.7.0
+# sudo ctr images tag k8s.gcr.io/etcd:3.4.13-0 k8s.gcr.io/etcd:v1.22.0-alpha.3.31_a3abd06ad53b2f
+sudo kubeadm init --apiserver-advertise-address=10.20.30.10 --pod-network-cidr=10.244.0.0/16 --image-repository="k8s.gcr.io" --kubernetes-version="v1.22.0-alpha.3.31_a3abd06ad53b2f"
 
 #to start the cluster with the current user:
 mkdir -p $HOME/.kube
