@@ -128,7 +128,7 @@ function cni_flannel {
 }
 
 function cni_antrea {
-  curl -s -L https://github.com/kubernetes-sigs/sig-windows-tools/releases/latest/download/kube-proxy.yml | sed "s#VERSION#v$kubernetes_version#g" | kubectl apply -f -
+# curl -s -L https://github.com/kubernetes-sigs/sig-windows-tools/releases/latest/download/kube-proxy.yml | sed "s#VERSION#v$kubernetes_version#g" | kubectl apply -f -
   kubectl apply -f https://github.com/antrea-io/antrea/releases/download/v0.13.2/antrea.yml
 }
 
