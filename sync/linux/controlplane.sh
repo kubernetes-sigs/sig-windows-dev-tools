@@ -14,9 +14,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 '
 set -e
-kubernetes_version=${1-1.21.0}
+
+# TODO Add these as command line options
+overwrite_linux_bins=${1-false}
+k8s_linux_registry=${2-"gcr.io/k8s-staging-ci-images"}
+k8s_linux_kubelet_deb=${3-"1.21.0"}
+k8s_linux_apiserver=${4-"v1.22.0-alpha.3.31+a3abd06ad53b2f"}
+
 echo "Using $kubernetes_version as the Kubernetes version"
-overwrite_bins=${2-false}
 echo "Overwriting bins is set to '$overwrite_bins'"
 
 # Add GDP keys and repositories for both Docker and Kubernetes
@@ -51,13 +56,16 @@ EOF
 # Apply sysctl params without reboot
 sudo sysctl --system
 
+#Install Docker and Kubernetes,
+sudo apt-get install -y docker-ce=5:20.10.5~3-0~ubuntu-$(lsb_release -cs) \
+kubelet=${k8s_linux_kubelet_deb}-00 \
+kubeadm=${k8s_linux_kubelet_deb}-00 \
+kubectl=${k8s_linux_kubelet_deb}-00
 
-#Install Docker and Kubernetes, hold versions
-sudo apt-get install -y docker-ce=5:20.10.5~3-0~ubuntu-$(lsb_release -cs) kubelet=$kubernetes_version-00 kubeadm=$kubernetes_version-00 kubectl=$kubernetes_version-00
 sudo apt-mark hold docker-ce kubelet kubeadm kubectl
 
 
-if $overwrite_bins ; then
+if $overwrite_linux_bins ; then
   echo "overwriting binaries ..."
   for BIN in kubeadm kubectl kubelet
   do
@@ -105,7 +113,11 @@ sudo docker pull k8s.gcr.io/coredns/coredns:v1.8.0
 sudo docker tag k8s.gcr.io/etcd:3.4.13-0 gcr.io/k8s-staging-ci-images/etcd:3.4.13-0
 sudo docker tag k8s.gcr.io/pause:3.4.1 gcr.io/k8s-staging-ci-images/pause:3.4.1
 sudo docker tag k8s.gcr.io/coredns/coredns:v1.8.0 gcr.io/k8s-staging-ci-images/coredns/coredns:v1.8.0
-sudo kubeadm init --apiserver-advertise-address=10.20.30.10 --pod-network-cidr=10.244.0.0/16 --image-repository="gcr.io/k8s-staging-ci-images" --kubernetes-version="v1.22.0-alpha.3.31+a3abd06ad53b2f" --v=6
+sudo kubeadm init --apiserver-advertise-address=10.20.30.10 \
+--pod-network-cidr=10.244.0.0/16 \
+--image-repository=$k8s_version_linux_registry \
+--kubernetes-version=$k8s_version_linux_apiserver \
+--v=6
 
 #to start the cluster with the current user:
 mkdir -p $HOME/.kube
@@ -115,20 +127,7 @@ sudo chown $(id -u):$(id -g) $HOME/.kube/config
 rm -f /var/sync/shared/config
 cp $HOME/.kube/config /var/sync/shared/config
 
-# CNI: Not 100% tested, just a prototype...
-# Not used at all... probably should delete
-function cni_flannel {
-  wget https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml -P /tmp -q
-  ## this is important for windows:
-  sed -i 's/"Type": "vxlan"/"Type": "vxlan","VNI": 4096,"Port": 4789/' /tmp/kube-flannel.yml
-  kubectl apply -f /tmp/kube-flannel.yml
-
-  curl -s -L https://github.com/kubernetes-sigs/sig-windows-tools/releases/latest/download/kube-proxy.yml | sed "s#VERSION#v$kubernetes_version#g" | kubectl apply -f -
-  kubectl apply -f https://github.com/kubernetes-sigs/sig-windows-tools/releases/latest/download/flannel-overlay.yml
-}
-
 function cni_antrea {
-# curl -s -L https://github.com/kubernetes-sigs/sig-windows-tools/releases/latest/download/kube-proxy.yml | sed "s#VERSION#v$kubernetes_version#g" | kubectl apply -f -
   kubectl apply -f https://github.com/antrea-io/antrea/releases/download/v0.13.2/antrea.yml
 }
 

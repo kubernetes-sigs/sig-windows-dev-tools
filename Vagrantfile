@@ -1,11 +1,16 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 require 'yaml'
+
+# Modify these in the variables.yaml file... they are described there in gory detail...
 settings = YAML.load_file 'sync/shared/variables.yaml'
-kubernetes_version_linux = settings['kubernetes_version_linux']
-kubernetes_version_windows = settings['kubernetes_version_windows']
-overwrite_linux = settings['overwrite_linux_bins']
-overwrite_windows = settings['overwrite_windows_bins'] ? "-OverwriteBins" : ""
+k8s_linux_registry=settings['k8s_linux_registry']
+k8s_linux_kubelet_deb=settings['k8s_linux_kubelet_deb']
+k8s_linux_apiserver=settings['k8s_linux_apiserver']
+kubernetes_version_windows=settings['kubernetes_version_windows']
+
+overwrite_linux_bins = settings['overwrite_linux_bins']
+overwrite_windows_bins = settings['overwrite_windows_bins'] ? "-OverwriteBins" : ""
 
 Vagrant.configure(2) do |config|
 
@@ -23,7 +28,7 @@ Vagrant.configure(2) do |config|
       vb.memory = 8192
       vb.cpus = 4
     end
-    controlplane.vm.provision :shell, privileged: false, path: "sync/linux/controlplane.sh", args: "#{kubernetes_version_linux} #{overwrite_linux}"
+    controlplane.vm.provision :shell, privileged: false, path: "sync/linux/controlplane.sh", args: "#{overwrite_linux_bins} ${k8s_linux_registry} ${k8s_linux_kubelet_deb} ${k8s_linux_apiserver} "
   end
 
   # WINDOWS WORKER (win server 2019)
@@ -54,7 +59,7 @@ Vagrant.configure(2) do |config|
 
     winw1.vm.provision "shell", path: "sync/windows/containerd2.ps1", privileged: true #, run: "never"
 
-    winw1.vm.provision "shell", path: "forked/PrepareNode.ps1", privileged: true, args: "-KubernetesVersion #{kubernetes_version_windows} -ContainerRuntime containerD #{overwrite_windows }" #, run: "never"
+    winw1.vm.provision "shell", path: "forked/PrepareNode.ps1", privileged: true, args: "-KubernetesVersion #{kubernetes_version_windows} -ContainerRuntime containerD #{overwrite_windows_bins }" #, run: "never"
 
     winw1.vm.provision "shell", path: "sync/shared/kubejoin.ps1", privileged: true #, run: "never"
 

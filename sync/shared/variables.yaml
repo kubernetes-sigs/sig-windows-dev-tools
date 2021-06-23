@@ -1,7 +1,26 @@
 kubelet_path:  "./sync/windows/bin/kubelet.exe"
 kubeproxy_path:  "./sync/windows/bin/kube-proxy.exe"
-kubernetes_version_linux:  "1.21.0"
+
+# LINUX KUBELET VERSION
+# LINUX KUBEADM VERSION
+# The RPM versions of the kubelet pulled down remotely
+# from https://apt.kubernetes.io/
+k8s_linux_registry: "gcr.io/k8s-staging-ci-images"
+k8s_linux_kubelet_deb:  "1.21.0"
+k8s_linux_apiserver: "v1.22.0-alpha.3.31+a3abd06ad53b2f"
+
+# WINDOWS KUBELET VERSION
+# This is the -KubernetesVersion sent to
+# The PrepareNode.ps1 script, which is maintained
+# by sig-windows.  It determines what
+# WINDOWS KUBELET, KUBEADM we download.
 kubernetes_version_windows:  "1.21.0"
+
+# kubernetes_version_build: this changes the branch that is fetched...
 kubernetes_version_build: "1.21.0"
+
+### THIS WILL OVERWRITE THE KUBEADM and KUBELET with LOCAL SOURCE
+# TODO make these explicit about what they are overwriting
+# Seperate kubelet from kubeadm
 overwrite_linux_bins: false
 overwrite_windows_bins: false

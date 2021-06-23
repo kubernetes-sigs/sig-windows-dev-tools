@@ -43,6 +43,8 @@ Param(
     [ValidateSet("containerD", "Docker")]
     [string] $ContainerRuntime = "Docker",
 
+    # This is a modifcation for the windows-dev-tools where we
+    # OVERWRITE the WINDOWS kubelet AND kubeadm BINARY.
     [parameter(HelpMessage="Allows to overwrite bins with self-built ones")]
     [switch] $OverwriteBins
 )
@@ -93,7 +95,7 @@ $env:Path += ";$global:KubernetesPath"
 [Environment]::SetEnvironmentVariable("Path", $env:Path, [System.EnvironmentVariableTarget]::Machine)
 
 # DownloadFile $kubeletBinPath https://dl.k8s.io/$KubernetesVersion/bin/windows/amd64/kubelet.exe
-# We replaced this ↑ with that ↓
+# We replaced this ↑ with ↓
 Write-Output "Deciding source to use for Kubelet.exe ..."
 $SelfBuiltKubeletSource = "C:\sync\windows\bin\kubelet.exe"
 if ((Test-Path -Path $SelfBuiltKubeletSource -PathType Leaf) -and ($OverwriteBins)) {
@@ -116,7 +118,6 @@ if ($OverwriteBins) {
 }
 
 DownloadFile "$global:KubernetesPath\kubeadm.exe" https://dl.k8s.io/$KubernetesVersion/bin/windows/amd64/kubeadm.exe
-DownloadFile "$global:KubernetesPath\wins.exe" https://github.com/rancher/wins/releases/download/v0.0.4/wins.exe
 
 if ($ContainerRuntime -eq "Docker") {
     # Create host network to allow kubelet to schedule hostNetwork pods
