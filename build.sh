@@ -17,12 +17,21 @@ limitations under the License.
 set -e
 
 build_binaries () {
-	echo "building kube from $1"
+	echo "building kube locally inside `pwd` from $1"
 	startDir=`pwd`
+  echo "changing into directory $1 to start the build"
 	pushd $1
 	if [[ -d ./_output/dockerized/bin/windows/amd64/ ]]; then
 	echo "skipping compilation of windows bits... _output is present"
 	else
+		echo "running docker build ~ checking memory, make sure its > 4G!!!"
+		if [[ `docker system info | grep Memory | cut -d' ' -f 4 |cut -d'.' -f 1` -gt 4 ]]; then
+			echo "Proceeding with build, docker daemon memory is ok"
+		else
+			echo "Insufficient LOCAL memory to build k8s before the vagrant builder starts"
+			exit 1
+		fi
+		# use the kubernetes/build/run script to build specific targets...
 		./build/run.sh make kubelet KUBE_BUILD_PLATFORMS=windows/amd64
 		./build/run.sh make kube-proxy KUBE_BUILD_PLATFORMS=windows/amd64
 
@@ -30,7 +39,7 @@ build_binaries () {
 		./build/run.sh make kubectl KUBE_BUILD_PLATFORMS=linux/amd64
 		./build/run.sh make kubeadm KUBE_BUILD_PLATFORMS=linux/amd64
 	fi
-	# TODO maybe build a function ...
+	# TODO replace with https://github.com/kubernetes-sigs/sig-windows-tools/issues/152 at some point
 	echo "Copying files to sync"
 	#win
 	mkdir -p $startDir/sync/windows/bin

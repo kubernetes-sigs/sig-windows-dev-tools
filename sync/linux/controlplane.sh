@@ -30,7 +30,7 @@ sudo apt-get update
 
 
 #disable swap
-swapoff -a
+sudo swapoff -a
 sudo sed -i '/swap/d' /etc/fstab
 
 cat <<EOF | sudo tee /etc/modules-load.d/containerd.conf
@@ -116,6 +116,7 @@ rm -f /var/sync/shared/config
 cp $HOME/.kube/config /var/sync/shared/config
 
 # CNI: Not 100% tested, just a prototype...
+# Not used at all... probably should delete
 function cni_flannel {
   wget https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml -P /tmp -q
   ## this is important for windows:

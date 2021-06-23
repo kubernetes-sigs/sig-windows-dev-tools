@@ -1,22 +1,5 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
-
-=begin
-Copyright 2021 The Kubernetes Authors.
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-=end
-
 require 'yaml'
 settings = YAML.load_file 'sync/shared/variables.yaml'
 kubernetes_version_linux = settings['kubernetes_version_linux']
@@ -29,7 +12,10 @@ Vagrant.configure(2) do |config|
   # LINUX Control Plane
   config.vm.define :controlplane do |controlplane|
     controlplane.vm.host_name = "controlplane"
-    controlplane.vm.box = "ubuntu/focal64"
+    #    controlplane.vm.box = "ubuntu/focal64"
+    # better because its available on vmware and virtualbox
+    controlplane.vm.box = "bento/ubuntu-18.04"
+
     controlplane.vm.network :private_network, ip:"10.20.30.10"
     controlplane.vm.provider :virtualbox do |vb|
     controlplane.vm.synced_folder "./sync/shared", "/var/sync/shared"
