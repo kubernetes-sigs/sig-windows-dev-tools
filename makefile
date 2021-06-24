@@ -29,7 +29,7 @@ all: 0-fetch-k8s 1-build-binaries 2-vagrant-up
 	./build.sh $(path)
 
 2-vagrant-up:
-# TODO: pass kubernetes-version to vagrant
+	vagrant plugin install vagrant-vbguest
 	vagrant destroy -f && vagrant up
 
 # TODO
