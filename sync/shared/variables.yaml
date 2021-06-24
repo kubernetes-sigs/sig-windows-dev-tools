@@ -18,10 +18,6 @@ k8s_linux_apiserver: "ci/v1.22.0-alpha.3.31+a3abd06ad53b2f"
 # WINDOWS KUBELET, KUBEADM we download.
 kubernetes_version_windows:  "1.21.0"
 
-# kubernetes_version_build: this changes the branch that is fetched...
-# TODO Friedrich make this more complicated for us please ...
-kubernetes_version_build: "cb303e613a121a29364f75cc67d3d580833a7479"
-
 ### THIS WILL OVERWRITE THE KUBEADM and KUBELET with LOCAL SOURCE
 # TODO make these explicit about what they are overwriting
 # Seperate kubelet from kubeadm
