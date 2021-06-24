@@ -20,7 +20,8 @@ set -e
 echo "ARGS: $1 $2 $3 $4"
 if [[ "$1" == "" || "$2" == "" || "$3" == "" || "$4" == "" ]] ; then
   cat << EOF
-    Missing args.  You need to send overwrite_linux_bins, k8s_linux_registry, k8s_linux_kubelet_deb, k8s_linux_apiserver, i.e. something like...
+    Missing args.
+    You need to send overwrite_linux_bins, k8s_linux_registry, k8s_linux_kubelet_deb, k8s_linux_apiserver, i.e. something like...
     ./controlplane.sh false gcr.io/k8s-staging-ci-images 1.21.0 v1.22.0-alpha.3.31+a3abd06ad53b2f"}
     Normally these are in your variables.yml, and piped in by Vagrant.
     So, check that you didn't break the Vagrantfile :)

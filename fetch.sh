@@ -17,10 +17,30 @@ limitations under the License.
 set -e
 variables_file="sync/shared/variables.yaml"
 
-git clone https://github.com/kubernetes/kubernetes.git
-pushd kubernetes
-git checkout cb303e613a121a29364f75cc67d3d580833a7479
-popd
+# kubernetes version can be passed as param, otherwise it will be read from variables_file, otherwise it uses the default "1.21.0"
+kubernetes_sha=$1
+if [ -z ${kubernetes_sha} ]; then
+  if [ -f ${variables_file} ]; then
+    kubernetes_sha=$(awk '/kubernetes_version_build/ {print $2}' ${variables_file} | sed -e 's/^"//' -e 's/"$//'); #read param from file
+    echo "using kubernetes version $kubernetes_version (read from ${variables_file})"
+  else
+    kubernetes_sha="cb303e613a121a29364f75cc67d3d580833a7479"
+    echo "using kubernetes version ${kubernetes_sha} (using default)"
+  fi
+else
+  echo "using kubernetes version ${kubernetes_sha} (passed as parameter)"
+fi
+
+if [[ -d "kubernetes" ]] ; then
+  echo "kubernetes/ exists, not cloning..."
+else
+  git clone https://github.com/kubernetes/kubernetes.git
+  pushd kubernetes
+    git checkout $kubernetes_sha
+  popd
+fi
+
+
 # BELOW THIS LINE ADD YOUR CUSTOM BUILD LOGIC #########
 # FOR EXAMPLE
 # pushd kubernetes

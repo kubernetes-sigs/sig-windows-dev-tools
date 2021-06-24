@@ -1,3 +1,5 @@
+kubernetes_sha: "cb303e613a121a29364f75cc67d3d580833a7479"
+
 kubelet_path:  "./sync/windows/bin/kubelet.exe"
 kubeproxy_path:  "./sync/windows/bin/kube-proxy.exe"
 
