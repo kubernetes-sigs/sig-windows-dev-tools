@@ -28,7 +28,7 @@ Vagrant.configure(2) do |config|
       vb.memory = 8192
       vb.cpus = 4
     end
-    controlplane.vm.provision :shell, privileged: false, path: "sync/linux/controlplane.sh", args: "#{overwrite_linux_bins} ${k8s_linux_registry} ${k8s_linux_kubelet_deb} ${k8s_linux_apiserver} "
+    controlplane.vm.provision :shell, privileged: false, path: "sync/linux/controlplane.sh", args: "#{overwrite_linux_bins} #{k8s_linux_registry} #{k8s_linux_kubelet_deb} #{k8s_linux_apiserver} "
   end
 
   # WINDOWS WORKER (win server 2019)

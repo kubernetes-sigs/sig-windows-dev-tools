@@ -16,10 +16,24 @@ limitations under the License.
 set -e
 
 # TODO Add these as command line options
-overwrite_linux_bins=${1-false}
-k8s_linux_registry=${2-"gcr.io/k8s-staging-ci-images"}
-k8s_linux_kubelet_deb=${3-"1.21.0"}
-k8s_linux_apiserver=${4-"v1.22.0-alpha.3.31+a3abd06ad53b2f"}
+
+echo "ARGS: $1 $2 $3 $4"
+if [[ "$1" == "" || "$2" == "" || "$3" == "" || "$4" == "" ]] ; then
+  cat << EOF
+    Missing args.  You need to send overwrite_linux_bins, k8s_linux_registry, k8s_linux_kubelet_deb, k8s_linux_apiserver, i.e. something like...
+    ./controlplane.sh false gcr.io/k8s-staging-ci-images 1.21.0 v1.22.0-alpha.3.31+a3abd06ad53b2f"}
+    Normally these are in your variables.yml, and piped in by Vagrant.
+    So, check that you didn't break the Vagrantfile :)
+    BTW the only reason this error message is fancy is because friedrich said we should be curteous to people who want to
+    copy paste this code from the internet and reuse it.
+EOF
+  exit 1
+fi
+
+overwrite_linux_bins=${1}
+k8s_linux_registry=${2}
+k8s_linux_kubelet_deb=${3}
+k8s_linux_apiserver=${4}
 
 echo "Using $kubernetes_version as the Kubernetes version"
 echo "Overwriting bins is set to '$overwrite_bins'"
@@ -116,7 +130,7 @@ sudo docker tag k8s.gcr.io/coredns/coredns:v1.8.0 gcr.io/k8s-staging-ci-images/c
 sudo kubeadm init --apiserver-advertise-address=10.20.30.10 \
 --pod-network-cidr=10.244.0.0/16 \
 --image-repository=$k8s_version_linux_registry \
---kubernetes-version=$k8s_version_linux_apiserver \
+--kubernetes-version=$k8s_linux_apiserver \
 --v=6
 
 #to start the cluster with the current user:

@@ -7,7 +7,7 @@ kubeproxy_path:  "./sync/windows/bin/kube-proxy.exe"
 # from https://apt.kubernetes.io/
 k8s_linux_registry: "gcr.io/k8s-staging-ci-images"
 k8s_linux_kubelet_deb:  "1.21.0"
-k8s_linux_apiserver: "v1.22.0-alpha.3.31+a3abd06ad53b2f"
+k8s_linux_apiserver: "ci/v1.22.0-alpha.3.31+a3abd06ad53b2f"
 
 # WINDOWS KUBELET VERSION
 # This is the -KubernetesVersion sent to
