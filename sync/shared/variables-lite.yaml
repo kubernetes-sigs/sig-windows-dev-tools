@@ -24,7 +24,7 @@ kubernetes_version_windows:  "1.21.0"
 overwrite_linux_bins: false
 overwrite_windows_bins: false
 
-linux_ram: 4096
-linux_cpus: 4
-windows_ram: 8162
-windows_cpus: 4
+linux_ram: 2048
+linux_cpus: 2
+windows_ram: 4096
+windows_cpus: 2
