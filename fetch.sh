@@ -34,7 +34,7 @@ fi
 if [[ -d "kubernetes" ]] ; then
   echo "kubernetes/ exists, not cloning..."
   pushd kubernetes
-    git checkout $kubernetes_sha
+    git checkout $kubernetes_sha -f
   popd
 else
   git clone https://github.com/kubernetes/kubernetes.git
