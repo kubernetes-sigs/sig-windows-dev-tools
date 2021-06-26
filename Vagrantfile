@@ -3,7 +3,8 @@
 require 'yaml'
 
 # Modify these in the variables.yaml file... they are described there in gory detail...
-settings = YAML.load_file 'sync/shared/variables.yaml'
+settingsFile = ENV["VAGRANT_VARIABLES"] || 'sync/shared/variables.yaml'
+settings = YAML.load_file settingsFile
 k8s_linux_registry=settings['k8s_linux_registry']
 k8s_linux_kubelet_deb=settings['k8s_linux_kubelet_deb']
 k8s_linux_apiserver=settings['k8s_linux_apiserver']
@@ -11,6 +12,12 @@ kubernetes_version_windows=settings['kubernetes_version_windows']
 
 overwrite_linux_bins = settings['overwrite_linux_bins']
 overwrite_windows_bins = settings['overwrite_windows_bins'] ? "-OverwriteBins" : ""
+
+linux_ram = settings['linux_ram']
+linux_cpus = settings['linux_cpus']
+windows_ram = settings['windows_ram']
+windows_cpus = settings['windows_cpus']
+
 
 Vagrant.configure(2) do |config|
 
@@ -24,8 +31,8 @@ Vagrant.configure(2) do |config|
     controlplane.vm.provider :virtualbox do |vb|
     controlplane.vm.synced_folder "./sync/shared", "/var/sync/shared"
     controlplane.vm.synced_folder "./sync/linux", "/var/sync/linux"
-      vb.memory = 8192
-      vb.cpus = 4
+      vb.memory = linux_ram
+      vb.cpus = linux_cpus
     end
     controlplane.vm.provision :shell, privileged: false, path: "sync/linux/controlplane.sh", args: "#{overwrite_linux_bins} #{k8s_linux_registry} #{k8s_linux_kubelet_deb} #{k8s_linux_apiserver} "
   end
@@ -39,8 +46,8 @@ Vagrant.configure(2) do |config|
     winw1.vm.synced_folder "./sync/shared", "C:\\sync\\shared"
     winw1.vm.synced_folder "./sync/windows", "C:\\sync\\windows"
     winw1.vm.provider :virtualbox do |vb|
-      vb.memory = 8192
-      vb.cpus = 4
+      vb.memory = windows_ram
+      vb.cpus = windows_cpus
       vb.gui = false
     end
 
