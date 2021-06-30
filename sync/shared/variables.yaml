@@ -1,4 +1,8 @@
-kubernetes_sha: "cb303e613a121a29364f75cc67d3d580833a7479"
+# 286709... v1.21.2-rc.0 has the kube-proxy userspace fix...
+kubernetes_sha: "286709307da5adb62e78d989b7ed846355d5c88e"
+# this is the compatbility version, determining args we send to antrea and so on
+kubernetes_compatibility:  "1.21.2"
+overwrite_windows_bins: "false"
 
 kubelet_path:  "./sync/windows/bin/kubelet.exe"
 kubeproxy_path:  "./sync/windows/bin/kube-proxy.exe"
@@ -16,13 +20,14 @@ k8s_linux_apiserver: "ci/v1.22.0-alpha.3.31+a3abd06ad53b2f"
 # The PrepareNode.ps1 script, which is maintained
 # by sig-windows.  It determines what
 # WINDOWS KUBELET, KUBEADM we download.
-kubernetes_version_windows:  "1.21.0"
+# It would get overrideen by any commit/sha that is set above.
+# kubernetes_version_windows:  "v1.21.2-rc.0"
+# kubernetes_compatibility:  "v1.21.2-rc.0"
 
 ### THIS WILL OVERWRITE THE KUBEADM and KUBELET with LOCAL SOURCE
 # TODO make these explicit about what they are overwriting
 # Seperate kubelet from kubeadm
 overwrite_linux_bins: false
-overwrite_windows_bins: false
 
 linux_ram: 4096
 linux_cpus: 4
