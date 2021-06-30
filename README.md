@@ -65,6 +65,8 @@ Do not log into the VMs until the provisioning is done. That is especially true 
 
 ## Other notes 
 
+
+
 If you still have an old instance of these VMs running for the same dir:
 ```
 vagrant destroy -f && vagrant up
@@ -109,3 +111,24 @@ vagrant winrm winw1 --shell=powershell --command="ls"
 - this very good [guide on how to install Kubernetes on Ubuntu Focal (20.04)](https://github.com/mialeevs/kubernetes_installation). 
 - The Windows part is informed by this [guide on how to install Docker on Win Server 2019](https://www.hostafrica.co.za/blog/new-technologies/how-to-install-docker-on-linux-and-windows/#win), [this guide on adding Windows nodes](https://kubernetes.io/docs/tasks/administer-cluster/kubeadm/adding-windows-nodes/), and [this guide](https://www.hostafrica.co.za/blog/new-technologies/install-kubernetes-cluster-windows-server-worker-nodes/) on how to install Kubernetes on Win Server 2019.
 - We've also borrowed ideas from cluster api, kubeadm, and the antrea project too bootstrap how we manage CNI and containerd support.
+
+# Contributing
+
+Working on Windows Kubernetes is a great way to learn about Kubernetes internals and how Kubernetes works in a multi-os environment.  
+
+So, even if you arent a windows user, we encourage Kubernetes users of all types to try to get involved and contribute!
+
+We are a new project and we need help with... 
+
+- contributing / testing recipes on different vagrant providers
+- docs of existing workflows
+- ideas about how we can make this repository easier to use
+- test automation (sonobuoy, e2e.test, and so on)
+- new CNIs (like calico, or cillium)
+- CSI support and testing
+- priveliged container support
+- recipes with active directory
+- any other ideas !
+
+If nothing else, filing an issue with your bugs or experiences will be helpful longterm.  If interested in pairing with us to do your first contribution, just reach out in #sig-windows (https://slack.k8s.io/).  We understand that developing on Kubernetes with windows is new to many folks, and we're here to help you get started.
+
