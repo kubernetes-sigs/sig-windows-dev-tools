@@ -1,21 +1,12 @@
-# KubernetesOnWindows
+# Welcome to the sig-windows Development Environment !
 
 This is a fully batteries-included development for Windows on Kubernetes, including:
 - Vagrant file for launching a two-node cluster
 - the latest containerd
 - NetworkPolicy support for Windows and Linux provided by [Antrea](https://antrea.io)
 - Windows binaries for kube-proxy.exe and kubelet.exe that are fully built from source (K8s main branch)
-
-Soon to be integrated into kubernetes-sigs/windows-dev-environment!
-
-We welcome contributions. We'd especially love to see:
-- More CNI providers (calico, cillium, ...)
-- More Container Runtime ideas
-- More vagrant infrastructures (Vsphere, VMWare Fusion, EC2, GCE, and so on)
-- E2Es or scripts which exercise privileged containers or LDAP / AD
-- CSI or other storage/volume add-ons
-- other ideas!
-
+- kubeadm installation that can put the bleeding edge linux control plane in place, so you can test new featuers like priveliged containers
+ 
 # Goal
 
 Our goal is to make Windows ridiculously easy to contribute to, play with, and learn about for anyone interested
@@ -26,7 +17,7 @@ viable alternative to Linux thanks to the recent introduction of Windows HostPro
 
 - vagrant
 - vagrant reload plugin
-- some vagrant provider (we only have virtualbox automated here, but these recipes have been used with others, like HyperV)
+- some vagrant provider (we only have virtualbox automated here, but these recipes have been used with others, like HyperV and Fusion).
 
 # Lets run it!
 
@@ -36,25 +27,21 @@ Ok let's get started...
 
 For the happy path, just:
 
+0) Start docker so that you can build k8s from source as needed.
 1) Install vagrant, and then vagrant-reload
 ```
 vagrant plugin install vagrant-reload
 ```
-
-2) Modify cpu/memory.    We advise 8GB RAM for Windows. If your system has less than 16GB RAM, adjust the `Vagrantfile`:
-```
-    winw1.vm.provider :virtualbox do |vb|
-      vb.memory = 4096
-```
-change the `4096` to `2048`.
-
+2) Modify cpu/memory in the variables.yml file.  We recommend 4 cores 8G+ for your windows node if you can spare it, and 2 cores 8G for your linux node as well. 
+ 
 ## 2) Run it!
 
 There are two use cases for these Windows K8s dev environments: Quick testing, and testing K8s from source.
 
-## 3) Testing from source? make
+## 3) Testing from source? make all
 
-To test from source, run `make all`.  This will
+To test from source, run `vagrant destroy --force ; make all`.  This will
+- destroy your existing dev environment 
 - clone down K8s from GitHub. If you have the k/k repo locally, you can `make path=path_to_k/k all` 
 - compile the K8s proxy and kubelet
 - inject them into the Vagrant Windows environment at the C:/k/bin/ location 
@@ -75,6 +62,8 @@ AND THAT'S IT! Your machines should come up in a few minutes...
 
 ## IMPORTANT
 Do not log into the VMs until the provisioning is done. That is especially true for Windows because it will prevent the reboots.
+
+## Other notes 
 
 If you still have an old instance of these VMs running for the same dir:
 ```
@@ -114,7 +103,9 @@ To run a *command* on the Windows boxes without actually using the UI, you can u
 vagrant winrm winw1 --shell=powershell --command="ls"
 ```
 
-## Where did I steal all the stuff?
+## Where we derived these recipes from 
 
-This guide is based on [this very nice Vagrantfile](https://gist.github.com/danielepolencic/ef4ddb763fd9a18bf2f1eaaa2e337544) and this very good [guide on how to install Kubernetes on Ubuntu Focal (20.04)](https://github.com/mialeevs/kubernetes_installation). 
-The Windows part is informed by this [guide on how to install Docker on Win Server 2019](https://www.hostafrica.co.za/blog/new-technologies/how-to-install-docker-on-linux-and-windows/#win), [this guide on adding Windows nodes](https://kubernetes.io/docs/tasks/administer-cluster/kubeadm/adding-windows-nodes/), and [this guide](https://www.hostafrica.co.za/blog/new-technologies/install-kubernetes-cluster-windows-server-worker-nodes/) on how to install Kubernetes on Win Server 2019.
+- This guide is based on [this very nice Vagrantfile](https://gist.github.com/danielepolencic/ef4ddb763fd9a18bf2f1eaaa2e337544)
+- this very good [guide on how to install Kubernetes on Ubuntu Focal (20.04)](https://github.com/mialeevs/kubernetes_installation). 
+- The Windows part is informed by this [guide on how to install Docker on Win Server 2019](https://www.hostafrica.co.za/blog/new-technologies/how-to-install-docker-on-linux-and-windows/#win), [this guide on adding Windows nodes](https://kubernetes.io/docs/tasks/administer-cluster/kubeadm/adding-windows-nodes/), and [this guide](https://www.hostafrica.co.za/blog/new-technologies/install-kubernetes-cluster-windows-server-worker-nodes/) on how to install Kubernetes on Win Server 2019.
+- We've also borrowed ideas from cluster api, kubeadm, and the antrea project too bootstrap how we manage CNI and containerd support.
