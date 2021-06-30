@@ -36,17 +36,23 @@ PS> .\PrepareNode.ps1 -KubernetesVersion v1.19.3 -ContainerRuntime containerD
 #>
 
 Param(
-    [parameter(HelpMessage="Kubernetes version to use")]
+    [parameter(HelpMessage="Kubernetes version to use, might be downloaded if not present")]
     [string] $KubernetesVersion = "1.21.0",
 
-    [parameter(HelpMessage="Container runtime that Kubernets will use")]
+    [parameter(HelpMessage="Container runtime that Kubernetes will use")]
     [ValidateSet("containerD", "Docker")]
     [string] $ContainerRuntime = "Docker",
 
-    # This is a modifcation for the windows-dev-tools where we
-    # OVERWRITE the WINDOWS kubelet AND kubeadm BINARY.
+    # This is a modifcation for the windows-dev-tools where we OVERWRITE the WINDOWS kubelet AND kubeadm BINARY.
     [parameter(HelpMessage="Allows to overwrite bins with self-built ones")]
-    [switch] $OverwriteBins
+    [switch] $OverwriteBins,
+
+    [parameter(HelpMessage="kubelet source build path")]
+    [string] $SelfBuiltKubeletSource = "C:/sync/windows/bin/kubelet.exe",
+
+    [parameter(HelpMessage="kube-proxy source build path")]
+    [string] $SelfBuiltKubeProxySource = "C:/sync/windows/bin/kube-proxy.exe"
+
 )
 $ErrorActionPreference = 'Stop'
 Write-Output "Overwriting bins is set to '$OverwriteBins'"
@@ -89,6 +95,7 @@ $global:KubernetesPath = "$env:SystemDrive\k"
 $global:StartKubeletScript = "$global:KubernetesPath\StartKubelet.ps1"
 $global:NssmInstallDirectory = "$env:ProgramFiles\nssm"
 $kubeletBinPath = "$global:KubernetesPath\kubelet.exe"
+$kubeproxyBinPath = "$global:KubernetesPath\kube-proxy.exe"
 
 mkdir -force "$global:KubernetesPath"
 $env:Path += ";$global:KubernetesPath"
@@ -97,25 +104,28 @@ $env:Path += ";$global:KubernetesPath"
 # DownloadFile $kubeletBinPath https://dl.k8s.io/$KubernetesVersion/bin/windows/amd64/kubelet.exe
 # We replaced this ↑ with ↓
 Write-Output "Deciding source to use for Kubelet.exe ..."
-$SelfBuiltKubeletSource = "C:\sync\windows\bin\kubelet.exe"
+
 if ((Test-Path -Path $SelfBuiltKubeletSource -PathType Leaf) -and ($OverwriteBins)) {
     New-Item -ItemType File -Path $kubeletBinPath -Force
-    Write-Output "Found $SelfBuiltKubeletSource, copyin ..."
+    Write-Output "Found $SelfBuiltKubeletSource, copying ..."
     Copy-Item  $SelfBuiltKubeletSource -Destination $kubeletBinPath -Force
 } else {
     Write-Output "Didn't find $SelfBuiltKubeletSource, downloading ..."
     DownloadFile $kubeletBinPath https://dl.k8s.io/$KubernetesVersion/bin/windows/amd64/kubelet.exe
 }
+ls $kubeletBinPath
 
-# Copying the self-built bins to windows
-# TODO does this even overwrite the kube-proxy.exe? where does kube-proxy.exe come from if we dont copy it here?
-$SelfBuiltKubeProxySource = "C:\sync\windows\bin\kube-proxy.exe"
-$KubeProxyPath = "C:\k\bin\kube-proxy.exe"
-if ($OverwriteBins) {
-    New-Item -ItemType File -Path $KubeProxyPath -Force
+if ((Test-Path -Path $SelfBuiltKubeProxySource -PathType Leaf) -and ($OverwriteBins)) {
+    New-Item -ItemType File -Path $kubeProxyBinPath -Force
     Write-Output "Copying $SelfBuiltKubeletPath"
-    Copy-Item  $SelfBuiltKubeProxySource  -Destination $KubeProxyPath -Force
+    Copy-Item  $SelfBuiltKubeProxySource  -Destination $kubeProxyBinPath -Force
+} else {
+    # Note this step may be a no-op but is done for self-consistency with the kubelet step.
+    # Usually the CNI provider or wins managed kube-proxy.
+    Write-Output "Didn't find $SelfBuiltKubeProxySource, downloading ..."
+    DownloadFile $kubeProxyBinPath https://dl.k8s.io/$KubernetesVersion/bin/windows/amd64/kube-proxy.exe
 }
+ls $kubeProxyBinPath
 
 DownloadFile "$global:KubernetesPath\kubeadm.exe" https://dl.k8s.io/$KubernetesVersion/bin/windows/amd64/kubeadm.exe
 
@@ -162,6 +172,9 @@ $cmd = "C:\k\kubelet.exe $global:KubeletArgs --cert-dir=$env:SYSTEMDRIVE\var\lib
 Invoke-Expression $cmd'
 $StartKubeletFileContent = $StartKubeletFileContent -replace "{{CONTAINER_RUNTIME}}", "`"$ContainerRuntime`""
 Set-Content -Path $global:StartKubeletScript -Value $StartKubeletFileContent
+Write-Host "KUBEADM INITIAL FILE CONTENTS............"
+Write-Host $StartKubeletFileContent
+
 
 Write-Host "Installing nssm"
 $arch = "win32"

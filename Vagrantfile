@@ -9,6 +9,14 @@ k8s_linux_registry=settings['k8s_linux_registry']
 k8s_linux_kubelet_deb=settings['k8s_linux_kubelet_deb']
 k8s_linux_apiserver=settings['k8s_linux_apiserver']
 kubernetes_version_windows=settings['kubernetes_version_windows']
+kubernetes_compatibility=settings['kubernetes_compatibility']
+
+# sanity checks
+if settings['kubernetes_version_windows'] and settings['kubernetes_sha']
+    raise("Cant have both kubernetes_version_windows and kubernetes_sha ! pick one. sleeping 10 seconds so you see this error...")
+    sleep(10)
+    exit(1)
+end
 
 overwrite_linux_bins = settings['overwrite_linux_bins']
 overwrite_windows_bins = settings['overwrite_windows_bins'] ? "-OverwriteBins" : ""
@@ -34,6 +42,11 @@ Vagrant.configure(2) do |config|
       vb.memory = linux_ram
       vb.cpus = linux_cpus
     end
+
+    ### This allows the node to default to the right IP i think....
+    # 1) this seems to break the ability to get to the internet
+
+    #controlplane.vm.provision :shell, privileged: true, inline: "sudo ip route add default via 10.20.30.10"
     controlplane.vm.provision :shell, privileged: false, path: "sync/linux/controlplane.sh", args: "#{overwrite_linux_bins} #{k8s_linux_registry} #{k8s_linux_kubelet_deb} #{k8s_linux_apiserver} "
   end
 
@@ -43,8 +56,8 @@ Vagrant.configure(2) do |config|
     winw1.vm.box = "StefanScherer/windows_2019"  
     winw1.vm.network :private_network, ip:"10.20.30.11"
     winw1.vm.synced_folder ".", "/vagrant", disabled:true
-    winw1.vm.synced_folder "./sync/shared", "C:\\sync\\shared"
-    winw1.vm.synced_folder "./sync/windows", "C:\\sync\\windows"
+    winw1.vm.synced_folder "./sync/shared", "C:/sync/shared"
+    winw1.vm.synced_folder "./sync/windows/bin/", "C:/sync/windows/bin"
     winw1.vm.provider :virtualbox do |vb|
       vb.memory = windows_ram
       vb.cpus = windows_cpus
@@ -56,11 +69,11 @@ Vagrant.configure(2) do |config|
     winw1.vm.provision "shell", path: "sync/windows/containerd1.ps1", privileged: true #, run: "never"
     winw1.vm.provision :reload
     winw1.vm.provision "shell", path: "sync/windows/containerd2.ps1", privileged: true #, run: "never"
-    winw1.vm.provision "shell", path: "forked/PrepareNode.ps1", privileged: true, args: "-KubernetesVersion #{kubernetes_version_windows} -ContainerRuntime containerD #{overwrite_windows_bins }" #, run: "never"
+    winw1.vm.provision "shell", path: "forked/PrepareNode.ps1", privileged: true, args: "-KubernetesVersion #{kubernetes_compatibility} -ContainerRuntime containerD #{overwrite_windows_bins }" #, run: "never"
     winw1.vm.provision "shell", path: "sync/shared/kubejoin.ps1", privileged: true #, run: "never"
     # Experimental at the moment...
     winw1.vm.provision "shell", path: "forked/0-antrea.ps1", privileged: true #, run: "always"
-    winw1.vm.provision "shell", path: "forked/1-antrea.ps1", privileged: true, args: "-KubernetesVersion #{kubernetes_version_windows}" #, run: "always"
+    winw1.vm.provision "shell", path: "forked/1-antrea.ps1", privileged: true, args: "-KubernetesVersion #{kubernetes_compatibility}" #, run: "always"
 
   end
   

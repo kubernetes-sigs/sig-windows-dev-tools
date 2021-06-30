@@ -130,3 +130,8 @@ sleep 5
 Get-Service *kube*
 Get-Service *antrea*
 Get-Service *ovs*
+
+# Restart antrea, just in case needs to be done bc maybe kube proxy
+# wasnt initially up.  TODO, should we have antrea talk directly to the
+# apiserver over an IP address, rather then relying on the kube-proxy SEP?
+start-service *antrea*

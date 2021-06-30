@@ -40,7 +40,7 @@ build_binaries () {
 		./build/run.sh make kubeadm KUBE_BUILD_PLATFORMS=linux/amd64
 	fi
 	# TODO replace with https://github.com/kubernetes-sigs/sig-windows-tools/issues/152 at some point
-	echo "Copying files to sync"
+	echo "Copying files to sync in ... $startDir"
 	#win
 	mkdir -p $startDir/sync/windows/bin
 	cp -f ./_output/dockerized/bin/windows/amd64/kubelet.exe $startDir/sync/windows/bin
