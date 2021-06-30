@@ -131,7 +131,13 @@ Get-Service *kube*
 Get-Service *antrea*
 Get-Service *ovs*
 
-# Restart antrea, just in case needs to be done bc maybe kube proxy
-# wasnt initially up.  TODO, should we have antrea talk directly to the
-# apiserver over an IP address, rather then relying on the kube-proxy SEP?
-start-service *antrea*
+# Restart antrea in a loop until its running
+$antrea = Get-Service -Name "antrea-agent"
+$antrea_starts = 0
+while ($antrea.Status -ne 'Running')
+{
+    Write-Output("... Trying to start antrea service again, its not up yet ... $antrea_starts")
+    Start-Service "antrea-agent"
+    $antrea_starts = $antrea_starts + 1
+    $antrea.Refresh()
+}
