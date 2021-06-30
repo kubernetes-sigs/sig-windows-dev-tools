@@ -131,9 +131,6 @@ Get-Service *kube*
 Get-Service *antrea*
 Get-Service *ovs*
 
-##################################################
-# Try starting antrea.  Restart it, just in case #
-##################################################
 $antrea = Get-Service -Name "antrea-agent"
 $antrea_starts = 0
 while ($antrea.Status -ne 'Running')
