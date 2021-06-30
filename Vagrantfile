@@ -8,15 +8,7 @@ settings = YAML.load_file settingsFile
 k8s_linux_registry=settings['k8s_linux_registry']
 k8s_linux_kubelet_deb=settings['k8s_linux_kubelet_deb']
 k8s_linux_apiserver=settings['k8s_linux_apiserver']
-kubernetes_version_windows=settings['kubernetes_version_windows']
 kubernetes_compatibility=settings['kubernetes_compatibility']
-
-# sanity checks
-if settings['kubernetes_version_windows'] and settings['kubernetes_sha']
-    raise("Cant have both kubernetes_version_windows and kubernetes_sha ! pick one. sleeping 10 seconds so you see this error...")
-    sleep(10)
-    exit(1)
-end
 
 overwrite_linux_bins = settings['overwrite_linux_bins']
 overwrite_windows_bins = settings['overwrite_windows_bins'] ? "-OverwriteBins" : ""
