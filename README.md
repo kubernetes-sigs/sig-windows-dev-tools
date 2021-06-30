@@ -1,11 +1,11 @@
-# Welcome to the sig-windows Development Environment !
+# Welcome to the SIG Windows Development Environment !
 
-This is a fully batteries-included development for Windows on Kubernetes, including:
+This is a fully batteries-included development environment for Windows on Kubernetes, including:
 - Vagrant file for launching a two-node cluster
-- the latest containerd
+- the latest Containerd
 - NetworkPolicy support for Windows and Linux provided by [Antrea](https://antrea.io)
 - Windows binaries for kube-proxy.exe and kubelet.exe that are fully built from source (K8s main branch)
-- kubeadm installation that can put the bleeding edge linux control plane in place, so you can test new featuers like priveliged containers
+- kubeadm installation that can put the bleeding-edge Linux control plane in place, so you can test new features like privileged containers
  
 # Goal
 
@@ -64,8 +64,6 @@ AND THAT'S IT! Your machines should come up in a few minutes...
 Do not log into the VMs until the provisioning is done. That is especially true for Windows because it will prevent the reboots.
 
 ## Other notes 
-
-
 
 If you still have an old instance of these VMs running for the same dir:
 ```
@@ -131,4 +129,3 @@ We are a new project and we need help with...
 - any other ideas !
 
 If nothing else, filing an issue with your bugs or experiences will be helpful longterm.  If interested in pairing with us to do your first contribution, just reach out in #sig-windows (https://slack.k8s.io/).  We understand that developing on Kubernetes with windows is new to many folks, and we're here to help you get started.
-
