@@ -131,13 +131,19 @@ Get-Service *kube*
 Get-Service *antrea*
 Get-Service *ovs*
 
-# Restart antrea in a loop until its running
+##################################################
+# Try starting antrea.  Restart it, just in case #
+##################################################
 $antrea = Get-Service -Name "antrea-agent"
 $antrea_starts = 0
 while ($antrea.Status -ne 'Running')
 {
-    Write-Output("... Trying to start antrea service again, its not up yet ... $antrea_starts")
+    Write-Output("... Trying to start antrea service... $antrea_starts")
     Start-Service "antrea-agent"
     $antrea_starts = $antrea_starts + 1
     $antrea.Refresh()
 }
+Write-Output("Done starting antrea... ")
+Get-Service *kube*
+Get-Service *ovs*
+Get-Service *antrea*
