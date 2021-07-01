@@ -25,17 +25,12 @@ $ProgressPreference = 'SilentlyContinue'
 #Write-Output "### Enabling Hyper-V-PowerShell-Module"
 #Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V-Management-PowerShell 
 
-
 Set-Location 'C:\k'
-
-Write-Output "#Curling 'Install-Containerd.ps1'"
-
-curl.exe -LO 'https://github.com/kubernetes-sigs/sig-windows-tools/releases/latest/download/Install-Containerd.ps1'
 
 Write-Output "# Running 'Install-Containerd.ps1'"
 
-PowerShell "C:\k\Install-Containerd.ps1"
-
+# Our own version of install-containerd that omits the weird nat cni network thing
+PowerShell "C:/forked/Install-Containerd.ps1"
 
 # To avoid the "crictl.exe not on the path error, we add containerd permanantly to the pathhhhh"
 # TODO THIS might not be needed ...

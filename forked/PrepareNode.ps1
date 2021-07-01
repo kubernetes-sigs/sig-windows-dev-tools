@@ -132,7 +132,7 @@ DownloadFile "$global:KubernetesPath\kubeadm.exe" https://dl.k8s.io/$KubernetesV
 if ($ContainerRuntime -eq "Docker") {
     # Create host network to allow kubelet to schedule hostNetwork pods
     # NOTE: For containerd the 0-containerd-nat.json network config template added by
-    # Install-containerd.ps1 joins pods to the host network.
+    # Install-containerd.ps1 joins pods to the host network.  but it doesnt work .
     Write-Host "Creating Docker host network"
     docker network create -d nat host
 } elseif ($ContainerRuntime -eq "containerD") {
