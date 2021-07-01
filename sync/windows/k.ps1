@@ -21,8 +21,7 @@ $ErrorActionPreference = 'Stop'
 Write-Output "Kubernetes Version $KubernetesVersion"
 
 dism /online /get-features
-curl.exe -LO https://github.com/kubernetes-sigs/sig-windows-tools/releases/latest/download/Install-Containerd.ps1
-.\Install-Containerd.ps1
+PowerShell C:/forked/Install-Containerd.ps1
 ctr.exe version
 
 New-Item -ItemType Directory -Force -Path C:\k
