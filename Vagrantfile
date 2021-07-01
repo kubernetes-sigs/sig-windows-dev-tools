@@ -49,14 +49,16 @@ Vagrant.configure(2) do |config|
     winw1.vm.network :private_network, ip:"10.20.30.11"
     winw1.vm.synced_folder ".", "/vagrant", disabled:true
     winw1.vm.synced_folder "./sync/shared", "C:/sync/shared"
-    winw1.vm.synced_folder "./sync/windows/bin/", "C:/sync/windows/bin"
+    winw1.vm.synced_folder "./sync/windows/", "C:/sync/windows/"
+    winw1.vm.synced_folder "./forked", "C:/forked/"
+
     winw1.vm.provider :virtualbox do |vb|
       vb.memory = windows_ram
       vb.cpus = windows_cpus
       vb.gui = false
     end
 
-    winw1.vm.provision "shell", path: "sync/windows/hyperv.ps1", privileged: true #, run: "never"
+    winw1.vm.provision "shell", path: "sync/windows/hyperv.ps1", privileged: true
     winw1.vm.provision :reload
     winw1.vm.provision "shell", path: "sync/windows/containerd1.ps1", privileged: true #, run: "never"
     winw1.vm.provision :reload
