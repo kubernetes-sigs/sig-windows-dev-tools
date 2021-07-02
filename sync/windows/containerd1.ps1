@@ -27,7 +27,7 @@ $ProgressPreference = 'SilentlyContinue'
 
 Set-Location 'C:\k'
 
-Write-Output "# Running 'Install-Containerd.ps1'"
+Write-Output "### Running 'forked/Install-Containerd.ps1' ~ note we'll have to re run this again after reboot !!!"
 
 # Our own version of install-containerd that omits the weird nat cni network thing
 PowerShell "C:/forked/Install-Containerd.ps1"
