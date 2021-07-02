@@ -6,6 +6,15 @@ This is a fully batteries-included development for Windows on Kubernetes, includ
 - NetworkPolicy support for Windows and Linux provided by [Antrea](https://antrea.io)
 - Windows binaries for kube-proxy.exe and kubelet.exe that are fully built from source (K8s main branch)
 - kubeadm installation that can put the bleeding edge linux control plane in place, so you can test new featuers like priveliged containers
+
+# Quick start
+
+- clone this repo (obviously!)
+- install vagrant & virtualbox (the base tools for this project)
+- `vagrant plugin install vagrant-reload`, needed to easily reboot windows VMs during setup of containers features
+- `make all`, this will create the entire cluster for you and compile windows binaries from source
+- if the above failed, run `vagrant provision winw1`, just in case you have a flake during windows installation.
+- `vagrant ssh controlplane` and run `kubectl get nodes` to see your running dual-os linux+windows k8s cluster.
  
 # Goal
 
