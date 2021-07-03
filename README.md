@@ -1,11 +1,11 @@
-# Welcome to the sig-windows Development Environment !
+# Welcome to the SIG Windows Development Environment!
 
-This is a fully batteries-included development for Windows on Kubernetes, including:
+This is a fully batteries-included development environment for Windows on Kubernetes, including:
 - Vagrant file for launching a two-node cluster
-- the latest containerd
+- the latest Containerd
 - NetworkPolicy support for Windows and Linux provided by [Antrea](https://antrea.io)
 - Windows binaries for kube-proxy.exe and kubelet.exe that are fully built from source (K8s main branch)
-- kubeadm installation that can put the bleeding edge linux control plane in place, so you can test new featuers like priveliged containers
+- kubeadm installation that can put the bleeding-edge Linux control plane in place, so you can test new features like privileged containers
 
 # Quick start
 
@@ -24,9 +24,9 @@ viable alternative to Linux thanks to the recent introduction of Windows HostPro
 
 ## Prerequisites
 
-- vagrant
-- vagrant reload plugin
-- some vagrant provider (we only have virtualbox automated here, but these recipes have been used with others, like HyperV and Fusion).
+- Vagrant
+- Vagrant reload plugin
+- some Vagrant provider (we only have VirtualBox automated here, but these recipes have been used with others, like HyperV and Fusion).
 
 # Lets run it!
 
@@ -36,12 +36,12 @@ Ok let's get started...
 
 For the happy path, just:
 
-0) Start docker so that you can build k8s from source as needed.
-1) Install vagrant, and then vagrant-reload
+0) Start Docker so that you can build K8s from source as needed.
+1) Install Vagrant, and then vagrant-reload
 ```
 vagrant plugin install vagrant-reload
 ```
-2) Modify cpu/memory in the variables.yml file.  We recommend 4 cores 8G+ for your windows node if you can spare it, and 2 cores 8G for your linux node as well. 
+2) Modify CPU/memory in the variables.yml file. We recommend four cores 8G+ for your Windows node if you can spare it, and two cores 8G for your Linux node as well. 
  
 ## 2) Run it!
 
@@ -74,8 +74,6 @@ Do not log into the VMs until the provisioning is done. That is especially true 
 
 ## Other notes 
 
-
-
 If you still have an old instance of these VMs running for the same dir:
 ```
 vagrant destroy -f && vagrant up
@@ -88,7 +86,7 @@ and get an overview of the nodes:
 ```
 kubectl get nodes
 ```
-The win node might stay 'NotReady' for a while, because it takes some time to download the flannel image.
+The win node might stay 'NotReady' for a while, because it takes some time to download the Flannel image.
 ```
 vagrant@master:~$ kubectl get nodes
 NAME     STATUS     ROLES                  AGE    VERSION
@@ -123,21 +121,20 @@ vagrant winrm winw1 --shell=powershell --command="ls"
 
 # Contributing
 
-Working on Windows Kubernetes is a great way to learn about Kubernetes internals and how Kubernetes works in a multi-os environment.  
+Working on Windows Kubernetes is a great way to learn about Kubernetes internals and how Kubernetes works in a multi-OS environment.  
 
-So, even if you arent a windows user, we encourage Kubernetes users of all types to try to get involved and contribute!
+So, even if you aren't a Windows user, we encourage Kubernetes users of all types to try to get involved and contribute!
 
 We are a new project and we need help with... 
 
-- contributing / testing recipes on different vagrant providers
+- contributing / testing recipes on different Vagrant providers
 - docs of existing workflows
 - ideas about how we can make this repository easier to use
-- test automation (sonobuoy, e2e.test, and so on)
-- new CNIs (like calico, or cillium)
+- test automation ([Sonobuoy](https://github.com/vmware-tanzu/sonobuoy), [E2E Framework](https://github.com/kubernetes-sigs/e2e-framework), and so on)
+- new CNIs like [Calico](https://www.projectcalico.org) or [Cillium](https://cilium.io)
 - CSI support and testing
-- priveliged container support
+- privileged container support
 - recipes with active directory
-- any other ideas !
+- any other ideas!
 
-If nothing else, filing an issue with your bugs or experiences will be helpful longterm.  If interested in pairing with us to do your first contribution, just reach out in #sig-windows (https://slack.k8s.io/).  We understand that developing on Kubernetes with windows is new to many folks, and we're here to help you get started.
-
+If nothing else, filing an issue with your bugs or experiences will be helpful long-term. If interested in pairing with us to do your first contribution, just reach out in #sig-windows (https://slack.k8s.io/). We understand that developing on Kubernetes with Windows is new to many folks, and we're here to help you get started.
