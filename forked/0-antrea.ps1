@@ -26,6 +26,12 @@ mkdir -Force C:/k/antrea/ # scripts
 mkdir -Force C:/k/antrea/bin/ #executables
 mkdir -Force C:/k/antrea/etc/ # for antrea-agent.conf
 
+# PATCH ANTREA AGENT IF ITS ALREADY BUILT!!! TODO, patch other things?
+if (!(Test-Path "C:/sync/windows/antrea-agent.exe")) {
+    cp "C:/sync/windows/bin/antrea-agent.exe" "C:/k/antrea/bin/antrea-agent.exe"
+}
+
+
 $antreaInstallationFiles = @{
       "https://raw.githubusercontent.com/antrea-io/antrea/main/build/yamls/base/conf/antrea-cni.conflist" = "C:/etc/cni/net.d/10-antrea.conflist"
       "https://raw.githubusercontent.com/antrea-io/antrea/main/hack/windows/Install-OVS.ps1" =  "C:/k/antrea/Install-OVS.ps1"

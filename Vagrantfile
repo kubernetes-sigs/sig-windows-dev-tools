@@ -25,8 +25,10 @@ Vagrant.configure(2) do |config|
   config.vm.define :controlplane do |controlplane|
     controlplane.vm.host_name = "controlplane"
     controlplane.vm.box = "ubuntu/focal64"
-    # better because its available on vmware and virtualbox
-    # controlplane.vm.box = "bento/ubuntu-18.04"
+    #   better because its available on vmware and virtualbox
+    #   controlplane.vm.box = "bento/ubuntu-18.04"
+    #   controlplane.vm.network "public_network", ip:"10.0.0.100", bridge: "en0: Wi-Fi (Wireless)"
+    #   controlplane.vm.network "public_network", bridge: "en0: Wi-Fi (Wireless)", use_dhcp_assigned_default_route: true
     controlplane.vm.network :private_network, ip:"10.20.30.10"
     controlplane.vm.provider :virtualbox do |vb|
     controlplane.vm.synced_folder "./sync/shared", "/var/sync/shared"
@@ -46,6 +48,9 @@ Vagrant.configure(2) do |config|
   config.vm.define :winw1 do |winw1|
     winw1.vm.host_name = "winw1"
     winw1.vm.box = "StefanScherer/windows_2019"  
+    #    winw1.vm.network "public_network", ip:"10.0.0.200", bridge: "en0: Wi-Fi (Wireless)" (failed, didnt get claimed )
+    #    winw1.vm.network "public_network", bridge: "en0: Wi-Fi (Wireless)"
+    #    winw1.vm.network "private_network", bridge: "en0: Wi-Fi (Wireless)", use_dhcp_assigned_default_route: true
     winw1.vm.network :private_network, ip:"10.20.30.11"
     winw1.vm.synced_folder ".", "/vagrant", disabled:true
     winw1.vm.synced_folder "./sync/shared", "C:/sync/shared"

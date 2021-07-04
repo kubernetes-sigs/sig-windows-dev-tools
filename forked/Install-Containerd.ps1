@@ -30,14 +30,41 @@ Param(
 
 $ErrorActionPreference = 'Stop'
 
+# DONT EDIT THIS FUNCTION DIRECTLY, INSTEAD  SINCE COPIED FROM PREPARENODE.PS1 - PLEASE MODIFY THAT AS NEEDED AND COPY HERE
 function DownloadFile($destination, $source) {
-    Write-Host("Downloading $source to $destination")
-    curl.exe --silent --fail -Lo $destination $source
 
-    if (!$?) {
-        Write-Error "Download $source failed"
-        exit 1
-    }
+    $tries=0
+    $attempts=5
+    $sleepInSeconds=5
+    do
+    {   $tries = $tries + 1
+        Write-Host("Download file, try ( $tries )  [[[ $source ]]] ")
+        try
+        {
+            if (Test-Path -Path $destination) {
+                Write-Host("Skipping download to avoid overwriting, already found on disk...")
+                return
+            }
+            else {
+                Write-Host("Downloading $source to $destination")
+                curl.exe --silent --fail -Lo $destination $source
+
+                if (!$?) {
+                    Write-Error "Download $source failed"
+                    exit 1
+                }
+            }
+        }
+        catch [Exception]
+        {
+            Write-Host $_.Exception.Message
+        }
+        $attempts--
+        if ($attempts -gt 0) {
+            sleep $sleepInSeconds
+        }
+    } while ($attempts -gt 0)
+
 }
 
 <#

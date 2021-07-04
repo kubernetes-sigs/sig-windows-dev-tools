@@ -24,8 +24,6 @@ Param(
 $ErrorActionPreference = 'Stop'
 Write-Output "Using Kubernetes version '$KubernetesVersion'"
 
-
-
 # Create Folders
 # TODO just add this to the path somehow?
 # NVM its already on the f'ng path
@@ -42,22 +40,27 @@ foreach ($e in $avexceptions) {
     Add-MpPreference -ExclusionProcess $e
 }
 
+# windows-dev-environments... # Hack hardcodeding this now cuz vagrantttt
+$env:HostIP = "10.20.30.11"
+
 # Get HostIP and set in kubeadm-flags.env
-[Environment]::SetEnvironmentVariable("NODE_NAME", (hostname).ToLower())
-$env:HostIP = (
-  Get-NetIPConfiguration |
-  Where-Object {
-      $_.IPv4DefaultGateway -ne $null -and $_.NetAdapter.Status -ne "Disconnected"
-  }
-).IPv4Address.IPAddress
+# [Environment]::SetEnvironmentVariable("NODE_NAME", (hostname).ToLower())
+# $env:HostIP = (
+#  Get-NetIPConfiguration |
+#  Where-Object {
+#      $_.IPv4DefaultGateway -ne $null -and $_.NetAdapter.Status -ne "Disconnected"
+#  }
+# ).IPv4Address.IPAddress
+
 $file = 'C:\var\lib\kubelet\kubeadm-flags.env'
 $newstr ="--node-ip=" + $env:HostIP
 $raw = Get-Content -Path $file -TotalCount 1
 $raw = $raw -replace ".$"
 $new = "$($raw) $($newstr)`""
 Set-Content $file $new
-$KubeConfigFile='C:\etc\kubernetes\kubelet.conf'
 
+
+$KubeConfigFile='C:\etc\kubernetes\kubelet.conf'
 # Setup kubo-proxy config file
 $KubeProxyConfig="C:/k/antrea/etc/kube-proxy.conf"
 $KubeAPIServer=$(kubectl --kubeconfig=$KubeConfigFile config view -o jsonpath='{.clusters[0].cluster.server}')

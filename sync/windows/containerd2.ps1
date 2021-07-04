@@ -17,11 +17,5 @@ limitations under the License.
 Write-Output "Rerunning containerd installation..."
 PowerShell "C:/forked/Install-Containerd.ps1"
 
-Write-Output "###############################"
-Write-Output "STARTING with 'containerd2.ps1'"
-
-Write-Output "### Running 'Install-Containerd.ps1'"
-PowerShell "C:\k\Install-Containerd.ps1"
-
 Write-Output "DONE with 'containerd2.ps1'"
 Write-Output "###############################"

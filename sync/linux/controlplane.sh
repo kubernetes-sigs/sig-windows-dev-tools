@@ -130,8 +130,12 @@ sudo docker tag k8s.gcr.io/pause:3.4.1 gcr.io/k8s-staging-ci-images/pause:3.4.1
 sudo docker tag k8s.gcr.io/coredns/coredns:v1.8.0 gcr.io/k8s-staging-ci-images/coredns/coredns:v1.8.0
 
 
-sudo kubeadm init --apiserver-advertise-address=10.20.30.10 \
---pod-network-cidr=10.244.0.0/16 \
+ip_address=`ip a | grep enp | grep inet | grep s8 | cut -d' ' -f 6 | cut -d'/' -f 1`
+
+echo "parsed the IP address ===> $ip_address"
+
+sudo kubeadm init --apiserver-advertise-address=${ip_address} \
+--pod-network-cidr=100.244.0.0/16 \
 --image-repository=$k8s_version_linux_registry \
 --kubernetes-version=$k8s_linux_apiserver \
 --v=6
