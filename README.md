@@ -11,7 +11,7 @@ This is a fully batteries-included development environment for Windows on Kubern
 
 - clone this repo (obviously!)
 - install vagrant & virtualbox (the base tools for this project)
-- `vagrant plugin install vagrant-reload`, needed to easily reboot windows VMs during setup of containers features
+- `vagrant plugin install vagrant-reload winrm winrm-elevated`, vagrant-reload needed to easily reboot windows VMs during setup of containers features.
 - `make all`, this will create the entire cluster for you and compile windows binaries from source
 - if the above failed, run `vagrant provision winw1`, just in case you have a flake during windows installation.
 - `vagrant ssh controlplane` and run `kubectl get nodes` to see your running dual-os linux+windows k8s cluster.
@@ -25,7 +25,7 @@ viable alternative to Linux thanks to the recent introduction of Windows HostPro
 ## Prerequisites
 
 - Vagrant
-- Vagrant reload plugin
+- Vagrant reload, winrm and winrm-elevated plugins
 - some Vagrant provider (we only have VirtualBox automated here, but these recipes have been used with others, like HyperV and Fusion).
 
 # Lets run it!
@@ -39,7 +39,7 @@ For the happy path, just:
 0) Start Docker so that you can build K8s from source as needed.
 1) Install Vagrant, and then vagrant-reload
 ```
-vagrant plugin install vagrant-reload
+vagrant plugin install vagrant-reload winrm winrm-elevated
 ```
 2) Modify CPU/memory in the variables.yml file. We recommend four cores 8G+ for your Windows node if you can spare it, and two cores 8G for your Linux node as well. 
  
@@ -80,27 +80,25 @@ vagrant destroy -f && vagrant up
 ```
 after everything is done (can take 10 min+), ssh' into the Linux VM:
 ```
-vagrant ssh master
+vagrant ssh controlplane
 ```
 and get an overview of the nodes:
 ```
 kubectl get nodes
 ```
-The win node might stay 'NotReady' for a while, because it takes some time to download the Flannel image.
+The Windows node might stay 'NotReady' for a while, because it takes some time to download the Flannel image.
 ```
-vagrant@master:~$ kubectl get nodes
+vagrant@controlplane:~$ kubectl get nodes
 NAME     STATUS     ROLES                  AGE    VERSION
-master   Ready      control-plane,master   8m4s   v1.20.4
-winw1    NotReady   <none>                 64s    v1.20.4
+controlplane    Ready      control-plane,controlplane   8m4s   v1.20.4
+winw1           NotReady   <none>                       64s    v1.20.4
 ```
 ...
 ```
 NAME     STATUS   ROLES                  AGE     VERSION
-master   Ready    control-plane,master   16m     v1.20.4
-winw1    Ready    <none>                 9m11s   v1.20.4
+controlplane    Ready    control-plane,controlplane     16m     v1.20.4
+winw1           Ready    <none>                         9m11s   v1.20.4
 ```
-
-I have only tested this on one machine. If you run into trouble, you're very welcome to create a new issue and include info about your system. 
 
 ## Accessing the Windows box
 
