@@ -40,6 +40,15 @@ Vagrant.configure(2) do |config|
 
     #controlplane.vm.provision :shell, privileged: true, inline: "sudo ip route add default via 10.20.30.10"
     controlplane.vm.provision :shell, privileged: false, path: "sync/linux/controlplane.sh", args: "#{overwrite_linux_bins} #{k8s_linux_registry} #{k8s_linux_kubelet_deb} #{k8s_linux_apiserver} "
+
+    # TODO shoudl we pass KuberneteVersion to calico agent exe? and also service cidr if needed?
+    if settings['cni'].equal? "calico" then
+      controlplane.vm.provision "shell", path: "sync/linux/calico-0.sh", privileged: true
+    else
+      controlplane.vm.provision "shell", path: "sync/linux/antrea-0.sh", privileged: true
+    end
+
+
   end
 
   # WINDOWS WORKER (win server 2019)
@@ -65,10 +74,15 @@ Vagrant.configure(2) do |config|
     winw1.vm.provision "shell", path: "sync/windows/containerd2.ps1", privileged: true #, run: "never"
     winw1.vm.provision "shell", path: "forked/PrepareNode.ps1", privileged: true, args: "-KubernetesVersion #{kubernetes_compatibility} -ContainerRuntime containerD #{overwrite_windows_bins }" #, run: "never"
     winw1.vm.provision "shell", path: "sync/shared/kubejoin.ps1", privileged: true #, run: "never"
-    # Experimental at the moment...
-    winw1.vm.provision "shell", path: "forked/0-antrea.ps1", privileged: true #, run: "always"
-    winw1.vm.provision "shell", path: "forked/1-antrea.ps1", privileged: true, args: "-KubernetesVersion #{kubernetes_compatibility}" #, run: "always"
 
+    # TODO shoudl we pass KuberneteVersion to calico agent exe? and also service cidr if needed?
+    if settings['cni'].equal? "calico" then
+      winw1.vm.provision "shell", path: "forked/0-calico.ps1", privileged: true #, run: "always"
+    else         
+      # Experimental at the moment...
+      winw1.vm.provision "shell", path: "forked/0-antrea.ps1", privileged: true #, run: "always"
+      winw1.vm.provision "shell", path: "forked/1-antrea.ps1", privileged: true, args: "-KubernetesVersion #{kubernetes_compatibility}" #, run: "always"
+    end
   end
   
 end
