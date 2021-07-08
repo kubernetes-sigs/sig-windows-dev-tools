@@ -17,9 +17,11 @@ linux_ram = settings['linux_ram']
 linux_cpus = settings['linux_cpus']
 windows_ram = settings['windows_ram']
 windows_cpus = settings['windows_cpus']
-
+cni = settings['cni']
 
 Vagrant.configure(2) do |config|
+  puts "cni:"
+  puts cni
 
   # LINUX Control Plane
   config.vm.define :controlplane do |controlplane|
@@ -39,11 +41,11 @@ Vagrant.configure(2) do |config|
     # 1) this seems to break the ability to get to the internet
 
     #controlplane.vm.provision :shell, privileged: true, inline: "sudo ip route add default via 10.20.30.10"
-    # controlplane.vm.provision :shell, privileged: false, path: "sync/linux/controlplane.sh", args: "#{overwrite_linux_bins} #{k8s_linux_registry} #{k8s_linux_kubelet_deb} #{k8s_linux_apiserver} "
+    controlplane.vm.provision :shell, privileged: false, path: "sync/linux/controlplane.sh", args: "#{overwrite_linux_bins} #{k8s_linux_registry} #{k8s_linux_kubelet_deb} #{k8s_linux_apiserver} "
 
     # TODO shoudl we pass KuberneteVersion to calico agent exe? and also service cidr if needed?
     # dont run as priveliged cuz we need the kubeconfig from regular user
-    if settings['cni'].equal? "calico" then
+    if cni == "calico" then
       controlplane.vm.provision "shell", path: "sync/linux/calico-0.sh"
     else
       controlplane.vm.provision "shell", path: "sync/linux/antrea-0.sh"
@@ -77,9 +79,11 @@ Vagrant.configure(2) do |config|
     winw1.vm.provision "shell", path: "sync/shared/kubejoin.ps1", privileged: true #, run: "never"
 
     # TODO shoudl we pass KuberneteVersion to calico agent exe? and also service cidr if needed?
-    if settings['cni'].equal? "calico" then
+    if cni == "calico" then
       winw1.vm.provision "shell", path: "forked/0-calico.ps1", privileged: true #, run: "always"
-    else         
+      winw1.vm.provision :reload
+      winw1.vm.provision "shell", path: "forked/1-calico.ps1", privileged: true #, run: "always"
+    else
       # Experimental at the moment...
       winw1.vm.provision "shell", path: "forked/0-antrea.ps1", privileged: true #, run: "always"
       winw1.vm.provision "shell", path: "forked/1-antrea.ps1", privileged: true, args: "-KubernetesVersion #{kubernetes_compatibility}" #, run: "always"
