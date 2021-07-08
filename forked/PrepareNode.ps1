@@ -148,12 +148,7 @@ if ((Test-Path -Path $SelfBuiltKubeProxySource -PathType Leaf) -and ($OverwriteB
 ls $kubeProxyBinPath
 
 # for some reason, this fails sometimes on windows VMs?
-try {
-	DownloadFile "$global:KubernetesPath\kubeadm.exe" https://dl.k8s.io/$KubernetesVersion/bin/windows/amd64/kubeadm.exe
-} catch [Exception] {
-	Write-Host "retrying download of kubeadm.exe"
-	DownloadFile "$global:KubernetesPath\kubeadm.exe" https://dl.k8s.io/$KubernetesVersion/bin/windows/amd64/kubeadm.exe
-}
+DownloadFile "$global:KubernetesPath\kubeadm.exe" https://dl.k8s.io/$KubernetesVersion/bin/windows/amd64/kubeadm.exe
 
 
 if ($ContainerRuntime -eq "Docker") {
@@ -163,12 +158,7 @@ if ($ContainerRuntime -eq "Docker") {
     Write-Host "Creating Docker host network"
     docker network create -d nat host
 } elseif ($ContainerRuntime -eq "containerD") {
-    try {
-        DownloadFile "C:\k\hns.psm1" https://github.com/Microsoft/SDN/raw/master/Kubernetes/windows/hns.psm1
-    } catch [Exception] {
-            Write-Host "retrying download of hns.psm1 !!!"
-            DownloadFile "C:\k\hns.psm1" https://github.com/Microsoft/SDN/raw/master/Kubernetes/windows/hns.psm1
-    }
+    DownloadFile "C:\k\hns.psm1" https://github.com/Microsoft/SDN/raw/master/Kubernetes/windows/hns.psm1
     Import-Module "C:\k\hns.psm1"
     # TODO(marosset): check if network already exists before creatation
     New-HnsNetwork -Type NAT -Name nat
