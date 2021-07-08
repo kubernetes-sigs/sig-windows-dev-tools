@@ -233,3 +233,9 @@ roleRef:
 EOF
 
 kubectl create -f kube-proxy-and-antrea.yaml
+
+echo "testing that we didnt blow anything up "
+
+kubectl get pods -A
+
+echo "exiting controlplane.sh"
