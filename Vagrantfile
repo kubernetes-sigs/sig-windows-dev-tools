@@ -39,13 +39,14 @@ Vagrant.configure(2) do |config|
     # 1) this seems to break the ability to get to the internet
 
     #controlplane.vm.provision :shell, privileged: true, inline: "sudo ip route add default via 10.20.30.10"
-    controlplane.vm.provision :shell, privileged: false, path: "sync/linux/controlplane.sh", args: "#{overwrite_linux_bins} #{k8s_linux_registry} #{k8s_linux_kubelet_deb} #{k8s_linux_apiserver} "
+    # controlplane.vm.provision :shell, privileged: false, path: "sync/linux/controlplane.sh", args: "#{overwrite_linux_bins} #{k8s_linux_registry} #{k8s_linux_kubelet_deb} #{k8s_linux_apiserver} "
 
     # TODO shoudl we pass KuberneteVersion to calico agent exe? and also service cidr if needed?
+    # dont run as priveliged cuz we need the kubeconfig from regular user
     if settings['cni'].equal? "calico" then
-      controlplane.vm.provision "shell", path: "sync/linux/calico-0.sh", privileged: true
+      controlplane.vm.provision "shell", path: "sync/linux/calico-0.sh"
     else
-      controlplane.vm.provision "shell", path: "sync/linux/antrea-0.sh", privileged: true
+      controlplane.vm.provision "shell", path: "sync/linux/antrea-0.sh"
     end
 
 
