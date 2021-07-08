@@ -144,14 +144,6 @@ sudo chown $(id -u):$(id -g) $HOME/.kube/config
 rm -f /var/sync/shared/config
 cp $HOME/.kube/config /var/sync/shared/config
 
-function cni_antrea {
-  kubectl apply -f https://github.com/antrea-io/antrea/releases/download/v0.13.2/antrea.yml
-}
-
-# flannel
-cni_antrea
-
-
 ######## MAKE THE JOIN FILE FOR WINDOWS ##########
 ######## MAKE THE JOIN FILE FOR WINDOWS ##########
 ######## MAKE THE JOIN FILE FOR WINDOWS ##########

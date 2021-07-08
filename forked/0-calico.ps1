@@ -1,0 +1,2 @@
+Invoke-WebRequest https://docs.projectcalico.org/scripts/install-calico-windows.ps1 -OutFile c:\install-calico-windows.ps1
+C:\install-calico-windows.ps1 -KubeVersion <your Kubernetes version 1.21.1 -ServiceCidr 10.96.0.0/12 -DNSServerIPs 10.96.0.10
