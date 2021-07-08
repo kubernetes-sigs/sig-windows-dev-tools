@@ -58,19 +58,39 @@ $ErrorActionPreference = 'Stop'
 Write-Output "Overwriting bins is set to '$OverwriteBins'"
 
 function DownloadFile($destination, $source) {
-    if (Test-Path -Path $destination) {
-        Write-Host("Skipping download to avoid overwriting, already found on disk...")
-        return
-    }
-    else {
-        Write-Host("Downloading $source to $destination")
-        curl.exe --silent --fail -Lo $destination $source
 
-        if (!$?) {
-            Write-Error "Download $source failed"
-            exit 1
+    $tries=0
+    $attempts=5
+    $sleepInSeconds=5
+    do
+    {   $tries = $tries + 1
+        Write-Host("Download file, try ( $tries )  [[[ $source ]]] ")
+        try
+        {
+            if (Test-Path -Path $destination) {
+                Write-Host("Skipping download to avoid overwriting, already found on disk...")
+                return
+            }
+            else {
+                Write-Host("Downloading $source to $destination")
+                curl.exe --silent --fail -Lo $destination $source
+
+                if (!$?) {
+                    Write-Error "Download $source failed"
+                    exit 1
+                }
+            }
         }
-    }
+        catch [Exception]
+        {
+            Write-Host $_.Exception.Message
+        }
+        $attempts--
+        if ($attempts -gt 0) {
+            sleep $sleepInSeconds
+        }
+    } while ($attempts -gt 0)
+
 }
 
 if ($ContainerRuntime -eq "Docker") {
@@ -127,7 +147,14 @@ if ((Test-Path -Path $SelfBuiltKubeProxySource -PathType Leaf) -and ($OverwriteB
 }
 ls $kubeProxyBinPath
 
-DownloadFile "$global:KubernetesPath\kubeadm.exe" https://dl.k8s.io/$KubernetesVersion/bin/windows/amd64/kubeadm.exe
+# for some reason, this fails sometimes on windows VMs?
+try {
+	DownloadFile "$global:KubernetesPath\kubeadm.exe" https://dl.k8s.io/$KubernetesVersion/bin/windows/amd64/kubeadm.exe
+} catch [Exception] {
+	Write-Host "retrying download of kubeadm.exe"
+	DownloadFile "$global:KubernetesPath\kubeadm.exe" https://dl.k8s.io/$KubernetesVersion/bin/windows/amd64/kubeadm.exe
+}
+
 
 if ($ContainerRuntime -eq "Docker") {
     # Create host network to allow kubelet to schedule hostNetwork pods
@@ -136,7 +163,12 @@ if ($ContainerRuntime -eq "Docker") {
     Write-Host "Creating Docker host network"
     docker network create -d nat host
 } elseif ($ContainerRuntime -eq "containerD") {
-    DownloadFile "C:\k\hns.psm1" https://github.com/Microsoft/SDN/raw/master/Kubernetes/windows/hns.psm1
+    try {
+        DownloadFile "C:\k\hns.psm1" https://github.com/Microsoft/SDN/raw/master/Kubernetes/windows/hns.psm1
+    } catch [Exception] {
+            Write-Host "retrying download of hns.psm1 !!!"
+            DownloadFile "C:\k\hns.psm1" https://github.com/Microsoft/SDN/raw/master/Kubernetes/windows/hns.psm1
+    }
     Import-Module "C:\k\hns.psm1"
     # TODO(marosset): check if network already exists before creatation
     New-HnsNetwork -Type NAT -Name nat
@@ -167,6 +199,7 @@ if ($global:containerRuntime -eq "Docker") {
     }
 }
 
+# TODO Add dynamic node ip here !
 $cmd = "C:\k\kubelet.exe $global:KubeletArgs --cert-dir=$env:SYSTEMDRIVE\var\lib\kubelet\pki --config=/var/lib/kubelet/config.yaml --bootstrap-kubeconfig=/etc/kubernetes/bootstrap-kubelet.conf --kubeconfig=/etc/kubernetes/kubelet.conf --hostname-override=$(hostname) --pod-infra-container-image=`"mcr.microsoft.com/oss/kubernetes/pause:1.4.1`" --enable-debugging-handlers --cgroups-per-qos=false --enforce-node-allocatable=`"`" --network-plugin=cni --resolv-conf=`"`" --log-dir=/var/log/kubelet --logtostderr=false --image-pull-progress-deadline=20m"
 
 Invoke-Expression $cmd'
