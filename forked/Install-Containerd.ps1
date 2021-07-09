@@ -120,6 +120,10 @@ $env:Path += ";$global:ConainterDPath"
 containerd.exe config default | Out-File "$global:ConainterDPath\config.toml" -Encoding ascii
 #config file fixups
 $config = Get-Content "$global:ConainterDPath\config.toml"
+
+### NOTE that for cni providers calico/antrea this info might have to be plumbed in manually.
+### For that reason we've forked the calico scripts in this repo and made upstream PRs to make
+### these directories configurable in the CNI installation.
 $config = $config -replace "bin_dir = (.)*$", "bin_dir = `"c:/opt/cni/bin`""
 $config = $config -replace "conf_dir = (.)*$", "conf_dir = `"c:/etc/cni/net.d`""
 $config | Set-Content "$global:ConainterDPath\config.toml" -Force 
