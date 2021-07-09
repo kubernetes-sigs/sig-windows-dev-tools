@@ -70,13 +70,13 @@ Vagrant.configure(2) do |config|
       vb.gui = false
     end
 
-#    winw1.vm.provision "shell", path: "sync/windows/hyperv.ps1", privileged: true
-#    winw1.vm.provision :reload
-#    winw1.vm.provision "shell", path: "sync/windows/containerd1.ps1", privileged: true #, run: "never"
-#    winw1.vm.provision :reload
-#    winw1.vm.provision "shell", path: "sync/windows/containerd2.ps1", privileged: true #, run: "never"
-#    winw1.vm.provision "shell", path: "forked/PrepareNode.ps1", privileged: true, args: "-KubernetesVersion #{kubernetes_compatibility} -ContainerRuntime containerD #{overwrite_windows_bins }" #, run: "never"
-#    winw1.vm.provision "shell", path: "sync/shared/kubejoin.ps1", privileged: true #, run: "never"
+    winw1.vm.provision "shell", path: "sync/windows/hyperv.ps1", privileged: true
+    winw1.vm.provision :reload
+    winw1.vm.provision "shell", path: "sync/windows/containerd1.ps1", privileged: true #, run: "never"
+    winw1.vm.provision :reload
+    winw1.vm.provision "shell", path: "sync/windows/containerd2.ps1", privileged: true #, run: "never"
+    winw1.vm.provision "shell", path: "forked/PrepareNode.ps1", privileged: true, args: "-KubernetesVersion #{kubernetes_compatibility} -ContainerRuntime containerD #{overwrite_windows_bins }" #, run: "never"
+    winw1.vm.provision "shell", path: "sync/shared/kubejoin.ps1", privileged: true #, run: "never"
 
     # TODO shoudl we pass KuberneteVersion to calico agent exe? and also service cidr if needed?
     if cni == "calico" then
