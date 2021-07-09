@@ -52,6 +52,8 @@ Vagrant.configure(2) do |config|
     end
 
 
+    controlplane.vm.provision :shell, privileged: false, inline: "kubectl create -f /vagrant/smoke-test.yaml"
+
   end
 
   # WINDOWS WORKER (win server 2019)
