@@ -3,7 +3,7 @@
 This is a fully batteries-included development environment for Windows on Kubernetes, including:
 - Vagrant file for launching a two-node cluster
 - the latest Containerd
-- NetworkPolicy support for Windows and Linux provided by [Antrea](https://antrea.io)
+- NetworkPolicy support for Windows and Linux provided by [Antrea](https://antrea.io) and [Calico](https://www.tigera.io/project-calico/)
 - Windows binaries for kube-proxy.exe and kubelet.exe that are fully built from source (K8s main branch)
 - kubeadm installation that can put the bleeding-edge Linux control plane in place, so you can test new features like privileged containers
 
