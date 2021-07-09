@@ -1,8 +1,5 @@
 $baseDir = "$PSScriptRoot"
 
-if (-not (Test-Path $env:CALICO_NETWORKING_BACKEND)) { 
-    Write-Output "missing the networking backend CALICO_NETWORKING_BACKEND var, should be  vxlan/windows-bgp/none."
-}
 ipmo $baseDir\libs\calico\calico.psm1
 
 ## Cluster configuration:
@@ -24,6 +21,7 @@ $env:DNS_SEARCH = "svc.cluster.local"
 # Hardcoded bc this is supposed to be the single source of truth...
 $env:CALICO_NETWORKING_BACKEND="vxlan"
 $env:CALICO_DATASTORE_TYPE = "kubernetes"
+
 $env:KUBECONFIG = "C:/etc/kubernetes/kubelet.conf"
 $env:CNI_BIN_DIR = "C:/opt/cni/bin"
 $env:CNI_CONF_DIR = "C:/etc/cni/net.d"

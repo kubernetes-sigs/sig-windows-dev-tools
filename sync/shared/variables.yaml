@@ -35,6 +35,5 @@ windows_ram: 8162
 windows_cpus: 4
 
 ###################### CHOOSE YOUR CNI $$$$$$$$$$$$$$$
-#cni: "calico"
-cni: "antrea"
-
+cni: "calico"
+#cni: "antrea"
