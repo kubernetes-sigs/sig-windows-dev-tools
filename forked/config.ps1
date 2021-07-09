@@ -1,4 +1,8 @@
 $baseDir = "$PSScriptRoot"
+
+if (-not (Test-Path $env:CALICO_NETWORKING_BACKEND)) { 
+    Write-Output "missing the networking backend CALICO_NETWORKING_BACKEND var, should be  vxlan/windows-bgp/none."
+}
 ipmo $baseDir\libs\calico\calico.psm1
 
 ## Cluster configuration:
@@ -7,28 +11,36 @@ ipmo $baseDir\libs\calico\calico.psm1
 # The default, "Calico.*", is correct for Calico CNI. 
 $env:KUBE_NETWORK = "Calico.*"
 
-# Set this to one of the following values:
-# - "vxlan" for Calico VXLAN networking
-# - "windows-bgp" for Calico BGP networking using the Windows BGP router.
-# - "none" to disable the Calico CNI plugin (so that you can use another plugin).
-$env:CALICO_NETWORKING_BACKEND="vxlan"
-
 # Set to match your Kubernetes service CIDR.
 $env:K8S_SERVICE_CIDR = "<your service cidr>"
 $env:DNS_NAME_SERVERS = "<your dns server ips>"
 $env:DNS_SEARCH = "svc.cluster.local"
 
+# Set this to one of the following values:
+# - "vxlan" for Calico VXLAN networking
+# - "windows-bgp" for Calico BGP networking using the Windows BGP router.
+# - "none" to disable the Calico CNI plugin (so that you can use another plugin).
+#$env:CALICO_NETWORKING_BACKEND="vxlan"
+#$env:CALICO_DATASTORE_TYPE = "kubernetes"
+
 
 ## Datastore configuration:
 
 # Set this to "kubernetes" to use the kubernetes datastore, or "etcdv3" for etcd.
-$env:CALICO_DATASTORE_TYPE = "<your datastore type>"
 
-
-if (-not (Test-Path env:KUBECONFIG)) { 
+if (-not (Test-Path $env:KUBECONFIG)) { 
     Write-Output "config.ps1 ~ Didn't find a KUBECONFIG env var... exiting."
     exit 1
 }
+if (-not (Test-Path env:CALICO_NETWORKING_BACKEND )) { 
+    Write-Output "config.ps1 ~ Didn't find a CALICO_NETWORKING_BACKEND (vxlan/windows-bgp) env var... exiting."
+    exit 1
+}
+if (-not (Test-Path env:CALICO_DATASTORE_TYPE )) { 
+    Write-Output "config.ps1 ~ Didn't find a CALICO_DATASTORE_TYPE (kubernetes/etcdv3) env var... exiting."
+    exit 1
+}
+
 
 Write-Output "kubeconfig for calico will be ~ $env:KUBECONFIG"
 

@@ -8,6 +8,8 @@ cd C:\CalicoWindows
 $Env:CNI_BIN_DIR='C:/opt/cni/bin'
 $Env:CNI_CONF_DIR='C:/etc/cni/net.d'
 $env:KUBECONFIG="C:/etc/kubernetes/kubelet.conf"
+$env:CALICO_NETWORKING_BACKEND="vxlan"
+$env:CALICO_DATASTORE_TYPE="kubernetes"
 
 if (-not(Test-Path -Path $env:KUBECONFIG -PathType Leaf)) {
     Write-Output "Missing KUBECONFIG env var ! exiting $env:KUBECONFIG"
@@ -24,6 +26,7 @@ if (-not (Test-Path -Path ./install-calico.ps1 -PathType Leaf)) {
 
 
     Write-Output "Copying calico files............."
+    
 
     cp C:/forked/install-calico.ps1 ./
     cp C:/forked/calico.psm1 ./libs/calico/
@@ -31,7 +34,6 @@ if (-not (Test-Path -Path ./install-calico.ps1 -PathType Leaf)) {
     Write-Output "................ DONE Copying forked calico files"
 
     ### This /opt/cni/bin directory is read by the calico node startup script
-    $Env:CNI_BIN_DIR='C:/opt/cni/bin'
     Write-Output "............ RUNNING INSTALL_CALICO.ps1 with the following ENV VARS ............"
     Get-ChildItem env: 
     .\install-calico.ps1

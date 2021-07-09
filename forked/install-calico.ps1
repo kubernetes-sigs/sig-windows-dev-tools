@@ -36,6 +36,13 @@ if (-not (Test-Path env:KUBECONFIG)) {
     exit 1
 }
 
+# Set this to one of the following values:
+# - "vxlan" for Calico VXLAN networking
+# - "windows-bgp" for Calico BGP networking using the Windows BGP router.
+# - "none" to disable the Calico CNI plugin (so that you can use another plugin).
+$env:CALICO_NETWORKING_BACKEND = "vxlan"
+$env:CALICO_DATASTORE_TYPE = "kubernetes"
+
 . $PSScriptRoot\config.ps1
 
 Test-CalicoConfiguration
