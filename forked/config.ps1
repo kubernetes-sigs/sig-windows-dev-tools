@@ -15,13 +15,18 @@ $env:KUBE_NETWORK = "Calico.*"
 $env:K8S_SERVICE_CIDR = "<your service cidr>"
 $env:DNS_NAME_SERVERS = "<your dns server ips>"
 $env:DNS_SEARCH = "svc.cluster.local"
-
 # Set this to one of the following values:
 # - "vxlan" for Calico VXLAN networking
 # - "windows-bgp" for Calico BGP networking using the Windows BGP router.
 # - "none" to disable the Calico CNI plugin (so that you can use another plugin).
-#$env:CALICO_NETWORKING_BACKEND="vxlan"
-#$env:CALICO_DATASTORE_TYPE = "kubernetes"
+
+
+# Hardcoded bc this is supposed to be the single source of truth...
+$env:CALICO_NETWORKING_BACKEND="vxlan"
+$env:CALICO_DATASTORE_TYPE = "kubernetes"
+$env:KUBECONFIG = "C:/etc/kubernetes/kubelet.conf"
+$env:CNI_BIN_DIR = "C:/opt/cni/bin"
+$env:CNI_CONF_DIR = "C:/etc/cni/net.d"
 
 
 ## Datastore configuration:
@@ -30,14 +35,6 @@ $env:DNS_SEARCH = "svc.cluster.local"
 
 if (-not (Test-Path $env:KUBECONFIG)) { 
     Write-Output "config.ps1 ~ Didn't find a KUBECONFIG env var... exiting."
-    exit 1
-}
-if (-not (Test-Path env:CALICO_NETWORKING_BACKEND )) { 
-    Write-Output "config.ps1 ~ Didn't find a CALICO_NETWORKING_BACKEND (vxlan/windows-bgp) env var... exiting."
-    exit 1
-}
-if (-not (Test-Path env:CALICO_DATASTORE_TYPE )) { 
-    Write-Output "config.ps1 ~ Didn't find a CALICO_DATASTORE_TYPE (kubernetes/etcdv3) env var... exiting."
     exit 1
 }
 
@@ -134,3 +131,6 @@ $env:FELIX_LOGSEVERITYSYS = "none"
 # confd logs to screen at info level by default.  Uncomment this line to override the log
 # level.
 #$env:BGP_LOGSEVERITYSCREEN = "debug"
+
+# for calico node....
+$env:KUBECONFIG = "C:/etc/kubernetes/kubelet.conf"

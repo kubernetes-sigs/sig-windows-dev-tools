@@ -85,6 +85,8 @@ function InstallK8sBinaries()
 
 function GetPlatformType()
 {
+    ipmo C:\k\hns.psm1
+
     # AKS
     $hnsNetwork = Get-HnsNetwork | ? Name -EQ azure
     if ($hnsNetwork.name -EQ "azure") {
@@ -295,7 +297,7 @@ function StartCalico()
 
     mkdir -p $env:CNI_CONF_DIR
     mkdir -p $env:CNI_BIN_DIR
-    
+    $env:KUBECONFIG="C:/etc/kubernetes/kubelet.conf"
     .\install-calico.ps1
     popd
     Write-Host "`nCalico for Windows Started`n"
@@ -427,7 +429,7 @@ if ($DownloadOnly -EQ "yes") {
     Write-Host "Dowloaded Calico for Windows. Update c:\CalicoWindows\config.ps1 and run c:\CalicoWindows\install-calico.ps1"
     Exit
 }
-
+$env:KUBECONFIG="C:/etc/kubernetes/kubelet.conf"
 StartCalico
 
 if ($Backend -NE "none") {
