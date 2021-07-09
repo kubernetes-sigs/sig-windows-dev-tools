@@ -33,4 +33,8 @@ linux_ram: 4096
 linux_cpus: 4
 windows_ram: 8162
 windows_cpus: 4
-cni: "calico"
+
+###################### CHOOSE YOUR CNI $$$$$$$$$$$$$$$
+#cni: "calico"
+cni: "antrea"
+
