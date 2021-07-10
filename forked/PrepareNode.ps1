@@ -58,19 +58,39 @@ $ErrorActionPreference = 'Stop'
 Write-Output "Overwriting bins is set to '$OverwriteBins'"
 
 function DownloadFile($destination, $source) {
-    if (Test-Path -Path $destination) {
-        Write-Host("Skipping download to avoid overwriting, already found on disk...")
-        return
-    }
-    else {
-        Write-Host("Downloading $source to $destination")
-        curl.exe --silent --fail -Lo $destination $source
 
-        if (!$?) {
-            Write-Error "Download $source failed"
-            exit 1
+    $tries=0
+    $attempts=5
+    $sleepInSeconds=5
+    do
+    {   $tries = $tries + 1
+        Write-Host("Download file, try ( $tries )  [[[ $source ]]] ")
+        try
+        {
+            if (Test-Path -Path $destination) {
+                Write-Host("Skipping download to avoid overwriting, already found on disk...")
+                return
+            }
+            else {
+                Write-Host("Downloading $source to $destination")
+                curl.exe --silent --fail -Lo $destination $source
+
+                if (!$?) {
+                    Write-Error "Download $source failed"
+                    exit 1
+                }
+            }
         }
-    }
+        catch [Exception]
+        {
+            Write-Host $_.Exception.Message
+        }
+        $attempts--
+        if ($attempts -gt 0) {
+            sleep $sleepInSeconds
+        }
+    } while ($attempts -gt 0)
+
 }
 
 if ($ContainerRuntime -eq "Docker") {
@@ -127,7 +147,9 @@ if ((Test-Path -Path $SelfBuiltKubeProxySource -PathType Leaf) -and ($OverwriteB
 }
 ls $kubeProxyBinPath
 
+# for some reason, this fails sometimes on windows VMs?
 DownloadFile "$global:KubernetesPath\kubeadm.exe" https://dl.k8s.io/$KubernetesVersion/bin/windows/amd64/kubeadm.exe
+
 
 if ($ContainerRuntime -eq "Docker") {
     # Create host network to allow kubelet to schedule hostNetwork pods
@@ -167,7 +189,8 @@ if ($global:containerRuntime -eq "Docker") {
     }
 }
 
-$cmd = "C:\k\kubelet.exe $global:KubeletArgs --cert-dir=$env:SYSTEMDRIVE\var\lib\kubelet\pki --config=/var/lib/kubelet/config.yaml --bootstrap-kubeconfig=/etc/kubernetes/bootstrap-kubelet.conf --kubeconfig=/etc/kubernetes/kubelet.conf --hostname-override=$(hostname) --pod-infra-container-image=`"mcr.microsoft.com/oss/kubernetes/pause:1.4.1`" --enable-debugging-handlers --cgroups-per-qos=false --enforce-node-allocatable=`"`" --network-plugin=cni --resolv-conf=`"`" --log-dir=/var/log/kubelet --logtostderr=false --image-pull-progress-deadline=20m"
+# TODO Add dynamic node ip here !
+$cmd = "C:\k\kubelet.exe $global:KubeletArgs --cert-dir=$env:SYSTEMDRIVE\var\lib\kubelet\pki --config=/var/lib/kubelet/config.yaml --bootstrap-kubeconfig=/etc/kubernetes/bootstrap-kubelet.conf --kubeconfig=/etc/kubernetes/kubelet.conf --hostname-override=$(hostname) --pod-infra-container-image=`"mcr.microsoft.com/oss/kubernetes/pause:1.4.1`" --enable-debugging-handlers --cgroups-per-qos=false --enforce-node-allocatable=`"`" --network-plugin=cni --resolv-conf=`"`" --log-dir=/var/log/kubelet --logtostderr=false --image-pull-progress-deadline=20m --container-runtime=remote --container-runtime-endpoint=npipe:////.//pipe//containerd-containerd"
 
 Invoke-Expression $cmd'
 $StartKubeletFileContent = $StartKubeletFileContent -replace "{{CONTAINER_RUNTIME}}", "`"$ContainerRuntime`""

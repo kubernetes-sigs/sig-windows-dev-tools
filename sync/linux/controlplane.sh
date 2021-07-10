@@ -131,7 +131,7 @@ sudo docker tag k8s.gcr.io/coredns/coredns:v1.8.0 gcr.io/k8s-staging-ci-images/c
 
 
 sudo kubeadm init --apiserver-advertise-address=10.20.30.10 \
---pod-network-cidr=10.244.0.0/16 \
+--pod-network-cidr=100.244.0.0/16 \
 --image-repository=$k8s_version_linux_registry \
 --kubernetes-version=$k8s_linux_apiserver \
 --v=6
@@ -143,14 +143,6 @@ sudo chown $(id -u):$(id -g) $HOME/.kube/config
 
 rm -f /var/sync/shared/config
 cp $HOME/.kube/config /var/sync/shared/config
-
-function cni_antrea {
-  kubectl apply -f https://github.com/antrea-io/antrea/releases/download/v0.13.2/antrea.yml
-}
-
-# flannel
-cni_antrea
-
 
 ######## MAKE THE JOIN FILE FOR WINDOWS ##########
 ######## MAKE THE JOIN FILE FOR WINDOWS ##########
@@ -241,3 +233,7 @@ roleRef:
 EOF
 
 kubectl create -f kube-proxy-and-antrea.yaml
+
+echo "testing that we didnt blow anything up "
+
+kubectl get pods -A
