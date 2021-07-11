@@ -72,7 +72,7 @@ EOF
 sudo sysctl --system
 
 #Install Docker and Kubernetes,
-sudo apt-get install -y docker-ce=5:20.10.5~3-0~ubuntu-$(lsb_release -cs) \
+sudo apt-get install -y net-tools docker-ce=5:20.10.5~3-0~ubuntu-$(lsb_release -cs) \
 kubelet=${k8s_linux_kubelet_deb}-00 \
 kubeadm=${k8s_linux_kubelet_deb}-00 \
 kubectl=${k8s_linux_kubelet_deb}-00
@@ -129,8 +129,10 @@ sudo docker tag k8s.gcr.io/etcd:3.4.13-0 gcr.io/k8s-staging-ci-images/etcd:3.4.1
 sudo docker tag k8s.gcr.io/pause:3.4.1 gcr.io/k8s-staging-ci-images/pause:3.4.1
 sudo docker tag k8s.gcr.io/coredns/coredns:v1.8.0 gcr.io/k8s-staging-ci-images/coredns/coredns:v1.8.0
 
+#hyper-violence
+ip_address=$(ifconfig eth0 | grep -o -P '(?<=inet ).*(?=  netmask)')
 
-sudo kubeadm init --apiserver-advertise-address=10.20.30.10 \
+sudo kubeadm init --apiserver-advertise-address=$ip_address \
 --pod-network-cidr=100.244.0.0/16 \
 --image-repository=$k8s_version_linux_registry \
 --kubernetes-version=$k8s_linux_apiserver \

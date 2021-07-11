@@ -4,3 +4,4 @@ sync/linux/bin/
 sync/shared/config
 kubernetes
 .vagrant/
+/hyperv/.vagrant/
