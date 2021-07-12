@@ -18,10 +18,14 @@ linux_cpus = settings['linux_cpus']
 windows_ram = settings['windows_ram']
 windows_cpus = settings['windows_cpus']
 cni = settings['cni']
+vb_paravirt = settings['vb_paravirt']
 
 Vagrant.configure(2) do |config|
   puts "cni:"
   puts cni
+
+  config.winrm.max_tries = 60
+  config.winrm.retry_delay = 5
 
   # LINUX Control Plane
   config.vm.define :controlplane do |controlplane|
@@ -30,11 +34,12 @@ Vagrant.configure(2) do |config|
     # better because its available on vmware and virtualbox
     # controlplane.vm.box = "bento/ubuntu-18.04"
     controlplane.vm.network :private_network, ip:"10.20.30.10"
-    controlplane.vm.provider :virtualbox do |vb|
     controlplane.vm.synced_folder "./sync/shared", "/var/sync/shared"
     controlplane.vm.synced_folder "./sync/linux", "/var/sync/linux"
+    controlplane.vm.provider :virtualbox do |vb|
       vb.memory = linux_ram
       vb.cpus = linux_cpus
+      vb.customize [ "modifyvm", :id, "--paravirtprovider", "#{vb_paravirt}"]
     end
 
     ### This allows the node to default to the right IP i think....
@@ -63,11 +68,13 @@ Vagrant.configure(2) do |config|
     winw1.vm.synced_folder "./sync/shared", "C:/sync/shared"
     winw1.vm.synced_folder "./sync/windows/", "C:/sync/windows/"
     winw1.vm.synced_folder "./forked", "C:/forked/"
+    winw1.vm.boot_timeout = 600
 
     winw1.vm.provider :virtualbox do |vb|
       vb.memory = windows_ram
       vb.cpus = windows_cpus
-      vb.gui = false
+      vb.gui = true
+      vb.customize [ "modifyvm", :id, "--paravirtprovider", "#{vb_paravirt}" ]
     end
 
     winw1.vm.provision "shell", path: "sync/windows/hyperv.ps1", privileged: true

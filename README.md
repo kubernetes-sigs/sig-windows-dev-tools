@@ -99,6 +99,7 @@ NAME     STATUS   ROLES                  AGE     VERSION
 controlplane    Ready    control-plane,controlplane     16m     v1.20.4
 winw1           Ready    <none>                         9m11s   v1.20.4
 ```
+If you are running on a Windows machine with HyperV and virtualbox installed edit [variables.yaml](\sync\shared\variables.yaml) and update the **vb_paravirt** varible to **hyperv** to enabled HyperV paravertialization support in virtualbox.
 
 ## Accessing the Windows box
 

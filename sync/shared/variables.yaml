@@ -34,6 +34,9 @@ linux_cpus: 4
 windows_ram: 8162
 windows_cpus: 4
 
+### Update this to 'hyperv' if running virtualbox on a Windows machine with HyperV installed
+vb_paravirt: minimal
+
 ###################### CHOOSE YOUR CNI $$$$$$$$$$$$$$$
 #cni: "calico"
 cni: "antrea"
