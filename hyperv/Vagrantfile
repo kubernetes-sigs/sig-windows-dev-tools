@@ -1,0 +1,79 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+require 'yaml'
+
+settingsFile = ENV["VAGRANT_VARIABLES"] || '../sync/shared/variables.yaml'
+settings = YAML.load_file settingsFile
+k8s_linux_registry=settings['k8s_linux_registry']
+k8s_linux_kubelet_deb=settings['k8s_linux_kubelet_deb']
+k8s_linux_apiserver=settings['k8s_linux_apiserver']
+kubernetes_compatibility=settings['kubernetes_compatibility']
+
+overwrite_linux_bins = settings['overwrite_linux_bins']
+overwrite_windows_bins = settings['overwrite_windows_bins'] ? "-OverwriteBins" : ""
+
+linux_ram = settings['linux_ram']
+linux_cpus = settings['linux_cpus']
+windows_ram = settings['windows_ram']
+windows_cpus = settings['windows_cpus']
+cni = settings['cni']
+
+Vagrant.configure(2) do |config|
+  puts "cni:"
+  puts cni
+  config.vm.define :controlplane do |controlplane|
+    controlplane.vm.host_name = "controlplane"
+    controlplane.vm.box = "roboxes/ubuntu2004"
+    controlplane.vm.network :private_network, bridge: "Default Switch"
+    controlplane.vm.synced_folder "../sync/shared", "/var/sync/shared", smb_username: ENV['SMB_USERNAME'], smb_password: ENV['SMB_PASSWORD']    
+    controlplane.vm.synced_folder "../sync/linux", "/var/sync/linux", smb_username: ENV['SMB_USERNAME'], smb_password: ENV['SMB_PASSWORD']    
+    controlplane.vm.provider :hyperv do |vb|
+      vb.memory = 5000
+      vb.maxmemory = 5000
+      vb.cpus = 4
+    end
+    controlplane.vm.provision :shell, privileged: false, path: "../sync/linux/controlplane.sh", args: "#{overwrite_linux_bins} #{k8s_linux_registry} #{k8s_linux_kubelet_deb} #{k8s_linux_apiserver}"
+    
+    if cni == "calico" then
+      controlplane.vm.provision "shell", path: "../sync/linux/calico-0.sh"
+    else
+      controlplane.vm.provision "shell", path: "../sync/linux/antrea-0.sh"
+    end
+
+    controlplane.vm.provision :shell, privileged: false, inline: "kubectl create -f ../smoke-test.yaml"
+  end
+end
+
+Vagrant.configure(2) do |config|
+  config.vm.define :winw1 do |winw1|
+    winw1.vm.host_name = "winw1"
+    winw1.vm.box = "StefanScherer/windows_2019"  
+    winw1.vm.network :private_network, bridge: "Default Switch"
+    winw1.vm.synced_folder ".", "/vagrant", disabled:true
+    winw1.vm.synced_folder "../sync/shared", "C:/sync/shared", smb_username: ENV['SMB_USERNAME'], smb_password: ENV['SMB_PASSWORD']
+    winw1.vm.synced_folder "../sync/windows/bin/", "C:/sync/windows/bin", smb_username: ENV['SMB_USERNAME'], smb_password: ENV['SMB_PASSWORD']
+
+    winw1.vm.provider :hyperv do |vb|
+      vb.maxmemory = 5000
+      vb.memory = 5000
+      vb.cpus = 4
+    end
+
+    winw1.vm.provision "shell", path: "../sync/windows/hyperv.ps1", privileged: true
+    winw1.vm.provision :reload
+    winw1.vm.provision "shell", path: "../sync/windows/containerd1.ps1", privileged: true #, run: "never"
+    winw1.vm.provision :reload
+    winw1.vm.provision "shell", path: "../sync/windows/containerd2.ps1", privileged: true #, run: "never"
+    winw1.vm.provision "shell", path: "../forked/PrepareNode.ps1", privileged: true, args: "-KubernetesVersion #{kubernetes_compatibility} -ContainerRuntime containerD #{overwrite_windows_bins }" #, run: "never"
+    winw1.vm.provision "shell", path: "../sync/shared/kubejoin.ps1", privileged: true #, run: "never"
+
+    if cni == "calico" then
+      winw1.vm.provision "shell", path: "../forked/0-calico.ps1", privileged: true #, run: "always"
+      winw1.vm.provision :reload
+      winw1.vm.provision "shell", path: "../forked/1-calico.ps1", privileged: true #, run: "always"
+    else
+      winw1.vm.provision "shell", path: "../forked/0-antrea.ps1", privileged: true #, run: "always"
+      winw1.vm.provision "shell", path: "../forked/1-antrea.ps1", privileged: true, args: "-KubernetesVersion #{kubernetes_compatibility}" #, run: "always"
+    end
+  end
+end
