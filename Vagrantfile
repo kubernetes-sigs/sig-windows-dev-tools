@@ -26,7 +26,7 @@ Vagrant.configure(2) do |config|
   # LINUX Control Plane
   config.vm.define :controlplane do |controlplane|
     controlplane.vm.host_name = "controlplane"
-    controlplane.vm.box = "controlplane.vm.box = "roboxes/ubuntu2004""
+    controlplane.vm.box = "roboxes/ubuntu2004"
     # the default: 
     # controlplane.vm.box = "ubuntu/focal64"
     # better because its available on vmware and virtualbox:
