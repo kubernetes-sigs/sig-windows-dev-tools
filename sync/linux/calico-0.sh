@@ -4,7 +4,7 @@ sleep 2
 export KUBECONFIG=/home/vagrant/.kube/config
 KUBECONFIG=/home/vagrant/.kube/config
 
-kubectl create -f /vagrant/forked/calico.yaml
+kubectl create -f /var/sync/forked/calico.yaml
 kubectl taint nodes --all node-role.kubernetes.io/master-
 
 echo "waiting 20s for calico pods..."

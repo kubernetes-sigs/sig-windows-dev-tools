@@ -26,12 +26,15 @@ Vagrant.configure(2) do |config|
   # LINUX Control Plane
   config.vm.define :controlplane do |controlplane|
     controlplane.vm.host_name = "controlplane"
-    controlplane.vm.box = "ubuntu/focal64"
-    # better because its available on vmware and virtualbox
+    controlplane.vm.box = "roboxes/ubuntu2004"
+    # the default: 
+    # controlplane.vm.box = "ubuntu/focal64"
+    # better because its available on vmware and virtualbox:
     # controlplane.vm.box = "bento/ubuntu-18.04"
     controlplane.vm.network :private_network, ip:"10.20.30.10"
     controlplane.vm.provider :virtualbox do |vb|
     controlplane.vm.synced_folder "./sync/shared", "/var/sync/shared"
+    controlplane.vm.synced_folder "./forked", "/var/sync/forked"
     controlplane.vm.synced_folder "./sync/linux", "/var/sync/linux"
       vb.memory = linux_ram
       vb.cpus = linux_cpus
@@ -52,7 +55,7 @@ Vagrant.configure(2) do |config|
     end
 
 
-    controlplane.vm.provision :shell, privileged: false, inline: "kubectl create -f /vagrant/smoke-test.yaml"
+    controlplane.vm.provision :shell, privileged: false, inline: "kubectl create -f /var/sync/linux/smoke-test.yaml"
 
   end
 
