@@ -34,6 +34,7 @@ Vagrant.configure(2) do |config|
     controlplane.vm.network :private_network, ip:"10.20.30.10"
     controlplane.vm.provider :virtualbox do |vb|
     controlplane.vm.synced_folder "./sync/shared", "/var/sync/shared"
+    controlplane.vm.synced_folder "./forked", "/var/sync/forked"
     controlplane.vm.synced_folder "./sync/linux", "/var/sync/linux"
       vb.memory = linux_ram
       vb.cpus = linux_cpus
