@@ -1,7 +1,7 @@
 # See the OWNERS docs at https://go.k8s.io/owners
 
-approvers:.
-  sig-windows-dev-tools:
-    - sladyn98
-    - jayunit100
-    - friedrichwilken
+approvers:
+  - friedrichwilken
+  - jayunit100
+  - jsturtevant
+  - marosset
