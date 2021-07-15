@@ -9,7 +9,7 @@ ipmo $baseDir\libs\calico\calico.psm1
 $env:KUBE_NETWORK = "Calico.*"
 
 # Set to match your Kubernetes service CIDR.
-$env:K8S_SERVICE_CIDR = "<your service cidr>"
+$env:K8S_SERVICE_CIDR = "10.96.0.0/12"
 $env:DNS_NAME_SERVERS = "<your dns server ips>"
 $env:DNS_SEARCH = "svc.cluster.local"
 # Set this to one of the following values:
