@@ -36,4 +36,4 @@ windows_cpus: 4
 
 ###################### CHOOSE YOUR CNI $$$$$$$$$$$$$$$
 cni: "calico"
-#cni: "antrea"
+# cni: "antrea"
