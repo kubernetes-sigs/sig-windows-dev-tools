@@ -23,11 +23,8 @@ if (-not (Test-Path -Path ./install-calico.ps1 -PathType Leaf)) {
     exit 100
 } else {
     ### Replace calico scripts with forked ones:
-
-
     Write-Output "Copying calico files............."
     
-
     cp C:/forked/install-calico.ps1 ./
     cp C:/forked/calico.psm1 ./libs/calico/
     cp C:/forked/config.ps1 ./
@@ -36,9 +33,11 @@ if (-not (Test-Path -Path ./install-calico.ps1 -PathType Leaf)) {
     ### This /opt/cni/bin directory is read by the calico node startup script
     Write-Output "............ RUNNING INSTALL_CALICO.ps1 with the following ENV VARS ............"
     Get-ChildItem env: 
+    Get-Date
     .\install-calico.ps1
 }
 
 Write-Output "DONE INSTALLING CALICO I THINK !"
+Get-Date
 Get-Service -Name CalicoNode
 Get-Service -Name CalicoFelix

@@ -66,7 +66,6 @@ function PrepareKubernetes()
 {
     DownloadFiles
     PrepareDockerFile
-    ipmo C:\k\hns.psm1
 
     # Prepare POD infra Images
     c:\k\InstallImages.ps1
