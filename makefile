@@ -31,6 +31,7 @@ all: 0-fetch-k8s 1-build-binaries 2-vagrant-up
 2-vagrant-up:
 	vagrant plugin install vagrant-vbguest
 	vagrant destroy -f 
+	rm provisioned || echo "already clean"
 	vagrant up || touch provisioned && vagrant up
 # TODO
 #3-e2e-test:
