@@ -347,7 +347,7 @@ function Get-StoredLastBootTime()
 
 function Set-StoredLastBootTime($lastBootTime)
 {
-    Write-Output("Someone requested Set-StoredLastBootTime ... ensuring registry key")
+    Write-Output("Someone requested Set-StoredLastBootTime ... ensuring registry key: $calicoRegistryKey")
     ensureRegistryKey
     
     return Set-ItemProperty $calicoRegistryKey -Name LastBootTime -Value $lastBootTime
