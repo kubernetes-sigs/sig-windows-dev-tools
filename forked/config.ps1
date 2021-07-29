@@ -10,7 +10,7 @@ $env:KUBE_NETWORK = "Calico.*"
 
 # Set to match your Kubernetes service CIDR.
 $env:K8S_SERVICE_CIDR = "10.96.0.0/12"
-$env:DNS_NAME_SERVERS = "<your dns server ips>"
+$env:DNS_NAME_SERVERS = "10.96.0.10"
 $env:DNS_SEARCH = "svc.cluster.local"
 # Set this to one of the following values:
 # - "vxlan" for Calico VXLAN networking
@@ -37,8 +37,8 @@ if (-not (Test-Path $env:KUBECONFIG)) {
 }
 
 
-Write-Output "kubeconfig for calico will be ~ $env:KUBECONFIG"
-
+Write-Output "kubeconfig for calico will be ~ $env:KUBECONFIG ... DATE ===> "
+Get-Date
 # For the "etcdv3" datastore only: set ETCD_ENDPOINTS, format: "http://<host>:<port>,..."
 $env:ETCD_ENDPOINTS = "<your etcd endpoints>"
 # For etcd over TLS, set these lines to point to your keys/certs:

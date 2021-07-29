@@ -304,9 +304,11 @@ function Wait-ForManagementIP($NetworkName)
 
 function Get-LastBootTime()
 {
+    Write-Output("... checking last-boot time ")
     $bootTime = (Get-WmiObject win32_operatingsystem | select @{LABEL='LastBootUpTime';EXPRESSION={$_.lastbootuptime}}).LastBootUpTime
     if (($bootTime -EQ $null) -OR ($bootTime.length -EQ 0))
     {
+        Write-Output("no boot time in Get-WmiObject win32_operatingsystem....")
         throw "Failed to get last boot time"
     }
     return $bootTime
@@ -317,14 +319,17 @@ $calicoRegistryKey = $softwareRegistryKey + "\Calico"
 
 function ensureRegistryKey()
 {
+    Write-Output("Ensuring registry key $softwareRegistryKey ...")
     if (! (Test-Path $softwareRegistryKey))
     {
         New-Item $softwareRegistryKey
     }
+    Write-Output("Ensuring registry key $calicoRegistryKey ... ")
     if (! (Test-Path $calicoRegistryKey))
     {
         New-Item $calicoRegistryKey
     }
+    Write-Output("Done ensuring registry kets... now boot time can be set")
 }
 
 function Get-StoredLastBootTime()
@@ -335,29 +340,40 @@ function Get-StoredLastBootTime()
     }
     catch
     {
+        Write-Output("... No boot time stored yet in the Get-ItemProperty for $calicoRegistryKey")
         $PSItem.Exception.Message
     }
 }
 
 function Set-StoredLastBootTime($lastBootTime)
 {
+    Write-Output("Someone requested Set-StoredLastBootTime ... ensuring registry key: $calicoRegistryKey")
     ensureRegistryKey
-
+    
     return Set-ItemProperty $calicoRegistryKey -Name LastBootTime -Value $lastBootTime
 }
 
-function Wait-ForCalicoInit()
+function Wait-ForCalicoInit($Tries)
 {
     Write-Host "Waiting for Calico initialisation to finish..."
+
     $Stored=Get-StoredLastBootTime
     $Current=Get-LastBootTime
-    while ($Stored -NE $Current) {
-        Write-Host "Waiting for Calico initialisation to finish...StoredLastBootTime $Stored, CurrentLastBootTime $Current"
+    $TriesSoFar=0
+    Get-Date
+    # tries limits how long we wait till proceeding to the next stage...
+    while ( ($TriesSoFar -LT $Tries) -or ($Stored -NE $Current) ) {
         Start-Sleep 1
+        $TriesSoFar = $TriesSoFar + 1
+        Write-Host "Waiting for Calico initialisation to finish...StoredLastBootTime $Stored, CurrentLastBootTime $Current"
+    	Write-Host "Trial: $TriesSoFar, out of $Tries..."
+        Get-Date
+        Write-Host "This will complete once the node-agent writes the registry key."
 
         $Stored=Get-StoredLastBootTime
         $Current=Get-LastBootTime
     }
+    Get-Date
     Write-Host "Calico initialisation finished."
 }
 

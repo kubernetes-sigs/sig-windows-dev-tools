@@ -14,7 +14,7 @@
 
 path ?= kubernetes
 
-all: 0-fetch-k8s 1-build-binaries 2-vagrant-up
+all: 0-fetch-k8s 1-build-binaries 2-vagrant-up 3-smoke-test
 
 0: 0-fetch-k8s
 1: 1-build-binaries
@@ -30,7 +30,15 @@ all: 0-fetch-k8s 1-build-binaries 2-vagrant-up
 
 2-vagrant-up:
 	vagrant plugin install vagrant-vbguest
-	vagrant destroy -f && vagrant up
+	vagrant destroy -f 
+	rm provisioned || echo "already clean"
+	vagrant up || touch provisioned && vagrant provision winw1
+
+3-smoke-test:
+	vagrant ssh controlplane -c "kubectl scale deployment windows-server-iis --replicas 0"
+	vagrant ssh controlplane -c "kubectl scale deployment windows-server-iis --replicas 1"
+	vagrant ssh controlplane -c "kubectl get pods"
+	
 
 # TODO
 #3-e2e-test:

@@ -72,7 +72,11 @@ Write-Host "Starting Calico..."
 Write-Host "This may take several seconds if the vSwitch needs to be created."
 
 Start-Service CalicoNode
-Wait-ForCalicoInit
+
+Write-Host "This might fail, maybe because of the fact that it creates an HNS network"
+
+Write-Host "Starting the wait loop to launch felix in the background..."
+Wait-ForCalicoInit(120)
 Start-Service CalicoFelix
 
 if ($env:CALICO_NETWORKING_BACKEND -EQ "windows-bgp")
@@ -82,8 +86,8 @@ if ($env:CALICO_NETWORKING_BACKEND -EQ "windows-bgp")
 
 while ((Get-Service | where Name -Like 'Calico*' | where Status -NE Running) -NE $null) {
     Write-Host "Waiting for the Calico services to be running..."
-    Start-Sleep 1
+    Start-Sleep -s 1
 }
 
-Write-Host "Done, the Calico services are running:"
-Get-Service | where Name -Like 'Calico*'
+
+Write-Host "All set ! your calico cluster should be up shortly !"
