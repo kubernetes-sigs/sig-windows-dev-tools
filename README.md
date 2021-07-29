@@ -111,6 +111,8 @@ To run a *command* on the Windows boxes without actually using the UI, you can u
 
 ```
 vagrant winrm winw1 --shell=powershell --command="ls"
+# Note for notes on how to use powershell to debug stuff, check out
+# https://github.com/vmware-tanzu/tgik/blob/master/episodes/144/README.md
 ```
 
 ## Where we derived these recipes from 
