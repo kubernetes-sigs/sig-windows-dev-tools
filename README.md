@@ -44,13 +44,20 @@ For the happy path, just:
 ```
 vagrant plugin install vagrant-reload winrm winrm-elevated
 ```
-2) Modify CPU/memory in the variables.yml file. We recommend four cores 8G+ for your Windows node if you can spare it, and two cores 8G for your Linux node as well. 
+2) Modify CPU/memory in the `sync/shared/variables.yaml` file (this path can be overwride in the `VAGRANT_VARIABLES` environment variable ). We recommend four cores and 8G+ of RAM for your Windows node if you can spare it, and two cores and 8G of RAM for your Linux node as well, these are the correspondent parameters:
+
+```
+linux_ram: 8192
+linux_cpus: 2
+windows_ram: 8192
+windows_cpus: 4
+```
  
 ## 2) Run it!
 
-There are two use cases for these Windows K8s dev environments: Quick testing, and testing K8s from source.
+There are two use cases for these Windows K8s dev environments: testing K8s from source and quick testing.
 
-## 3) Testing from source? make all
+## 3.1) Testing K8s from source? make all
 
 To test from source, run `vagrant destroy --force ; make all`.  This will
 - destroy your existing dev environment 
@@ -60,7 +67,7 @@ To test from source, run `vagrant destroy --force ; make all`.  This will
 - start up the Linux and Windows VMs
 - ... TODO ~ build Linux components from source as well ...
 
-### Quick testing: Vagrant up
+### 3.2) Quick testing: Vagrant up
 
 ```
 # 1) First run this, bc Vagrant needs to do some reload of machines
@@ -73,15 +80,12 @@ vagrant up
 AND THAT'S IT! Your machines should come up in a few minutes...
 
 ## IMPORTANT
+
 Do not log into the VMs until the provisioning is done. That is especially true for Windows because it will prevent the reboots.
 
 ## Other notes 
 
-If you still have an old instance of these VMs running for the same dir:
-```
-vagrant destroy -f && vagrant up
-```
-after everything is done (can take 10 min+), ssh' into the Linux VM:
+After everything is done (can take 10 min+), ssh' into the Linux VM:
 ```
 vagrant ssh controlplane
 ```
@@ -89,7 +93,7 @@ and get an overview of the nodes:
 ```
 kubectl get nodes
 ```
-The Windows node might stay 'NotReady' for a while, because it takes some time to download the Flannel image.
+The Windows node might stay 'NotReady' for a while, because it takes some time to download the CNI image.
 ```
 vagrant@controlplane:~$ kubectl get nodes
 NAME     STATUS     ROLES                  AGE    VERSION
@@ -103,6 +107,13 @@ controlplane    Ready    control-plane,controlplane     16m     v1.20.4
 winw1           Ready    <none>                         9m11s   v1.20.4
 ```
 
+## Clean up
+
+If you still have an old instance of these VMs running for the same dir:
+```
+vagrant destroy -f && vagrant up
+```
+
 ## Accessing the Windows box
 
 You'll obviously want to run commands on the Windows box. You can do this by noting the IP address during `vagrant provision` and running *any* RDP client (vagrant/vagrant for username/password).
@@ -111,6 +122,12 @@ To run a *command* on the Windows boxes without actually using the UI, you can u
 
 ```
 vagrant winrm winw1 --shell=powershell --command="ls"
+```
+
+Another possibility is to connect via SSH in the windows machine, user and password are *vagrant/vagrant* as well:
+
+```
+vagrant ssh winw1
 ```
 
 ## Where we derived these recipes from 
