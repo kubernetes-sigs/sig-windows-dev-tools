@@ -83,8 +83,9 @@ Vagrant.configure(2) do |config|
       winw1.vm.provision "shell", path: "sync/windows/containerd2.ps1", privileged: true #, run: "never"
       winw1.vm.provision "shell", path: "forked/PrepareNode.ps1", privileged: true, args: "-KubernetesVersion #{kubernetes_compatibility} -ContainerRuntime containerD #{overwrite_windows_bins }" #, run: "never"
       winw1.vm.provision "shell", path: "sync/shared/kubejoin.ps1", privileged: true #, run: "never"
+      winw1.vm.provision "shell", path: "sync/windows/ssh.ps1", privileged: true #, run: "never"
     else
-      # TODO shoudl we pass KuberneteVersion to calico agent exe? and also service cidr if needed?
+      # TODO should we pass KuberneteVersion to calico agent exe? and also service cidr if needed?
       if cni == "calico" then
         if not File.file?("cni") then
           # installs both felix and node

@@ -105,8 +105,14 @@ winw1           Ready    <none>                         9m11s   v1.20.4
 
 ## Accessing the Windows box
 
-You'll obviously want to run commands on the Windows box. You can do this by noting the IP address during `vagrant provision` and running *any* RDP client (vagrant/vagrant for username/password).
+You'll obviously want to run commands on the Windows box. The easiest way is to SSH into the Windows machine and use powershell from there:
 
+```
+vagrant ssh winw1
+C:\ > powershell
+```
+
+Optionally, you can do this by noting the IP address during `vagrant provision` and running *any* RDP client (vagrant/vagrant for username/password, works for SSH).
 To run a *command* on the Windows boxes without actually using the UI, you can use `winrm`, which is integrated into Vagrant. For example, you can run:
 
 ```
