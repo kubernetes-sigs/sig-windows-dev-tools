@@ -75,7 +75,10 @@ Vagrant.configure(2) do |config|
       vb.gui = false
     end
 
-    if not File.file?("provisioned") then
+    #... Just testing if this reboot stabilizes windows...
+    winw1.vm.provision :reload
+
+    if not File.file?("joined") then
       winw1.vm.provision "shell", path: "sync/windows/hyperv.ps1", privileged: true
       winw1.vm.provision :reload
       winw1.vm.provision "shell", path: "sync/windows/containerd1.ps1", privileged: true #, run: "never"
@@ -86,12 +89,12 @@ Vagrant.configure(2) do |config|
     end
     # TODO shoudl we pass KuberneteVersion to calico agent exe? and also service cidr if needed?
     if cni == "calico" then
-      if not File.file?("provisioned") then
+      if not File.file?("cni") then
         # installs both felix and node
         winw1.vm.provision "shell", path: "forked/0-calico.ps1", privileged: true #, run: "always"
         winw1.vm.provision :reload
         winw1.vm.provision "shell", path: "forked/1-calico.ps1", privileged: true #, run: "always"
-      # only run final provisioning step
+      # only run final provisioning step if 'provisioned' is there...
       else
         winw1.vm.provision "shell", path: "forked/2-calico.ps1", privileged: true #, run: "always"
       end

@@ -21,7 +21,9 @@ $ProgressPreference = 'SilentlyContinue'
 Write-Output "### Installing Nuget"
 Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201  -Force
 
-Write-Output "### Using dism: enabling Hyper-V"
+Write-Output "### Using dism: enabling Hyper-V, so that we can use the HNS APIs"
+Write-Output "### Using dism: SHOULD WE BE DISABLING THE HYPERVISOR ???"
+
 dism -online -enable-feature -featurename:Microsoft-Hyper-V -all -NoRestart
 
 Write-Output "### Installing Containers"

@@ -47,8 +47,6 @@ $env:CALICO_DATASTORE_TYPE = "kubernetes"
 
 Test-CalicoConfiguration
 
-Install-NodeService
-Install-FelixService
 if ($env:CALICO_NETWORKING_BACKEND -EQ "vxlan")
 {
     if (($env:VXLAN_VNI -as [int]) -lt 4096)
@@ -68,16 +66,24 @@ else
     Write-Host "Using third party CNI plugin."
 }
 
-Write-Host "Starting Calico..."
-Write-Host "This may take several seconds if the vSwitch needs to be created."
+# This runs the FIRST time you install calico, it can sever a winrm connection though... so we
+# might run this script twice
+If ((Get-Service "CalicoNode").Status -ne 'Running') {
+    Write-Host "Starting Calico..."
+    Write-Host "This may take several seconds if the vSwitch needs to be created."
+    Start-Service CalicoNode
+    Write-Host "This might fail, maybe because of the fact that it creates an HNS network"
+    Write-Host "Starting the wait loop to launch felix in the background..."
+    Write-Host "Will exit immediately (after 2 tries), plan to re-run this script afterwards to do felix installation"
+    Wait-ForCalicoInit(2)
+    exit 0
+}
 
-Start-Service CalicoNode
-
-Write-Host "This might fail, maybe because of the fact that it creates an HNS network"
-
-Write-Host "Starting the wait loop to launch felix in the background..."
-Wait-ForCalicoInit(120)
-Start-Service CalicoFelix
+# This is meant to run the SECOND time you install calico
+If ((Get-Service "CalicoFelix").Status -ne 'Running') {
+    Write-Output "Calico felix not running, installing it..."
+    Start-Service CalicoFelix
+}
 
 if ($env:CALICO_NETWORKING_BACKEND -EQ "windows-bgp")
 {
@@ -88,6 +94,5 @@ while ((Get-Service | where Name -Like 'Calico*' | where Status -NE Running) -NE
     Write-Host "Waiting for the Calico services to be running..."
     Start-Sleep -s 1
 }
-
 
 Write-Host "All set ! your calico cluster should be up shortly !"

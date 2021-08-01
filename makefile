@@ -29,10 +29,30 @@ all: 0-fetch-k8s 1-build-binaries 2-vagrant-up 3-smoke-test
 	./build.sh $(path)
 
 2-vagrant-up:
+	echo "cleaning up semaphores..."
+	rm -f joined
+	rm -f cni
+	echo "<- done"
+
 	vagrant plugin install vagrant-vbguest
-	vagrant destroy -f 
-	rm provisioned || echo "already clean"
-	vagrant up || touch provisioned && vagrant provision winw1
+	# vagrant destroy -f
+	echo "######################################"
+	echo "######################################"
+	echo "######################################"
+	echo "######################################"
+	echo "Retry vagrant up if the first time the windows node failed"
+
+	u=0
+	j=0
+	c=0
+
+	vagrant up # try to bring up both nodes
+	echo "*********************************************"
+	vagrant status
+	echo "*********** vagrant up first run done ~~~~ ENTERING WINDOWS BRINGUP LOOP ***"
+	until `vagrant status | grep winw1 | grep -q "running"` ; do echo "uuu `date` -> join try $u " ; let "u+=1" ; vagrant up winw1 ; done
+	until [ -f joined ] ; do echo "jjj `date` -> join try $j" ; let "j+=1" ; vagrant provision winw1 && touch joined ; done
+	until [ -f cni ] ; do echo "ccc `date` -> join try $c" ; let "c+=1" ; vagrant provision winw1 && touch cni ; done
 
 3-smoke-test:
 	vagrant ssh controlplane -c "kubectl scale deployment windows-server-iis --replicas 0"
