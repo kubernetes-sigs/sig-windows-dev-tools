@@ -75,9 +75,6 @@ Vagrant.configure(2) do |config|
       vb.gui = false
     end
 
-    #... Just testing if this reboot stabilizes windows...
-    winw1.vm.provision :reload
-
     if not File.file?("joined") then
       winw1.vm.provision "shell", path: "sync/windows/hyperv.ps1", privileged: true
       winw1.vm.provision :reload
