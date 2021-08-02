@@ -46,17 +46,14 @@ all: 0-fetch-k8s 1-build-binaries 2-vagrant-up 3-smoke-test
 	j=0
 	c=0
 
-	vagrant up
+	vagrant up controlplane
 	
 	echo "*********** vagrant up first run done ~~~~ ENTERING WINDOWS BRINGUP LOOP ***"
-	until `vagrant status | grep winw1 | grep -q "running"` ; do vagrant up winw1 ; done
-	until `vagrant ssh controlplane -c "kubectl get nodes" | grep -q winw1` ; do vagrant provision winw1 ; done
-	# so the vagrantfile knows to proceed w/ CNI...
-	touch joined
+	until `vagrant status | grep winw1 | grep -q "running"` ; do ( vagrant up winw1 && touch up) || echo failed_win_up ; done
+	until `vagrant ssh controlplane -c "kubectl get nodes" | grep -q winw1` ; do ( vagrant provision winw1 && touch joined) || failed_win_join; done
+
 	# Expec tthis to happen > 1 time... since calico needs two runs.  maybe 3 if a flake?
-	vagrant provision winw1 && touch cni
-	# Reprovision in calicos situation.  TODO make sure antrea is idempotent for this step
-	vagrant provision winw1
+	until [ -f cni ] ; do ( vagrant provision winw1 && touch cni ) || echo failed_win_cni ; done 
 
 3-smoke-test:
 	vagrant ssh controlplane -c "kubectl scale deployment windows-server-iis --replicas 0"
