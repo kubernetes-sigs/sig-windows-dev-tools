@@ -96,9 +96,13 @@ Vagrant.configure(2) do |config|
           winw1.vm.provision "shell", path: "forked/2-calico.ps1", privileged: true #, run: "always"
         end
       else
-        # Experimental at the moment...
-        winw1.vm.provision "shell", path: "forked/0-antrea.ps1", privileged: true #, run: "always"
-        winw1.vm.provision "shell", path: "forked/1-antrea.ps1", privileged: true, args: "-KubernetesVersion #{kubernetes_compatibility}" #, run: "always"
+        if File.file?("cni") then
+          print("cni already done for antrea")
+        else
+          # Experimental at the moment...
+          winw1.vm.provision "shell", path: "forked/0-antrea.ps1", privileged: true #, run: "always"
+          winw1.vm.provision "shell", path: "forked/1-antrea.ps1", privileged: true, args: "-KubernetesVersion #{kubernetes_compatibility}" #, run: "always"
+        end
       end
     end
   end

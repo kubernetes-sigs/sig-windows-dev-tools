@@ -54,7 +54,9 @@ all: 0-fetch-k8s 1-build-binaries 2-vagrant-up 3-smoke-test
 	# so the vagrantfile knows to proceed w/ CNI...
 	touch joined
 	# Expec tthis to happen > 1 time... since calico needs two runs.  maybe 3 if a flake?
-	until [ -f cni ] ; do echo "ccc `date` -> join try $c" ; let "c+=1" ; vagrant provision winw1 && touch cni ; done
+	vagrant provision winw1 && touch cni
+	# Reprovision in calicos situation.  TODO make sure antrea is idempotent for this step
+	vagrant provision winw1
 
 3-smoke-test:
 	vagrant ssh controlplane -c "kubectl scale deployment windows-server-iis --replicas 0"
