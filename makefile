@@ -50,8 +50,11 @@ all: 0-fetch-k8s 1-build-binaries 2-vagrant-up 3-smoke-test
 	echo "*********************************************"
 	vagrant status
 	echo "*********** vagrant up first run done ~~~~ ENTERING WINDOWS BRINGUP LOOP ***"
-	until `vagrant status | grep winw1 | grep -q "running"` ; do echo "uuu `date` -> join try $u " ; let "u+=1" ; vagrant up winw1 ; done
-	until [ -f joined ] ; do echo "jjj `date` -> join try $j" ; let "j+=1" ; vagrant provision winw1 && touch joined ; done
+	until `vagrant status | grep winw1 | grep -q "running"` ; do vagrant up winw1 ; done
+	until `vagrant ssh controlplane -c "kubectl get nodes" | grep -q winw1` ; do vagrant provision winw1 ; done
+	# so the vagrantfile knows to proceed w/ CNI...
+	touch joined
+	# Expec tthis to happen > 1 time... since calico needs two runs.  maybe 3 if a flake?
 	until [ -f cni ] ; do echo "ccc `date` -> join try $c" ; let "c+=1" ; vagrant provision winw1 && touch cni ; done
 
 3-smoke-test:

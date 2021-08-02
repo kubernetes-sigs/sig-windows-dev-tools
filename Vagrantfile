@@ -86,22 +86,24 @@ Vagrant.configure(2) do |config|
       winw1.vm.provision "shell", path: "sync/windows/containerd2.ps1", privileged: true #, run: "never"
       winw1.vm.provision "shell", path: "forked/PrepareNode.ps1", privileged: true, args: "-KubernetesVersion #{kubernetes_compatibility} -ContainerRuntime containerD #{overwrite_windows_bins }" #, run: "never"
       winw1.vm.provision "shell", path: "sync/shared/kubejoin.ps1", privileged: true #, run: "never"
-    end
-    # TODO shoudl we pass KuberneteVersion to calico agent exe? and also service cidr if needed?
-    if cni == "calico" then
-      if not File.file?("cni") then
-        # installs both felix and node
-        winw1.vm.provision "shell", path: "forked/0-calico.ps1", privileged: true #, run: "always"
-        winw1.vm.provision :reload
-        winw1.vm.provision "shell", path: "forked/1-calico.ps1", privileged: true #, run: "always"
-      # only run final provisioning step if 'provisioned' is there...
-      else
-        winw1.vm.provision "shell", path: "forked/2-calico.ps1", privileged: true #, run: "always"
-      end
+      exit 0
     else
-      # Experimental at the moment...
-      winw1.vm.provision "shell", path: "forked/0-antrea.ps1", privileged: true #, run: "always"
-      winw1.vm.provision "shell", path: "forked/1-antrea.ps1", privileged: true, args: "-KubernetesVersion #{kubernetes_compatibility}" #, run: "always"
+      # TODO shoudl we pass KuberneteVersion to calico agent exe? and also service cidr if needed?
+      if cni == "calico" then
+        if not File.file?("cni") then
+          # installs both felix and node
+          winw1.vm.provision "shell", path: "forked/0-calico.ps1", privileged: true #, run: "always"
+          winw1.vm.provision :reload
+          winw1.vm.provision "shell", path: "forked/1-calico.ps1", privileged: true #, run: "always"
+          # only run final provisioning step if 'provisioned' is there...
+        else
+          winw1.vm.provision "shell", path: "forked/2-calico.ps1", privileged: true #, run: "always"
+        end
+      else
+        # Experimental at the moment...
+        winw1.vm.provision "shell", path: "forked/0-antrea.ps1", privileged: true #, run: "always"
+        winw1.vm.provision "shell", path: "forked/1-antrea.ps1", privileged: true, args: "-KubernetesVersion #{kubernetes_compatibility}" #, run: "always"
+      end
     end
   end
   

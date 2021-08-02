@@ -66,24 +66,43 @@ else
     Write-Host "Using third party CNI plugin."
 }
 
+Write-Output "Installing calico services (node and felix) if they don't exist..."
+
+If (Get-Service "CalicoNode" -ErrorAction SilentlyContinue) {
+} else {
+    Install-NodeService
+}
+If (Get-Service "CalicoFelix" -ErrorAction SilentlyContinue) {
+} else {
+    Install-FelixService
+}
+Write-Output "...  Done checking that all calico core services are INSTALLED... "
+
+
+Write-Output "Now checking if core calico services are running... "
+
 # This runs the FIRST time you install calico, it can sever a winrm connection though... so we
 # might run this script twice
 If ((Get-Service "CalicoNode").Status -ne 'Running') {
-    Write-Host "Starting Calico..."
-    Write-Host "This may take several seconds if the vSwitch needs to be created."
-    Start-Service CalicoNode
-    Write-Host "This might fail, maybe because of the fact that it creates an HNS network"
-    Write-Host "Starting the wait loop to launch felix in the background..."
-    Write-Host "Will exit immediately (after 2 tries), plan to re-run this script afterwards to do felix installation"
-    Wait-ForCalicoInit(2)
-    exit 0
+        Write-Host "Starting Calico..."
+        Write-Host "This may take several seconds if the vSwitch needs to be created."
+        Start-Service CalicoNode
+        Write-Host "This might fail, maybe because of the fact that it creates an HNS network"
+        Write-Host "Starting the wait loop to launch felix in the background..."
+        Write-Host "Will exit immediately (after 2 tries), plan to re-run this script afterwards to do felix installation"
+        Wait-ForCalicoInit(2)
+        exit 0
 }
+Write-Output "Calico Service Startup: 1) Done checking if core calico NODE service is running... "
+
+
 
 # This is meant to run the SECOND time you install calico
 If ((Get-Service "CalicoFelix").Status -ne 'Running') {
     Write-Output "Calico felix not running, installing it..."
     Start-Service CalicoFelix
 }
+Write-Output "Calico Service Startup 2) Done checking if core calico NODE service is running... "
 
 if ($env:CALICO_NETWORKING_BACKEND -EQ "windows-bgp")
 {
