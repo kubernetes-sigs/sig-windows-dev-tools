@@ -46,9 +46,8 @@ all: 0-fetch-k8s 1-build-binaries 2-vagrant-up 3-smoke-test
 	j=0
 	c=0
 
-	vagrant up # try to bring up both nodes
-	echo "*********************************************"
-	vagrant status
+	vagrant up
+	
 	echo "*********** vagrant up first run done ~~~~ ENTERING WINDOWS BRINGUP LOOP ***"
 	until `vagrant status | grep winw1 | grep -q "running"` ; do vagrant up winw1 ; done
 	until `vagrant ssh controlplane -c "kubectl get nodes" | grep -q winw1` ; do vagrant provision winw1 ; done
