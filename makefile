@@ -30,6 +30,7 @@ all: 0-fetch-k8s 1-build-binaries 2-vagrant-up 3-smoke-test
 
 2-vagrant-up:
 	echo "cleaning up semaphores..."
+	rm -f up
 	rm -f joined
 	rm -f cni
 	echo "<- done"
@@ -49,11 +50,13 @@ all: 0-fetch-k8s 1-build-binaries 2-vagrant-up 3-smoke-test
 	vagrant up controlplane
 	
 	echo "*********** vagrant up first run done ~~~~ ENTERING WINDOWS BRINGUP LOOP ***"
-	until `vagrant status | grep winw1 | grep -q "running"` ; do ( vagrant up winw1 && touch up) || echo failed_win_up ; done
-	until `vagrant ssh controlplane -c "kubectl get nodes" | grep -q winw1` ; do ( vagrant provision winw1 && touch joined) || failed_win_join; done
-
+	until `vagrant status | grep winw1 | grep -q "running"` ; do vagrant up winw1 || echo failed_win_up ; done
+	touch up
+	until `vagrant ssh controlplane -c "kubectl get nodes" | grep -q winw1` ; do vagrant provision winw1 || echo failed_win_join; done
+	touch joined
 	# Expec tthis to happen > 1 time... since calico needs two runs.  maybe 3 if a flake?
-	until [ -f cni ] ; do ( vagrant provision winw1 && touch cni ) || echo failed_win_cni ; done 
+	vagrant provision winw1 || echo "seconadary provision....." ; vagrant provision winw1
+	touch cni
 
 3-smoke-test:
 	vagrant ssh controlplane -c "kubectl scale deployment windows-server-iis --replicas 0"
