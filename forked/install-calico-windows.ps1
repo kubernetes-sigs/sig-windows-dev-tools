@@ -418,7 +418,7 @@ if ($platform -EQ "bare-metal") {
     GetCalicoKubeConfig -CalicoNamespace $calicoNs -KubeConfigPath C:/etc/kubernetes/kubelet.conf
     $Backend = GetBackendType -CalicoNamespace $calicoNs 
 
-    Write-Host "Backend networking is $Backend"
+    Write-Host "bare-metal Backend networking is $Backend"
     if ($Backend -EQ "bgp") {
         SetConfigParameters -OldString 'CALICO_NETWORKING_BACKEND="vxlan"' -NewString 'CALICO_NETWORKING_BACKEND="windows-bgp"'
     }

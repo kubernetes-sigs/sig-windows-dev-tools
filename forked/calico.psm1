@@ -362,7 +362,7 @@ function Wait-ForCalicoInit($Tries)
     $TriesSoFar=0
     Get-Date
     # tries limits how long we wait till proceeding to the next stage...
-    while ( ($TriesSoFar -LT $Tries) -or ($Stored -NE $Current) ) {
+    while ( ($TriesSoFar -LT $Tries) ) {
         Start-Sleep 1
         $TriesSoFar = $TriesSoFar + 1
         Write-Host "Waiting for Calico initialisation to finish...StoredLastBootTime $Stored, CurrentLastBootTime $Current"
