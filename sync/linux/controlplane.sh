@@ -71,15 +71,13 @@ EOF
 # Apply sysctl params without reboot
 sudo sysctl --system
 
-#Install Docker and Kubernetes,
+# Install Docker and Kubernetes binaries
 sudo apt-get install -y docker-ce=5:20.10.5~3-0~ubuntu-$(lsb_release -cs) \
 kubelet=${k8s_linux_kubelet_deb}-00 \
 kubeadm=${k8s_linux_kubelet_deb}-00 \
 kubectl=${k8s_linux_kubelet_deb}-00
 
 sudo apt-mark hold docker-ce kubelet kubeadm kubectl
-
-
 if $overwrite_linux_bins ; then
   echo "overwriting binaries ..."
   for BIN in kubeadm kubectl kubelet
@@ -129,12 +127,24 @@ sudo docker tag k8s.gcr.io/etcd:3.4.13-0 gcr.io/k8s-staging-ci-images/etcd:3.4.1
 sudo docker tag k8s.gcr.io/pause:3.4.1 gcr.io/k8s-staging-ci-images/pause:3.4.1
 sudo docker tag k8s.gcr.io/coredns/coredns:v1.8.0 gcr.io/k8s-staging-ci-images/coredns/coredns:v1.8.0
 
+cat << EOF > /var/sync/shared/kubeadm.yaml
+apiVersion: kubeadm.k8s.io/v1beta2
+kind: InitConfiguration
+localAPIEndpoint:
+  advertiseAddress: 10.20.30.10
+nodeRegistration:
+  kubeletExtraArgs:
+    node-ip: 10.20.30.10
+---
+apiVersion: kubeadm.k8s.io/v1beta2
+kind: ClusterConfiguration
+kubernetesVersion: $k8s_linux_apiserver
+imageRepository: $k8s_linux_registry
+networking:
+  podSubnet: "100.244.0.0/16"
+EOF
 
-sudo kubeadm init --apiserver-advertise-address=10.20.30.10 \
---pod-network-cidr=100.244.0.0/16 \
---image-repository=$k8s_version_linux_registry \
---kubernetes-version=$k8s_linux_apiserver \
---v=6
+sudo kubeadm init --config=/var/sync/shared/kubeadm.yaml --v=6
 
 #to start the cluster with the current user:
 mkdir -p $HOME/.kube
