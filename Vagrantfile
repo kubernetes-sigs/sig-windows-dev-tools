@@ -95,6 +95,7 @@ Vagrant.configure(2) do |config|
           # only run final provisioning step if 'provisioned' is there...
         else
           winw1.vm.provision "shell", path: "forked/2-calico.ps1", privileged: true #, run: "always"
+          winw1.vm.provision "shell", path: "forked/3-calico.ps1", privileged: true #, run: "always"
         end
       else
         if File.file?("cni") then
