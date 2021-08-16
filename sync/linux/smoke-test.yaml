@@ -39,6 +39,15 @@ spec:
             labels:
                 app: nginx
         spec:
+            tolerations:
+            - effect: NoSchedule
+              key: os
+              operator: Equal
+              value: windows
+            - effect: NoSchedule
+              key: os
+              operator: Equal
+              value: Windows
             containers:
             - name: nginx
               image: nginx:1.7.9
