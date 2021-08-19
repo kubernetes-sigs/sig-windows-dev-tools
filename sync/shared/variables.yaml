@@ -6,6 +6,7 @@ overwrite_windows_bins: "false"
 
 kubelet_path:  "./sync/windows/bin/kubelet.exe"
 kubeproxy_path:  "./sync/windows/bin/kube-proxy.exe"
+windows_node_ip: "10.20.30.11"
 
 # LINUX KUBELET VERSION
 # LINUX KUBEADM VERSION
@@ -14,6 +15,7 @@ kubeproxy_path:  "./sync/windows/bin/kube-proxy.exe"
 k8s_linux_registry: "gcr.io/k8s-staging-ci-images"
 k8s_linux_kubelet_deb:  "1.21.0"
 k8s_linux_apiserver: "ci/v1.22.0-alpha.3.31+a3abd06ad53b2f"
+k8s_linux_kubelet_nodeip: "10.20.30.10"
 
 # WINDOWS KUBELET VERSION
 # This is the -KubernetesVersion sent to

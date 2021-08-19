@@ -27,6 +27,7 @@ if (-not (Test-Path -Path ./install-calico.ps1 -PathType Leaf)) {
     
     cp C:/forked/install-calico.ps1 ./
     cp C:/forked/calico.psm1 ./libs/calico/
+    cp C:/forked/node-service.ps1 ./node/node-service.ps1
     cp C:/forked/config.ps1 ./
     Write-Output "................ DONE Copying forked calico files"
 

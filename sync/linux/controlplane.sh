@@ -17,11 +17,11 @@ set -e
 
 # TODO Add these as command line options
 
-echo "ARGS: $1 $2 $3 $4"
-if [[ "$1" == "" || "$2" == "" || "$3" == "" || "$4" == "" ]] ; then
+echo "ARGS: $1 $2 $3 $4 $5"
+if [[ "$1" == "" || "$2" == "" || "$3" == "" || "$4" == "" || "$5" == "" ]] ; then
   cat << EOF
     Missing args.
-    You need to send overwrite_linux_bins, k8s_linux_registry, k8s_linux_kubelet_deb, k8s_linux_apiserver, i.e. something like...
+    You need to send overwrite_linux_bins, k8s_linux_registry, k8s_linux_kubelet_deb, k8s_linux_apiserver, k8s_kubelet_nodeip i.e. something like...
     ./controlplane.sh false gcr.io/k8s-staging-ci-images 1.21.0 v1.22.0-alpha.3.31+a3abd06ad53b2f"}
     Normally these are in your variables.yml, and piped in by Vagrant.
     So, check that you didn't break the Vagrantfile :)
@@ -35,6 +35,7 @@ overwrite_linux_bins=${1}
 k8s_linux_registry=${2}
 k8s_linux_kubelet_deb=${3}
 k8s_linux_apiserver=${4}
+k8s_kubelet_node_ip=${5}
 
 echo "Using $kubernetes_version as the Kubernetes version"
 echo "Overwriting bins is set to '$overwrite_bins'"
@@ -131,10 +132,10 @@ cat << EOF > /var/sync/shared/kubeadm.yaml
 apiVersion: kubeadm.k8s.io/v1beta2
 kind: InitConfiguration
 localAPIEndpoint:
-  advertiseAddress: 10.20.30.10
+  advertiseAddress: $k8s_kubelet_node_ip
 nodeRegistration:
   kubeletExtraArgs:
-    node-ip: 10.20.30.10
+    node-ip: $k8s_kubelet_node_ip
 ---
 apiVersion: kubeadm.k8s.io/v1beta2
 kind: ClusterConfiguration
