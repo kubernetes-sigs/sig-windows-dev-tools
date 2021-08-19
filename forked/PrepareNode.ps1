@@ -47,12 +47,14 @@ Param(
     [parameter(HelpMessage="Allows to overwrite bins with self-built ones")]
     [switch] $OverwriteBins,
 
+    [parameter(HelpMessage="Kubelet Node IP")]
+    [string] $WindowsNodeIP = "10.20.30.11",
+
     [parameter(HelpMessage="kubelet source build path")]
     [string] $SelfBuiltKubeletSource = "C:/sync/windows/bin/kubelet.exe",
 
     [parameter(HelpMessage="kube-proxy source build path")]
-    [string] $SelfBuiltKubeProxySource = "C:/sync/windows/bin/kube-proxy.exe"
-
+    [string] $SelfBuiltKubeProxySource = "C:/sync/windows/bin/kube-proxy.exe" 
 )
 $ErrorActionPreference = 'Stop'
 Write-Output "Overwriting bins is set to '$OverwriteBins'"
@@ -190,7 +192,7 @@ if ($global:containerRuntime -eq "Docker") {
 }
 
 # TODO Add dynamic node ip here !
-$cmd = "C:\k\kubelet.exe $global:KubeletArgs --cert-dir=$env:SYSTEMDRIVE\var\lib\kubelet\pki --config=/var/lib/kubelet/config.yaml --bootstrap-kubeconfig=/etc/kubernetes/bootstrap-kubelet.conf --kubeconfig=/etc/kubernetes/kubelet.conf --hostname-override=$(hostname) --pod-infra-container-image=`"mcr.microsoft.com/oss/kubernetes/pause:1.4.1`" --enable-debugging-handlers --cgroups-per-qos=false --enforce-node-allocatable=`"`" --network-plugin=cni --resolv-conf=`"`" --log-dir=/var/log/kubelet --logtostderr=false --image-pull-progress-deadline=20m --container-runtime=remote --container-runtime-endpoint=npipe:////.//pipe//containerd-containerd"
+$cmd = "C:\k\kubelet.exe $global:KubeletArgs --cert-dir=$env:SYSTEMDRIVE\var\lib\kubelet\pki --config=/var/lib/kubelet/config.yaml --bootstrap-kubeconfig=/etc/kubernetes/bootstrap-kubelet.conf --kubeconfig=/etc/kubernetes/kubelet.conf --hostname-override=$(hostname) --pod-infra-container-image=`"mcr.microsoft.com/oss/kubernetes/pause:1.4.1`" --enable-debugging-handlers --cgroups-per-qos=false --enforce-node-allocatable=`"`" --network-plugin=cni --resolv-conf=`"`" --log-dir=/var/log/kubelet --logtostderr=false --image-pull-progress-deadline=20m --container-runtime=remote --container-runtime-endpoint=npipe:////.//pipe//containerd-containerd --node-ip=$WindowsNodeIP"
 
 Invoke-Expression $cmd'
 $StartKubeletFileContent = $StartKubeletFileContent -replace "{{CONTAINER_RUNTIME}}", "`"$ContainerRuntime`""
