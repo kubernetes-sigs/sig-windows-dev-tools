@@ -45,13 +45,15 @@ foreach ($e in $avexceptions) {
 # Get HostIP and set in kubeadm-flags.env
 [Environment]::SetEnvironmentVariable("NODE_NAME", (hostname).ToLower())
 $env:HostIP = (
-  Get-NetIPConfiguration |
-  Where-Object {
-      $_.IPv4DefaultGateway -ne $null -and $_.NetAdapter.Status -ne "Disconnected"
-  }
+    Get-NetIPConfiguration |
+    Where-Object {
+        $_.InterfaceAlias -eq "Ethernet 2" -and $_.NetAdapter.Status -ne "Disconnected"
+    }
 ).IPv4Address.IPAddress
+
 $file = 'C:\var\lib\kubelet\kubeadm-flags.env'
 $newstr ="--node-ip=" + $env:HostIP
+
 $raw = Get-Content -Path $file -TotalCount 1
 $raw = $raw -replace ".$"
 $new = "$($raw) $($newstr)`""
@@ -121,6 +123,7 @@ $nssm = (Get-Command nssm).Source
 & nssm install antrea-agent "C:/k/antrea/bin/antrea-agent.exe" "--config=C:/k/antrea/etc/antrea-agent.conf --logtostderr=false --log_dir=c:/var/log/antrea --alsologtostderr --log_file_max_size=100 --log_file_max_num=4"
 & nssm set antrea-agent DependOnService kube-proxy ovs-vswitchd
 & nssm set antrea-agent Start SERVICE_DELAYED_AUTO_START
+
 # Start Services
 start-service kubelet
 start-service kube-proxy

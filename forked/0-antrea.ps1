@@ -33,7 +33,7 @@ $antreaInstallationFiles = @{
       "https://downloads.antrea.io/artifacts/v1.3/antrea-agent-windows-x86_64.exe" = "C:/k/antrea/bin/antrea-agent.exe"
       "https://github.com/containernetworking/plugins/releases/download/v0.9.1/cni-plugins-windows-amd64-v0.9.1.tgz" = "C:/k/antrea/bin/cni-plugins-windows-amd64-v0.9.1.tgz"
       "https://dl.k8s.io/release/v1.21.0/bin/windows/amd64/kubectl.exe" = "C:/k/kubectl.exe"
-      "https://raw.githubusercontent.com/antrea-io/antrea/main/build/yamls/windows/base/conf/antrea-agent.conf" = "C:/k/antrea/etc/antrea-agent.conf"
+      "https://gist.githubusercontent.com/knabben/5dec7c059916d3b487aeb2efd3a689b6/raw/51d2120cb68f22681dd07263813afda563402aa1/gistfile1.yaml" = "C:/k/antrea/etc/antrea-agent.conf"
 }
 
 foreach ($theURL in $antreaInstallationFiles.keys) {
