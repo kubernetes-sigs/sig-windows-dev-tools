@@ -136,6 +136,7 @@ localAPIEndpoint:
 nodeRegistration:
   kubeletExtraArgs:
     node-ip: $k8s_kubelet_node_ip
+    cgroup-driver: cgroupfs
 ---
 apiVersion: kubeadm.k8s.io/v1beta2
 kind: ClusterConfiguration
