@@ -60,14 +60,16 @@ To test from source, run `vagrant destroy --force ; make all`.  This will
 - start up the Linux and Windows VMs
 - ... TODO ~ build Linux components from source as well ...
 
-### Quick testing: Vagrant up
+### Quick testing: make 2-vagrant-up
+
+If you already have run `make` before you may not need to rebuild the binaries and can just try and bring the cluster up.
 
 ```
-# 1) First run this, bc Vagrant needs to do some reload of machines
+# 1) Ensure you have installed this plugin because Vagrant needs to do some reload of machines.
 vagrant plugin install vagrant-reload 
 
 # 2) Bring up your entire Windows cluster! 
-vagrant up
+make 2-vagrant-up
 ```
 
 AND THAT'S IT! Your machines should come up in a few minutes...
