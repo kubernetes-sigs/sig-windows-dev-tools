@@ -6,6 +6,17 @@ the machine here is intend to be used into the `sig-windows-dev-tools` repositor
 
 Only the VirtualBox hypervisor is fully tested, but OVA images building can be made as well.
 
+## Running
+
+After getting the ISO from MSDN inform it via the `VBOX_WINDOWS_ISO` environment variable.
+
+```
+cd image-builder
+VBOX_WINDOWS_ISO=file:/tmp/windows-2019.iso ./image-builder.sh
+```
+
+Use `DEBUG=1` to enable verbosity in the build.
+
 ## What is included in the node
 
 The official `image-builder` for Windows nodes already includes a few Kubernetes artifacts, plus
@@ -29,6 +40,8 @@ winw1.vm.provision "shell", path: "sync/shared/kubejoin.ps1", privileged: true
 ```
 
 ## How image-builder creates the image
+
+![Image builder Diagram](images/diagram.jpg "Image-builder diagram")
 
 The intent of this section is to describe with more details how image-builder runs
 and generates the final Windows node. Since the steps here a focused on Vagrant boxes,
@@ -308,7 +321,7 @@ Containerd vs Docker
 - Add kubernetes folder to path
 - Create kubelet directory structure
 
-* C:\var\log\kubelet)
+* C:\var\log\kubelet
 * C:\var\lib\kubelet\etc\kubernetes
 * C:\var\lib\kubelet\etc\kubernetes\manifests
 * C:\etc\kubernetes\pki
@@ -346,6 +359,10 @@ hack/DebugWindowsNode.ps1
 this runs as the last provision step.
 
 ## Modifying the box with custom steps
+
+```
+WARNING: Experiment in progress
+```
 
 Installing Hyperv, ssh, containerd and Kubernetes binaries are already being contemplated 
 in the Ansible tasks installations.
