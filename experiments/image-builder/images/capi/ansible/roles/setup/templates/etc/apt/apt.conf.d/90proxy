@@ -1,8 +1,0 @@
-Acquire {
-{% if http_proxy %}
-    http::Proxy "{{ http_proxy }}";
-{% endif %}
-{% if https_proxy %}
-    https::Proxy "{{ https_proxy }}";
-{% endif %}
-}

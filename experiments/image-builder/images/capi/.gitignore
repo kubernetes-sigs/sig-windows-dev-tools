@@ -1,8 +1,0 @@
-/guestinfo-datasource.json
-/capv-image-uploader.json
-/packer_cache/
-/output-*/
-/output/
-/.bin/
-/.local/bin/
-manifest.json
