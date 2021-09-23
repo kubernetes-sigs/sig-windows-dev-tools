@@ -1,0 +1,75 @@
+# Copyright 2018 The Kubernetes Authors.
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+
+# http://www.apache.org/licenses/LICENSE-2.0
+
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+---
+common_rpms:
+- audit
+- ca-certificates
+- conntrack-tools
+- chrony
+- curl
+- ebtables
+- jq
+- open-vm-tools
+- python3-pip
+- python-netifaces
+- python-requests
+- socat
+- sysstat
+- yum-utils
+
+common_debs:
+- auditd
+- apt-transport-https
+- conntrack
+- chrony
+- curl
+- ebtables
+- jq
+- gnupg
+- libnetfilter-acct1
+- libnetfilter-cttimeout1
+- libnetfilter-log1
+- linux-cloud-tools-virtual
+- linux-tools-virtual
+- open-vm-tools
+- python3-distutils
+- python3-netifaces
+- python3-pip
+- socat
+
+common_photon_rpms:
+- audit
+- conntrack-tools
+- chrony
+- distrib-compat
+- ebtables
+- jq
+- net-tools
+- openssl-c_rehash
+- open-vm-tools
+- python-netifaces
+- python3-pip
+- python-requests
+- rng-tools
+- socat
+- tar
+- unzip
+
+#photon does not have backward compatibility for legacy distro behavior for sysctl.conf by default
+#as it uses systemd-sysctl. set this var so we can use for sysctl conf file value.
+sysctl_conf_file: "{{ '/etc/sysctl.d/99-sysctl.conf' if ansible_os_family == 'VMware Photon OS' else '/etc/sysctl.conf' }}"
+
+pause_image: "k8s.gcr.io/pause:3.4.1"
+containerd_additional_settings: null
+leak_local_mdns_to_dns: false

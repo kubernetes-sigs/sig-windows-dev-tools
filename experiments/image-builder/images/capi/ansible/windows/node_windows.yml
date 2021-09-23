@@ -1,0 +1,91 @@
+# Copyright 2020 The Kubernetes Authors.
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+
+# http://www.apache.org/licenses/LICENSE-2.0
+
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+---
+- hosts: all
+
+  tasks:
+    - name: Check if cloudbase-init url is set
+      set_fact:
+        install_cloudbase_init: '{{ true if (cloudbase_init_url is defined) and (cloudbase_init_url|length > 0) else false }}'
+    - name: Check if wins url is set
+      set_fact:
+        use_wins: '{{ true if (wins_url is defined) and (wins_url|length > 0) else false }}'  
+
+    # https://docs.ansible.com/ansible/latest/user_guide/windows_performance.html
+    - name: Optimise powershell
+      win_shell: |
+        function Optimize-PowershellAssemblies {
+          # NGEN powershell assembly, improves startup time of powershell by 10x
+          $old_path = $env:path
+          try {
+            $env:path = [Runtime.InteropServices.RuntimeEnvironment]::GetRuntimeDirectory()
+            [AppDomain]::CurrentDomain.GetAssemblies() | % {
+              if (! $_.location) {continue}
+              $Name = Split-Path $_.location -leaf
+              if ($Name.startswith("Microsoft.PowerShell.")) {
+                Write-Progress -Activity "Native Image Installation" -Status "$name"
+                ngen install $_.location | % {"`t$_"}
+              }
+            }
+          } finally {
+            $env:path = $old_path
+          }
+        }
+        Optimize-PowershellAssemblies
+      become: yes
+      become_method: runas
+      become_user: SYSTEM
+
+    - name: Get Install Drive
+      win_shell: $env:SYSTEMDRIVE
+      register: systemdrive
+
+    - name: Get Program Files Directory
+      win_shell: $env:ProgramFiles
+      register: programfiles
+
+    - name: Get All Users profile path
+      win_shell: $env:ALLUSERSPROFILE.Replace("\", "\\")
+      register: alluserprofile
+      
+    - name: Get TEMP Directory
+      win_shell: $env:TEMP
+      register: tempdir
+
+    - include_role:
+        name: systemprep
+    - include_role:
+        name: cloudbase-init
+      when: install_cloudbase_init
+    - include_role:
+        name: runtimes
+    - include_role:
+        name: kubernetes
+    - include_role:
+        name: load_additional_components
+      when: load_additional_components | bool
+    - include_role:
+        name: debug
+    - include_role:
+        name: "{{ role }}"
+      loop: "{{ custom_role_names.split() }}"
+      loop_control:
+        loop_var: role
+      when: custom_role | default(false)|bool
+  
+  environment:
+    HTTP_PROXY: "{{ http_proxy | default('') }}"
+    HTTPS_PROXY: "{{ https_proxy | default('') }}"
+    NO_PROXY: "{{ no_proxy | default('') }}"

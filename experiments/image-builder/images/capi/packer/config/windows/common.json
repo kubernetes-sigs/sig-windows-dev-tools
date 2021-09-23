@@ -1,0 +1,15 @@
+{
+  "additional_debug_files": "",
+  "disable_hypervisor": "false",
+  "http_proxy": "",
+  "https_proxy": "",
+  "netbios_host_name_compatibility": "true",
+  "no_proxy": "",
+  "nssm_url": "https://azurek8scishared.blob.core.windows.net/nssm/nssm.exe",
+  "prepull": "true",
+  "runtime": "docker-ee",
+  "windows_service_manager": "nssm",
+  "windows_updates_categories": "",
+  "windows_updates_kbs": "",
+  "wins_version": "0.0.4"
+}

@@ -1,0 +1,248 @@
+{
+  "builders": [
+    {
+      "boot_wait": "{{user `boot_wait`}}",
+      "communicator": "winrm",
+      "cpus": "{{user `cpu`}}",
+      "disk_adapter_type": "scsi",
+      "disk_size": "{{user `disk_size`}}",
+      "disk_type_id": "{{user `disk_type_id`}}",
+      "floppy_dirs": [
+        "./packer/ova/windows/pvscsi"
+      ],
+      "floppy_files": [
+        "./packer/ova/windows/{{user `build_name`}}/autounattend.xml",
+        "./packer/ova/windows/disable-network-discovery.cmd",
+        "./packer/ova/windows/disable-winrm.ps1",
+        "./packer/ova/windows/enable-winrm.ps1",
+        "./packer/ova/windows/sysprep.ps1"
+      ],
+      "guest_os_type": "{{user `local_guest_os_type`}}",
+      "iso_checksum": "{{user `iso_checksum` }}",
+      "iso_urls": [
+        "{{user `os_iso_url`}}"
+      ],
+      "memory": "{{user `memory`}}",
+      "name": "vmware-iso",
+      "output_directory": "{{user `output_dir`}}",
+      "shutdown_command": "powershell A:/sysprep.ps1",
+      "shutdown_timeout": "1h",
+      "type": "vmware-iso",
+      "version": "{{user `vmx_version`}}",
+      "vm_name": "{{user `build_version`}}",
+      "vmdk_name": "{{user `build_version`}}",
+      "vmx_data": {
+        "numvcpus": "4",
+        "scsi0.virtualDev": "pvscsi"
+      },
+      "winrm_password": "S3cr3t0!",
+      "winrm_timeout": "4h",
+      "winrm_username": "Administrator"
+    },
+    {
+      "CPUs": "{{user `cpu`}}",
+      "RAM": "{{user `memory`}}",
+      "boot_wait": "{{user `boot_wait`}}",
+      "cluster": "{{user `cluster`}}",
+      "communicator": "winrm",
+      "convert_to_template": "{{user `convert_to_template`}}",
+      "datacenter": "{{user `datacenter`}}",
+      "datastore": "{{user `datastore`}}",
+      "disk_controller_type": "{{user `disk_controller_type`}}",
+      "export": {
+        "force": true,
+        "output_directory": "{{user `output_dir`}}"
+      },
+      "firmware": "bios",
+      "floppy_dirs": [
+        "./packer/ova/windows/pvscsi"
+      ],
+      "floppy_files": [
+        "./packer/ova/windows/{{user `build_name`}}/autounattend.xml",
+        "./packer/ova/windows/disable-network-discovery.cmd",
+        "./packer/ova/windows/disable-winrm.ps1",
+        "./packer/ova/windows/enable-winrm.ps1",
+        "./packer/ova/windows/install-vm-tools.cmd",
+        "./packer/ova/windows/sysprep.ps1"
+      ],
+      "folder": "{{user `folder`}}",
+      "guest_os_type": "{{user `vsphere_guest_os_type`}}",
+      "host": "{{user `host`}}",
+      "insecure_connection": "{{user `insecure_connection`}}",
+      "iso_paths": [
+        "{{user `os_iso_path`}}",
+        "{{user `vmtools_iso_path`}}"
+      ],
+      "name": "vsphere",
+      "network_adapters": [
+        {
+          "network": "{{user `network`}}",
+          "network_card": "{{user `network_card`}}"
+        }
+      ],
+      "password": "{{user `password`}}",
+      "resource_pool": "{{user `resource_pool`}}",
+      "shutdown_command": "powershell A:/sysprep.ps1",
+      "shutdown_timeout": "1h",
+      "storage": [
+        {
+          "disk_size": "{{user `disk_size`}}",
+          "disk_thin_provisioned": "{{user `disk_thin_provisioned`}}"
+        }
+      ],
+      "type": "vsphere-iso",
+      "username": "{{user `username`}}",
+      "vcenter_server": "{{user `vcenter_server`}}",
+      "vm_name": "{{user `build_version`}}",
+      "vm_version": "{{user `vmx_version`}}",
+      "winrm_insecure": true,
+      "winrm_password": "S3cr3t0!",
+      "winrm_timeout": "4h",
+      "winrm_username": "Administrator"
+    }
+  ],
+  "post-processors": [
+    {
+      "custom_data": {
+        "build_date": "{{isotime}}",
+        "build_name": "{{user `build_name`}}",
+        "build_timestamp": "{{user `build_timestamp`}}",
+        "build_type": "node",
+        "containerd_version": "{{user `containerd_version`}}",
+        "custom_role": "{{user `custom_role`}}",
+        "disable_hypervisor": "{{user `disable_hypervisor`}}",
+        "disk_size": "{{user `disk_size`}}",
+        "distro_arch": "{{user `distro_arch` }}",
+        "distro_name": "{{user `distro_name` }}",
+        "distro_version": "{{user `distro_version` }}",
+        "firmware": "{{user `firmware`}}",
+        "guest_os_type": "{{user `guest_os_type`}}",
+        "ib_version": "{{user `ib_version`}}",
+        "kubernetes_cni_semver": "{{user `kubernetes_cni_semver`}}",
+        "kubernetes_semver": "{{user `kubernetes_semver`}}",
+        "kubernetes_source_type": "{{user `kubernetes_source_type`}}",
+        "kubernetes_typed_version": "{{user `kubernetes_typed_version`}}",
+        "os_name": "{{user `os_display_name`}}",
+        "vsphere_guest_os_type": "{{user `vsphere_guest_os_type`}}"
+      },
+      "output": "{{user `output_dir`}}/packer-manifest.json",
+      "strip_path": true,
+      "type": "manifest"
+    },
+    {
+      "inline": [
+        "cd {{user `output_dir`}}",
+        "tar xf {{user `build_version`}}.ova",
+        "rm {{user `build_version`}}.ova",
+        "../../hack/image-build-ova.py --stream_vmdk --node --vmx {{user `vmx_version`}} --eula ../../hack/ovf_eula.txt --ovf_template ../../hack/ovf_template.xml  --vmdk_file {{user `build_version`}}-disk1.vmdk"
+      ],
+      "name": "esx",
+      "type": "shell-local"
+    },
+    {
+      "inline": [
+        "cd {{user `output_dir`}}",
+        "../../hack/image-build-ova.py --node --vmx {{user `vmx_version`}} --eula ../../hack/ovf_eula.txt --ovf_template ../../hack/ovf_template.xml --vmdk_file {{user `build_version`}}-disk-0.vmdk"
+      ],
+      "name": "vsphere",
+      "type": "shell-local"
+    },
+    {
+      "inline": [
+        "./hack/image-build-ova.py --stream_vmdk --node --vmx {{user `vmx_version`}} --eula ./hack/ovf_eula.txt --ovf_template ./hack/ovf_template.xml {{user `output_dir`}}",
+        "./hack/image-post-create-config.sh {{user `output_dir`}}"
+      ],
+      "name": "local",
+      "type": "shell-local"
+    }
+  ],
+  "provisioners": [
+    {
+      "extra_arguments": [
+        "-e",
+        "ansible_winrm_server_cert_validation=ignore",
+        "--extra-vars",
+        "{{user `ansible_common_vars`}}",
+        "--extra-vars",
+        "{{user `ansible_extra_vars`}}",
+        "--extra-vars",
+        "{{user `ansible_user_vars`}}"
+      ],
+      "playbook_file": "ansible/windows/node_windows.yml",
+      "type": "ansible",
+      "use_proxy": false,
+      "user": "Administrator"
+    },
+    {
+      "restart_check_command": "powershell -command \"& {if ((get-content C:\\ProgramData\\lastboot.txt) -eq (Get-WmiObject win32_operatingsystem).LastBootUpTime) {Write-Output 'Sleeping for 600 seconds to wait for reboot'; start-sleep 600} else {Write-Output 'Reboot complete'}}\"",
+      "restart_command": "powershell \"& {(Get-WmiObject win32_operatingsystem).LastBootUpTime > C:\\ProgramData\\lastboot.txt; Restart-Computer -force}\"",
+      "type": "windows-restart"
+    },
+    {
+      "arch": "{{user `goss_arch`}}",
+      "download_path": "{{user `goss_download_path`}}",
+      "format": "{{user `goss_format`}}",
+      "format_options": "{{user `goss_format_options`}}",
+      "goss_file": "{{user `goss_entry_file`}}",
+      "inspect": "{{user `goss_inspect_mode`}}",
+      "remote_folder": "{{user `goss_remote_folder`}}",
+      "remote_path": "{{user `goss_remote_path`}}",
+      "skip_install": "{{user `goss_skip_install`}}",
+      "target_os": "Windows",
+      "tests": [
+        "{{user `goss_tests_dir`}}"
+      ],
+      "type": "goss",
+      "url": "{{user `goss_url`}}",
+      "use_sudo": false,
+      "vars_env": {
+        "GOSS_MAX_CONCURRENT": "1",
+        "GOSS_USE_ALPHA": "1"
+      },
+      "vars_file": "{{user `goss_vars_file`}}",
+      "vars_inline": {
+        "OS": "{{user `distro_name` | lower}}",
+        "PROVIDER": "ova",
+        "containerd_version": "{{user `containerd_version`}}",
+        "distribution_version": "{{user `distro_version`}}",
+        "docker_ee_version": "{{user `docker_ee_version`}}",
+        "kubernetes_version": "{{user `kubernetes_semver`}}",
+        "pause_image": "{{user `pause_image`}}",
+        "runtime": "{{user `runtime`}}"
+      },
+      "version": "{{user `goss_version`}}"
+    }
+  ],
+  "variables": {
+    "additional_debug_files": null,
+    "ansible_common_vars": "",
+    "ansible_extra_vars": "",
+    "ansible_user_vars": "",
+    "build_name": null,
+    "build_timestamp": "{{timestamp}}",
+    "build_version": "{{user `build_name`}}-kube-{{user `kubernetes_semver`}}",
+    "cloudbase_init_url": "https://github.com/cloudbase/cloudbase-init/releases/download/{{user `cloudbase_init_version`}}/CloudbaseInitSetup_{{user `cloudbase_init_version` | replace_all `.` `_` }}_x64.msi",
+    "cloudbase_metadata_services": "cloudbaseinit.metadata.services.vmwareguestinfoservice.VMwareGuestInfoService",
+    "cloudbase_metadata_services_unattend": "cloudbaseinit.metadata.services.vmwareguestinfoservice.VMwareGuestInfoService",
+    "cloudbase_plugins": "cloudbaseinit.plugins.common.ephemeraldisk.EphemeralDiskPlugin, cloudbaseinit.plugins.common.mtu.MTUPlugin, cloudbaseinit.plugins.common.sethostname.SetHostNamePlugin,  cloudbaseinit.plugins.common.sshpublickeys.SetUserSSHPublicKeysPlugin, cloudbaseinit.plugins.common.userdata.UserDataPlugin, cloudbaseinit.plugins.common.localscripts.LocalScriptsPlugin, cloudbaseinit.plugins.windows.createuser.CreateUserPlugin, cloudbaseinit.plugins.windows.extendvolumes.ExtendVolumesPlugin",
+    "cloudbase_plugins_unattend": "cloudbaseinit.plugins.common.mtu.MTUPlugin",
+    "containerd_sha256": null,
+    "containerd_url": "",
+    "containerd_version": null,
+    "disable_hypervisor": null,
+    "disk_size": "81920",
+    "ib_version": "{{env `IB_VERSION`}}",
+    "kubernetes_base_url": "https://kubernetesreleases.blob.core.windows.net/kubernetes/{{user `kubernetes_semver`}}/binaries/node/windows/{{user `kubernetes_goarch`}}",
+    "kubernetes_http_package_url": "",
+    "kubernetes_typed_version": "kube-{{user `kubernetes_semver`}}",
+    "manifest_output": "manifest.json",
+    "netbios_host_name_compatibility": null,
+    "nssm_url": null,
+    "output_dir": "./output/{{user `build_version`}}",
+    "prepull": null,
+    "windows_service_manager": null,
+    "windows_updates_categories": null,
+    "windows_updates_kbs": null,
+    "wins_url": "https://github.com/rancher/wins/releases/download/v{{user `wins_version`}}/wins.exe"
+  }
+}
