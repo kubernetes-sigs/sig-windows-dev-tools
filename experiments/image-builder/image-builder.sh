@@ -43,15 +43,16 @@ VBOX_WINDOWS_ISO="${VBOX_WINDOWS_ISO:-file:/tmp/windows.iso}"
 VBOX_WINDOWS_RUNTIME="${VBOX_WINDOWS_RUNTIME:-containerd}"
 VBOX_WINDOWS_ROLES=${VBOX_WINDOWS_CUSTOM_ROLES:-cni}
 
-# Cloning the image-builder repository
-[[ ! -d ${IMAGE_BUILDER_FOLDER} ]] && git clone ${IMAGE_BUILDER_REPO} ${IMAGE_BUILDER_FOLDER}
+# Copy the propper autounattend.xml over to the cloned repository
+cp ./overlays/autounattend.xml $IMAGE_BUILDER_FOLDER/packer/vbox/windows/windows-2019/autounattend.xml  
 
+# Checkout the right repository
 pushd ${IMAGE_BUILDER_FOLDER}/images/capi
     git checkout ${IMAGE_BUILDER_BRANCH}
 
     hack/ensure-jq.sh
     build_configuration
-
+    
     # Build local virtualbox artifact
     PACKER_VAR_FILES="${tmpfile}" make build-node-vbox-local-windows-2019
 popd
