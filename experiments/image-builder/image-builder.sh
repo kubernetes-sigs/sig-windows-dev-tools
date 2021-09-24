@@ -21,6 +21,17 @@ set -o pipefail
 [[ -n ${DEBUG:-} ]] && set -o xtrace
 
 tmpfile=$(mktemp)
+OVERLAYS_FOLDER=${ROOT_OVERLAYS:-${PWD}/overlays}
+
+IMAGE_BUILDER_FOLDER="${IMAGE_BUILDER_FOLDER:-image-builder}"
+IMAGE_BUILDER_BRANCH="${IMAGE_BUILDER_BRANCH:-master}"
+IMAGE_BUILDER_REPO="${IMAGE_BUILDER_REPO:-https://github.com/kubernetes-sigs/image-builder.git}"
+CAPI_IMAGES_PATH=${IMAGE_BUILDER_FOLDER}/images/capi
+
+# Settings and building configuration file from environment variables
+VBOX_WINDOWS_ISO="${VBOX_WINDOWS_ISO:-file:/tmp/windows.iso}"
+VBOX_WINDOWS_RUNTIME="${VBOX_WINDOWS_RUNTIME:-containerd}"
+VBOX_WINDOWS_ROLES=${VBOX_WINDOWS_CUSTOM_ROLES:-cni}
 
 function clean {
     rm -f ${tmpfile}
@@ -31,32 +42,30 @@ function build_configuration {
     --arg iso_url "${VBOX_WINDOWS_ISO}"             \
     --arg runtime "${VBOX_WINDOWS_RUNTIME}"         \
     --arg custom_role_names "${VBOX_WINDOWS_ROLES}" \
-    '{"os_iso_url": $iso_url, "runtime": $runtime, "custom_role_names": $custom_role_names}' > ${tmpfile}
+    '{"os_iso_url": $iso_url, "runtime": $runtime, "ansible_extra_vars": "custom_role=true", "custom_role_names": $custom_role_names}' > ${tmpfile}
 }
 
-IMAGE_BUILDER_FOLDER="${IMAGE_BUILDER_FOLDER:-image-builder}"
-IMAGE_BUILDER_BRANCH="${IMAGE_BUILDER_BRANCH:-master}"
-IMAGE_BUILDER_REPO="${IMAGE_BUILDER_REPO:-https://github.com/kubernetes-sigs/image-builder.git}"
-
-# Settings and building configuration file from environment variables
-VBOX_WINDOWS_ISO="${VBOX_WINDOWS_ISO:-file:/tmp/windows.iso}"
-VBOX_WINDOWS_RUNTIME="${VBOX_WINDOWS_RUNTIME:-containerd}"
-VBOX_WINDOWS_ROLES=${VBOX_WINDOWS_CUSTOM_ROLES:-cni}
+function copy_overlay_files {
+    # Overlay copy
+    cp -r ${OVERLAYS_FOLDER}/ansible/roles/cni ./ansible/windows/roles/
+    cp ${OVERLAYS_FOLDER}/autounattend.xml ./packer/vbox/windows/windows-2019/autounattend.xml  
+    cp ${OVERLAYS_FOLDER}/vm-guest-tools.ps1 ./packer/vbox/windows/vm-guest-tools.ps1
+    cp ${OVERLAYS_FOLDER}/packer-windows.json ./packer/vbox/packer-windows.json
+}
 
 # Cloning the image-builder repository
 [[ ! -d ${IMAGE_BUILDER_FOLDER} ]] && git clone ${IMAGE_BUILDER_REPO} ${IMAGE_BUILDER_FOLDER}
 
-# Copy the propper autounattend.xml over to the cloned repository
-cp ./overlays/autounattend.xml $IMAGE_BUILDER_FOLDER/packer/vbox/windows/windows-2019/autounattend.xml  
 
-# Checkout the right repository
-pushd ${IMAGE_BUILDER_FOLDER}/images/capi
+# Build local virtualbox artifact
+pushd ${CAPI_IMAGES_PATH}
+    hack/ensure-jq.sh
     git checkout ${IMAGE_BUILDER_BRANCH}
 
-    hack/ensure-jq.sh
     build_configuration
-    
-    # Build local virtualbox artifact
+    copy_overlay_files
+
+    make clean-vbox
     PACKER_VAR_FILES="${tmpfile}" make build-node-vbox-local-windows-2019
 popd
 
