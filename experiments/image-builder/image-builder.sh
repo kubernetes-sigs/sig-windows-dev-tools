@@ -49,6 +49,7 @@ VBOX_WINDOWS_ROLES=${VBOX_WINDOWS_CUSTOM_ROLES:-cni}
 # Copy the propper autounattend.xml over to the cloned repository
 cp ./overlays/autounattend.xml $IMAGE_BUILDER_FOLDER/packer/vbox/windows/windows-2019/autounattend.xml  
 
+# Checkout the right repository
 pushd ${IMAGE_BUILDER_FOLDER}/images/capi
     git checkout ${IMAGE_BUILDER_BRANCH}
 
