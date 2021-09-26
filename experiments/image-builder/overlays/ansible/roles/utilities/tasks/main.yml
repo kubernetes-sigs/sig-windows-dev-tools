@@ -1,9 +1,25 @@
 - name: Enable ssh login with password
   win_shell: Set-Content -Path "$env:ProgramData\ssh\sshd_config" -Value "PasswordAuthentication yes`nPubkeyAuthentication yes"
 
-  # CHOCO PACKAGES
-  # for more packages: https://community.chocolatey.org/packages
-  # on how to use ansible's choco plugin: https://docs.ansible.com/ansible/latest/collections/chocolatey/chocolatey/win_chocolatey_module.html#examples
+## CNI binary installation
+
+- name: Download Calico tooling
+  win_shell: |
+    Write-Output "Calico Running Pre-Install"
+
+    Install-WindowsFeature RemoteAccess
+    Install-WindowsFeature RSAT-RemoteAccess-PowerShell
+    Install-WindowsFeature Routing
+    Install-RemoteAccess -VpnType RoutingOnly
+    Start-Service RemoteAccess
+
+    Write-Output "Installing Calico"
+    Invoke-WebRequest https://docs.projectcalico.org/scripts/install-calico-windows.ps1 -OutFile c:\install-calico-windows.ps1
+
+# CHOCO PACKAGES
+# for more packages: https://community.chocolatey.org/packages
+# on how to use ansible's choco plugin: https://docs.ansible.com/ansible/latest/collections/chocolatey/chocolatey/win_chocolatey_module.html#examples
+
 - name: Ensure Chocolatey itself is installed and use internal repo as source
   win_chocolatey:
     name: chocolatey
