@@ -24,14 +24,17 @@ tmpfile=$(mktemp)
 OVERLAYS_FOLDER=${ROOT_OVERLAYS:-${PWD}/overlays}
 
 IMAGE_BUILDER_FOLDER="${IMAGE_BUILDER_FOLDER:-image-builder}"
+echo "IMAGE_BUILDER_FOLDER: $IMAGE_BUILDER_FOLDER"
 IMAGE_BUILDER_BRANCH="${IMAGE_BUILDER_BRANCH:-master}"
+echo "IMAGE_BUILDER_BRANCH: $IMAGE_BUILDER_BRANCH"
 IMAGE_BUILDER_REPO="${IMAGE_BUILDER_REPO:-https://github.com/kubernetes-sigs/image-builder.git}"
+echo "IMAGE_BUILDER_REPO: $IMAGE_BUILDER_REPO"
 CAPI_IMAGES_PATH=${IMAGE_BUILDER_FOLDER}/images/capi
 
 # Settings and building configuration file from environment variables
 VBOX_WINDOWS_ISO="${VBOX_WINDOWS_ISO:-file:/tmp/windows.iso}"
 VBOX_WINDOWS_RUNTIME="${VBOX_WINDOWS_RUNTIME:-containerd}"
-VBOX_WINDOWS_ROLES=${VBOX_WINDOWS_CUSTOM_ROLES:-cni}
+VBOX_WINDOWS_ROLES=${VBOX_WINDOWS_CUSTOM_ROLES:-utilities}
 
 function clean {
     rm -f ${tmpfile}
@@ -47,15 +50,17 @@ function build_configuration {
 
 function copy_overlay_files {
     # Overlay copy
-    cp -r ${OVERLAYS_FOLDER}/ansible/roles/cni ./ansible/windows/roles/
+    cp -r ${OVERLAYS_FOLDER}/ansible/roles/utilities ./ansible/windows/roles/
     cp ${OVERLAYS_FOLDER}/autounattend.xml ./packer/vbox/windows/windows-2019/autounattend.xml  
     cp ${OVERLAYS_FOLDER}/vm-guest-tools.ps1 ./packer/vbox/windows/vm-guest-tools.ps1
     cp ${OVERLAYS_FOLDER}/packer-windows.json ./packer/vbox/packer-windows.json
 }
 
+# adding the choco package manager plugin to ansible (see https://community.chocolatey.org/packages)
+ansible-galaxy collection install chocolatey.chocolatey
+
 # Cloning the image-builder repository
 [[ ! -d ${IMAGE_BUILDER_FOLDER} ]] && git clone ${IMAGE_BUILDER_REPO} ${IMAGE_BUILDER_FOLDER}
-
 
 # Build local virtualbox artifact
 pushd ${CAPI_IMAGES_PATH}
