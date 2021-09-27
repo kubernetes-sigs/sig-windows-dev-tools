@@ -1,2 +1,0 @@
-- name: Enable ssh login with password
-  win_shell: Set-Content -Path "$env:ProgramData\ssh\sshd_config" -Value "PasswordAuthentication yes`nPubkeyAuthentication yes"
