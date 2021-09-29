@@ -31,6 +31,9 @@ IMAGE_BUILDER_REPO="${IMAGE_BUILDER_REPO:-https://github.com/kubernetes-sigs/ima
 echo "IMAGE_BUILDER_REPO: $IMAGE_BUILDER_REPO"
 CAPI_IMAGES_PATH=${IMAGE_BUILDER_FOLDER}/images/capi
 
+CONTAINERD_PREPULL_IMAGES=${CONTAINERD_PREPULL_IMAGES:-docker.io/stefanscherer/whoami:windows-amd64-2.0.1}  # comma separated
+ANSIBLE_VARS="custom_role=true load_additional_components=true additional_registry_images=true additional_registry_images_list=${CONTAINERD_PREPULL_IMAGES}"
+
 # Settings and building configuration file from environment variables
 VBOX_WINDOWS_ISO="${VBOX_WINDOWS_ISO:-file:/tmp/windows.iso}"
 VBOX_WINDOWS_RUNTIME="${VBOX_WINDOWS_RUNTIME:-containerd}"
@@ -40,15 +43,17 @@ function clean {
     rm -f ${tmpfile}
 }
 
+
 function build_configuration {
  jq --null-input \
-    --arg iso_url "${VBOX_WINDOWS_ISO}"                      \
-    --arg runtime "${VBOX_WINDOWS_RUNTIME}"                  \
-    --arg custom_role_names "${VBOX_WINDOWS_ROLES}"          \
+    --arg iso_url "${VBOX_WINDOWS_ISO}"                 \
+    --arg runtime "${VBOX_WINDOWS_RUNTIME}"             \
+    --arg custom_role_names "${VBOX_WINDOWS_ROLES}"     \
+    --arg ansible_extra_vars "${ANSIBLE_VARS}"         \
     '{
         "os_iso_url": $iso_url,
         "runtime": $runtime,
-        "ansible_extra_vars": "custom_role=true",
+        "ansible_extra_vars": $ansible_extra_vars,
         "custom_role_names": $custom_role_names,
     }' > ${tmpfile}
 }
