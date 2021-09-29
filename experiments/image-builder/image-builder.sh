@@ -42,10 +42,15 @@ function clean {
 
 function build_configuration {
  jq --null-input \
-    --arg iso_url "${VBOX_WINDOWS_ISO}"             \
-    --arg runtime "${VBOX_WINDOWS_RUNTIME}"         \
-    --arg custom_role_names "${VBOX_WINDOWS_ROLES}" \
-    '{"os_iso_url": $iso_url, "runtime": $runtime, "ansible_extra_vars": "custom_role=true", "custom_role_names": $custom_role_names}' > ${tmpfile}
+    --arg iso_url "${VBOX_WINDOWS_ISO}"                      \
+    --arg runtime "${VBOX_WINDOWS_RUNTIME}"                  \
+    --arg custom_role_names "${VBOX_WINDOWS_ROLES}"          \
+    '{
+        "os_iso_url": $iso_url,
+        "runtime": $runtime,
+        "ansible_extra_vars": "custom_role=true",
+        "custom_role_names": $custom_role_names,
+    }' > ${tmpfile}
 }
 
 function copy_overlay_files {
