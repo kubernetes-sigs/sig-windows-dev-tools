@@ -64,12 +64,7 @@ Vagrant.configure(2) do |config|
   # WINDOWS WORKER (win server 2019)
   config.vm.define :winw1 do |winw1|
     winw1.vm.host_name = "winw1"
-    winw1.vm.box = "StefanScherer/windows_2019"  
-    winw1.vm.network :private_network, ip:"#{windows_node_ip}"
-    winw1.vm.synced_folder ".", "/vagrant", disabled:true
-    winw1.vm.synced_folder "./sync/shared", "C:/sync/shared"
-    winw1.vm.synced_folder "./sync/windows/", "C:/sync/windows/"
-    winw1.vm.synced_folder "./forked", "C:/forked/"
+    winw1.vm.box = "./windows-2019.box"
 
     winw1.vm.provider :virtualbox do |vb|
       vb.memory = windows_ram
@@ -77,27 +72,25 @@ Vagrant.configure(2) do |config|
       vb.gui = false
     end
 
+    winw1.vm.network :private_network, ip:"#{windows_node_ip}"
+    winw1.vm.synced_folder ".", "/vagrant", disabled:true
+    winw1.vm.synced_folder "./sync/shared", "C:/sync/shared"
+    winw1.vm.synced_folder "./sync/windows/", "C:/sync/windows/"
+    winw1.vm.synced_folder "./forked", "C:/forked/"
+
+    winw1.winrm.username = "vagrant"
+    winw1.winrm.password = "vagrant"
+
     if not File.file?("joined") then
-      winw1.vm.provision "shell", path: "sync/windows/hyperv.ps1", privileged: true
-      winw1.vm.provision :reload
-      winw1.vm.provision "shell", path: "sync/windows/containerd1.ps1", privileged: true #, run: "never"
-      winw1.vm.provision :reload
-      winw1.vm.provision "shell", path: "sync/windows/containerd2.ps1", privileged: true #, run: "never"
-      winw1.vm.provision "shell", path: "forked/PrepareNode.ps1", privileged: true, args: "-KubernetesVersion #{kubernetes_compatibility} -WindowsNodeIP #{windows_node_ip} -ContainerRuntime containerD #{overwrite_windows_bins} " #, run: "never"
+      # Joining the controlplane
       winw1.vm.provision "shell", path: "sync/shared/kubejoin.ps1", privileged: true #, run: "never"
-      winw1.vm.provision "shell", path: "sync/windows/ssh.ps1", privileged: true #, run: "never"
     else
       # TODO should we pass KuberneteVersion to calico agent exe? and also service cidr if needed?
       if cni == "calico" then
         if not File.file?("cni") then
           # installs both felix and node
-          winw1.vm.provision "shell", path: "forked/0-calico.ps1", privileged: true #, run: "always"
-          winw1.vm.provision :reload
-          winw1.vm.provision "shell", path: "forked/1-calico.ps1", privileged: true #, run: "always"
-          # only run final provisioning step if 'provisioned' is there...
-        else
-          winw1.vm.provision "shell", path: "forked/2-calico.ps1", privileged: true #, run: "always"
-          winw1.vm.provision "shell", path: "forked/3-calico.ps1", privileged: true #, run: "always"
+          winw1.vm.provision "shell", path: "forked/0-calico.ps1", privileged: true
+          winw1.vm.provision "shell", path: "forked/1-calico.ps1", privileged: true
         end
       else
         if File.file?("cni") then
@@ -110,5 +103,4 @@ Vagrant.configure(2) do |config|
       end
     end
   end
-  
 end

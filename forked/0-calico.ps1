@@ -14,54 +14,18 @@ See the License for the specific language governing permissions and
 limitations under the License.
 #>
 
-# Install antrea: CNI Provider
+# Force Kubernetes folder
 mkdir -Force C:/k/
 
-#########################################################################################################
-### kubectl:  is needed by calico installer, but TODO, antrea and calico shouldnt need to do this, and we should just
-### download kubectl as part of the generic windows kubernetes setup...
-#########################################################################################################
-$InstallationFiles = @{
-      "https://dl.k8s.io/release/v1.21.0/bin/windows/amd64/kubectl.exe" = "C:/k/kubectl.exe"
-}
+# Required configuration files symlink
+New-Item -ItemType HardLink -Target "C:\etc\kubernetes\kubelet.conf" -Path "C:\k\config"
 
-foreach ($theURL in $InstallationFiles.keys) {
-  $outPath = $InstallationFiles[$theURL]
-  Write-Output("1 - checking $outPath ... ")
-  if (!(Test-Path $outPath)) {
-     Write-Output("2 - Acquiring ---> $theURL writing to  $outPath")
-     curl.exe -L $theURL -o $outPath
-     Write-Output("$outPath ::: DETAILS ...")
-     Get-ItemProperty $outPath
-     ls $outPath
-     Write-Output("$outPath ::: DONE VERIFYING")
-  }
-  if (!(Test-Path $outPath)) {
-    Write-Error "That download totally failed $outPath is not created...."
-    exit 1
-  }
-}
+## ------------------------------------------
+Write-Output "Downloading Calico Artifacts"
+## ------------------------------------------
+C:\install-calico-windows.ps1 -DownloadOnly yes
 
-
-###############################################################################################
-
-
-
-
-
-Write-Output "FIRST RUNNING CALICO PRE SETUP STUFF"
-Install-WindowsFeature RemoteAccess
-Install-WindowsFeature RSAT-RemoteAccess-PowerShell
-Install-WindowsFeature Routing
-
-C:/forked/install-calico-windows.ps1 -DownloadOnly yes
-Write-Output "CALICO ARTIFACTS.................................."
-Write-Output "CALICO ARTIFACTS.................................."
-Write-Output "CALICO ARTIFACTS.................................."
-
+## ------------------------------------------
+Write-Output "Print installed files"
+## ------------------------------------------
 ls C:\CalicoWindows
-
-Write-Output ".................................. CALICO ARTIFACTS"
-Write-Output ".................................. CALICO ARTIFACTS"
-Write-Output ".................................. CALICO ARTIFACTS"
-

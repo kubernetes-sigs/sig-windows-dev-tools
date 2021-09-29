@@ -93,7 +93,7 @@ $env:VXLAN_VNI = "4096"
 # Prefix used when generating MAC addresses for virtual NICs.
 $env:VXLAN_MAC_PREFIX = "0E-2A"
 # Network Adapter used on VXLAN, leave blank for primary NIC.
-$env:VXLAN_ADAPTER = "Ethernet 2"
+$env:VXLAN_ADAPTER = (Get-NetIPAddress -IPAddress '10.20.30.11').InterfaceAlias
 
 
 ## Node configuration.
