@@ -55,8 +55,7 @@ all: 0-fetch-k8s 1-build-binaries 2-vagrant-up 3-smoke-test
 	until `vagrant ssh controlplane -c "kubectl get nodes" | grep -q winw1` ; do vagrant provision winw1 || echo failed_win_join; done
 	touch joined
 	# Expec tthis to happen > 1 time... since calico needs two runs.  maybe 3 if a flake?
-	vagrant provision winw1 || echo "seconadary provision....." ; vagrant provision winw1
-	touch cni
+	vagrant provision winw1 || echo "seconadary provision....." ; touch cni; vagrant provision winw1
 
 3-smoke-test:
 	vagrant ssh controlplane -c "kubectl scale deployment windows-server-iis --replicas 0"
