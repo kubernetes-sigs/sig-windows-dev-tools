@@ -1,20 +1,35 @@
 - name: Enable ssh login with password
   win_shell: Set-Content -Path "$env:ProgramData\ssh\sshd_config" -Value "PasswordAuthentication yes`nPubkeyAuthentication yes"
 
-## CNI binary installation
+## Calico CNI binary installation
 
-- name: Download Calico tooling
+- name: Download Calico install
+  win_get_url:
+    url: "https://docs.projectcalico.org/scripts/install-calico-windows.ps1"
+    dest: 'c:\install-calico-windows.ps1'
+  retries: 5
+  delay: 3
+
+- name: Download Kubernetes kube-proxy
+  win_get_url:
+    url: "{{ kubernetes_base_url }}/kube-proxy.exe"
+    dest: '{{ kubernetes_install_path }}\'
+  retries: 5
+  delay: 3
+
+## Install CRI and pull images
+
+- name: Download crictl
+  win_get_url:
+    url: "https://github.com/kubernetes-sigs/cri-tools/releases/download/v1.22.0/crictl-v1.22.0-windows-amd64.tar.gz"
+    dest: '{{ programfiles.stdout | trim }}\containerd\crictl-v1.22.0-windows-amd64.tar.gz'
+  retries: 5
+  delay: 3
+
+- name: Decompress crictl binary
   win_shell: |
-    Write-Output "Calico Running Pre-Install"
+   tar xvf "{{ programfiles.stdout | trim }}\containerd\crictl-v1.22.0-windows-amd64.tar.gz"
 
-    Install-WindowsFeature RemoteAccess
-    Install-WindowsFeature RSAT-RemoteAccess-PowerShell
-    Install-WindowsFeature Routing
-    Install-RemoteAccess -VpnType RoutingOnly
-    Start-Service RemoteAccess
-
-    Write-Output "Installing Calico"
-    Invoke-WebRequest https://docs.projectcalico.org/scripts/install-calico-windows.ps1 -OutFile c:\install-calico-windows.ps1
 
 # CHOCO PACKAGES
 # for more packages: https://community.chocolatey.org/packages
