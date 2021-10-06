@@ -19,6 +19,7 @@ all: 0-fetch-k8s 1-build-binaries 2-vagrant-up 3-smoke-test
 0: 0-fetch-k8s
 1: 1-build-binaries
 2: 2-vagrant-up
+3: 3-smoke-test
 
 0-fetch-k8s:
 	chmod +x fetch.sh
@@ -30,23 +31,15 @@ all: 0-fetch-k8s 1-build-binaries 2-vagrant-up 3-smoke-test
 
 2-vagrant-up:
 	echo "cleaning up semaphores..."
-	rm -f up
-	rm -f joined
-	rm -f cni
-	echo "<- done"
+	rm -f up joined cni
 
+	echo "installing vagrant vbguest plugin..."
 	vagrant plugin install vagrant-vbguest
-	# vagrant destroy -f
-	echo "######################################"
-	echo "######################################"
-	echo "######################################"
+
 	echo "######################################"
 	echo "Retry vagrant up if the first time the windows node failed"
-
-	u=0
-	j=0
-	c=0
-
+	echo "Starting the control plane"
+	echo "######################################"
 	vagrant up controlplane
 	
 	echo "*********** vagrant up first run done ~~~~ ENTERING WINDOWS BRINGUP LOOP ***"
@@ -54,16 +47,15 @@ all: 0-fetch-k8s 1-build-binaries 2-vagrant-up 3-smoke-test
 	touch up
 	until `vagrant ssh controlplane -c "kubectl get nodes" | grep -q winw1` ; do vagrant provision winw1 || echo failed_win_join; done
 	touch joined
-	# Expec tthis to happen > 1 time... since calico needs two runs.  maybe 3 if a flake?
-	vagrant provision winw1 || echo "seconadary provision....." ; vagrant provision winw1
+	vagrant provision winw1
 	touch cni
 
 3-smoke-test:
-	vagrant ssh controlplane -c "kubectl scale deployment windows-server-iis --replicas 0"
-	vagrant ssh controlplane -c "kubectl scale deployment windows-server-iis --replicas 1"
-	vagrant ssh controlplane -c "kubectl get pods"
-	
+	vagrant ssh controlplane -c "kubectl scale deployment whoami-windows --replicas 0"
+	vagrant ssh controlplane -c "kubectl scale deployment whoami-windows --replicas 3"
+	vagrant ssh controlplane -c "kubectl get pods; sleep 5"
+	vagrant ssh controlplane -c "kubectl exec -it netshoot -- curl http://whoami-windows:80/"
 
 # TODO
-#3-e2e-test:
+#4-e2e-test:
 #	sonobuoy run --e2e-focus=...
