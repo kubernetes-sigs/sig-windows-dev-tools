@@ -64,7 +64,7 @@ Vagrant.configure(2) do |config|
   # WINDOWS WORKER (win server 2019)
   config.vm.define :winw1 do |winw1|
     winw1.vm.host_name = "winw1"
-    winw1.vm.box = "./windows-2019.box"
+    winw1.vm.box = "FriedrichWilken/Windows_2019-sig-win-dev-tools"
 
     winw1.vm.provider :virtualbox do |vb|
       vb.memory = windows_ram
