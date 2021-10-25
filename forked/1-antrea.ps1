@@ -29,7 +29,7 @@ foreach ($f in $folders) {
   New-Item -ItemType Directory -Force -Path $f
 }
 
-### Installing OVS
+# ### Installing OVS
 
 # If you are doing this in production, you want to use the LocalFile option and
 # and you may want to run a signed OVS copy provided by a vendor
@@ -42,7 +42,7 @@ get-service ovs-vswitchd
 # Disable Windows Firewall
 Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled False
 
-### Installing Antrea Agent
+# ### Installing Antrea Agent
 
 # Add Windows Defender Options
 $avexceptions = @('c:\program files\containerd\ctr.exe', 'c:\program files\containerd\containerd.exe' )
@@ -67,7 +67,7 @@ $new = "$($raw) $($newstr)`""
 Set-Content $file $new
 $KubeConfigFile='C:\etc\kubernetes\kubelet.conf'
 
-# Setup kubo-proxy config file
+# Setup kube-proxy config file
 $KubeProxyConfig="C:/k/antrea/etc/kube-proxy.conf"
 $KubeAPIServer=$(kubectl --kubeconfig=$KubeConfigFile config view -o jsonpath='{.clusters[0].cluster.server}')
 $KubeProxyTOKEN=$(kubectl --kubeconfig=$KubeConfigFile get secrets -n kube-system -o jsonpath="{.items[?(@.metadata.annotations['kubernetes\.io/service-account\.name']=='kube-proxy-windows')].data.token}")
@@ -110,29 +110,27 @@ if (!(Test-Path $antrea_helper)) {
 }
 Import-Module $antrea_helper
 
-& Install-AntreaAgent -KubernetesVersion "v$KubernetesVersion" -KubernetesHome "c:/k" -KubeConfig "C:/etc/kubernetes/kubelet.conf" -AntreaVersion "v0.13.2" -AntreaHome "c:/k/antrea"
+& Install-AntreaAgent -KubernetesVersion "v$KubernetesVersion" -KubernetesHome "c:/k" -KubeConfig "C:/etc/kubernetes/kubelet.conf" -AntreaVersion "v1.2.3" -AntreaHome "c:/k/antrea"
 New-KubeProxyServiceInterface
 
-### Installing Kube-Proxy
-
-# Setup Services
+# ### Installing Kube-Proxy
 
 $nssm = (Get-Command nssm).Source
 & $nssm set Kubelet start SERVICE_AUTO_START
-# & nssm install kube-proxy "C:/k/kube-proxy.exe" "--proxy-mode=userspace --kubeconfig=$KubeProxyConfig --log-dir=c:/var/log/kube-proxy --logtostderr=false --alsologtostderr"
+& nssm install kube-proxy "C:/k/kube-proxy.exe" "--proxy-mode=userspace --kubeconfig=$KubeProxyConfig --log-dir=c:/var/log/kube-proxy --logtostderr=false --alsologtostderr"
 
-& nssm install antrea-agent "C:/k/antrea/bin/antrea-agent.exe" "--config=C:/k/antrea/etc/antrea-agent.conf --logtostder=false --log_dir=c:/var/log/antrea --alsologtostderr --log_file_max_size=100 --log_file_max_num=4"
+& nssm install antrea-agent "C:/k/antrea/bin/antrea-agent.exe" "-v=3 --config=C:/k/antrea/etc/antrea-agent.conf --logtostderr=false --log_dir=c:/var/log/antrea --alsologtostderr --log_file_max_size=100 --log_file_max_num=4"
 & nssm set antrea-agent DependOnService kube-proxy ovs-vswitchd
 & nssm set antrea-agent Start SERVICE_DELAYED_AUTO_START
 
 # Start Services
 start-service kubelet
-# start-service kube-proxy
+start-service kube-proxy
 Write-Output("...sleeping for a second before smoke testing...")
 sleep 5
 
 # Must happen *after* kube-proxy comes online.... so internal service endpoint is accessible to antrea-agent.
-#Get-Service *kube*
+Get-Service *kube*
 Get-Service *antrea*
 Get-Service *ovs*
 

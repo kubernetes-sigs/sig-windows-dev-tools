@@ -32,6 +32,8 @@ mkdir -Force C:/k/antrea/ # scripts
 mkdir -Force C:/k/antrea/bin/ #executables
 mkdir -Force C:/k/antrea/etc/ # for antrea-agent.conf
 
+# Downloading from vcredist_x64.exe from microsoft.com is flaking inside the script, if this happens 
+# need to do it manually.
 $antreaInstallationFiles = @{
       "https://raw.githubusercontent.com/antrea-io/antrea/main/build/yamls/base/conf/antrea-cni.conflist" = "C:/etc/cni/net.d/10-antrea.conflist"
       "https://raw.githubusercontent.com/antrea-io/antrea/main/hack/windows/Install-OVS.ps1" =  "C:/k/antrea/Install-OVS.ps1"
@@ -39,9 +41,9 @@ $antreaInstallationFiles = @{
       "https://github.com/antrea-io/antrea/releases/download/v1.3.0/antrea-agent-windows-x86_64.exe" = "C:/k/antrea/bin/antrea-agent.exe"
       "https://github.com/containernetworking/plugins/releases/download/v0.9.1/cni-plugins-windows-amd64-v0.9.1.tgz" = "C:/k/antrea/bin/cni-plugins-windows-amd64-v0.9.1.tgz"
       "https://dl.k8s.io/release/v1.21.0/bin/windows/amd64/kubectl.exe" = "C:/k/kubectl.exe"
-      "https://raw.githubusercontent.com/antrea-io/antrea/main/build/yamls/windows/base/conf/antrea-agent.conf" = "C:/k/antrea/etc/antrea-agent.conf"
-      "https://download.microsoft.com/download/2/E/6/2E61CFA4-993B-4DD4-91DA-3737CD5CD6E3/vcredist_x64.exe" = "C:\vc.exe"
-      "https://slproweb.com/download/Win64OpenSSL-1_0_2u.exe" = "C:/Windows/Temp/Win64OpenSSL-1_0_2u.exe"
+      "https://gist.githubusercontent.com/knabben/5dec7c059916d3b487aeb2efd3a689b6/raw/5ae62d1bf8fddac44f81ba3cc532cce685ef8995/antrea.yaml" = "C:/k/antrea/etc/antrea-agent.conf"
+      "https://slproweb.com/download/Win64OpenSSL-1_0_2u.exe" = "C:/ssl.exe"
+      "https://download.microsoft.com/download/2/E/6/2E61CFA4-993B-4DD4-91DA-3737CD5CD6E3/vcredist_x64.exe" = "C:/vcd.exe"
 }
 
 foreach ($theURL in $antreaInstallationFiles.keys) {
@@ -68,9 +70,9 @@ foreach ($theURL in $antreaInstallationFiles.keys) {
   }
 }
 
-# Installing MSDist find the really required one.
-C:\Windows\Temp\Win64OpenSSL-1_0_2u.exe /silent /verysilent /sp- /suppressmsgboxes
-C:\vc.exe /quiet /norestart
+C:/vcd.exe /quiet /norestart
+C:/ssl.exe /silent /verysilent /sp- /suppressmsgboxes
+Start-Sleep -s 30
 
 # Signing binaries
 Bcdedit.exe -set TESTSIGNING ON

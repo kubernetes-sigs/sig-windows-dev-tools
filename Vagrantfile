@@ -55,8 +55,6 @@ Vagrant.configure(2) do |config|
     else
       controlplane.vm.provision "shell", path: "sync/linux/antrea-0.sh"
     end
-
-    #controlplane.vm.provision :shell, privileged: false, inline: "kubectl create -f /var/sync/linux/smoke-test.yaml"
   end
 
   # WINDOWS WORKER (win server 2019)
@@ -90,7 +88,6 @@ Vagrant.configure(2) do |config|
           winw1.vm.provision "shell", path: "forked/0-calico.ps1", privileged: true
           winw1.vm.provision "shell", path: "forked/1-calico.ps1", privileged: true
         else
-          # Experimental at the moment...
           winw1.vm.provision "shell", path: "forked/0-antrea.ps1", privileged: true #, run: "always"
           winw1.vm.provision "shell", path: "forked/1-antrea.ps1", privileged: true, args: "-KubernetesVersion #{kubernetes_compatibility}" #, run: "always"
         end

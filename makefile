@@ -49,6 +49,7 @@ all: 0-fetch-k8s 1-build-binaries 2-vagrant-up 3-smoke-test 4-e2e-test
 	touch cni
 
 3-smoke-test:
+	vagrant ssh controlplane -c "kubectl apply -f /var/sync/linux/smoke-test.yaml"
 	vagrant ssh controlplane -c "kubectl scale deployment whoami-windows --replicas 0"
 	vagrant ssh controlplane -c "kubectl scale deployment whoami-windows --replicas 3"
 	vagrant ssh controlplane -c "kubectl get pods; sleep 5"
