@@ -14,6 +14,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
 #>
 
+# Force Kubernetes folder
+mkdir -Force C:/k/
+
+# Required configuration files symlink
+New-Item -ItemType HardLink -Target "C:\etc\kubernetes\kubelet.conf" -Path "C:\k\config"
+
 # Install NSSM: Workaround to privileged containers...
 mkdir C:/nssm/ -Force
 curl.exe -LO https://k8stestinfrabinaries.blob.core.windows.net/nssm-mirror/nssm-2.24.zip
@@ -34,6 +40,8 @@ $antreaInstallationFiles = @{
       "https://github.com/containernetworking/plugins/releases/download/v0.9.1/cni-plugins-windows-amd64-v0.9.1.tgz" = "C:/k/antrea/bin/cni-plugins-windows-amd64-v0.9.1.tgz"
       "https://dl.k8s.io/release/v1.21.0/bin/windows/amd64/kubectl.exe" = "C:/k/kubectl.exe"
       "https://raw.githubusercontent.com/antrea-io/antrea/main/build/yamls/windows/base/conf/antrea-agent.conf" = "C:/k/antrea/etc/antrea-agent.conf"
+      "https://download.microsoft.com/download/2/E/6/2E61CFA4-993B-4DD4-91DA-3737CD5CD6E3/vcredist_x64.exe" = "C:\vc.exe"
+      "https://slproweb.com/download/Win64OpenSSL-1_0_2u.exe" = "C:/Windows/Temp/Win64OpenSSL-1_0_2u.exe"
 }
 
 foreach ($theURL in $antreaInstallationFiles.keys) {
@@ -60,3 +68,10 @@ foreach ($theURL in $antreaInstallationFiles.keys) {
   }
 }
 
+# Installing MSDist find the really required one.
+C:\Windows\Temp\Win64OpenSSL-1_0_2u.exe /silent /verysilent /sp- /suppressmsgboxes
+C:\vc.exe /quiet /norestart
+
+# Signing binaries
+Bcdedit.exe -set TESTSIGNING ON
+Restart-Computer

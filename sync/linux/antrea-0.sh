@@ -1,2 +1,7 @@
 #!/bin/bash
-KUBECONFIG=/home/vagrant/.kube/config kubectl apply -f https://github.com/antrea-io/antrea/releases/download/v0.13.2/antrea.yml
+export KUBECONFIG=/home/vagrant/.kube/config
+
+kubectl taint nodes --all node-role.kubernetes.io/master-
+kubectl apply -f https://github.com/antrea-io/antrea/releases/download/v1.3.0/antrea.yml
+
+sleep 20
