@@ -1,0 +1,52 @@
+config-map:
+  image-repo-list-master: |
+    gcAuthenticatedRegistry: e2eprivate
+    gcEtcdRegistry: k8sprow.azurecr.io/kubernetes-e2e-test-images
+    privateRegistry: e2eteam
+podSpec:
+  containers: []
+  nodeSelector:
+    kubernetes.io/os: linux
+  restartPolicy: Never
+  serviceAccountName: sonobuoy-serviceaccount
+  tolerations:
+    - effect: NoSchedule
+      key: node-role.kubernetes.io/master
+      operator: Exists
+    - key: CriticalAddonsOnly
+      operator: Exists
+    - key: kubernetes.io/e2e-evict-taint-key
+      operator: Exists
+sonobuoy-config:
+  driver: Job
+  plugin-name: wine2e
+  result-format: junit
+  source_url: https://raw.githubusercontent.com/vmware-tanzu/sonobuoy-plugins/main/windows-e2e/win-e2e-image-repo-list-master.yaml
+  description: Runs Kubernetes end-to-end tests on Windows clusters.
+spec:
+  command:
+    - /run_e2e.sh
+  env:
+    - name: RESULTS_DIR
+      value: /tmp/sonobuoy/results
+    - name: SONOBUOY_RESULTS_DIR
+      value: /tmp/sonobuoy/results
+    - name: E2E_FOCUS
+      value: SecurityContext should ignore Linux Specific SecurityContext if set
+    - name: E2E_SKIP
+      value: \[LinuxOnly\]|\[Serial\]|GMSA|Guestbook.application.should.create.and.stop.a.working.application
+    - name: E2E_PARALLEL
+      value: "false"
+    - name: E2E_USE_GO_RUNNER
+      value: "true"
+    - name: E2E_EXTRA_ARGS
+      value: --progress-report-url=http://localhost:8099/progress --node-os-distro=windows
+    - name: KUBE_TEST_REPO_LIST
+      value: /tmp/sonobuoy/config/image-repo-list-master
+  image: k8s.gcr.io/conformance:$SONOBUOY_K8S_VERSION
+  imagePullPolicy: Always
+  name: e2e
+  resources: {}
+  volumeMounts:
+    - mountPath: /tmp/sonobuoy/results
+      name: results
