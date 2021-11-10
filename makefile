@@ -14,12 +14,13 @@
 
 path ?= kubernetes
 
-all: 0-fetch-k8s 1-build-binaries 2-vagrant-up 3-smoke-test
+all: 0-fetch-k8s 1-build-binaries 2-vagrant-up 3-smoke-test 4-e2e-test
 
 0: 0-fetch-k8s
 1: 1-build-binaries
 2: 2-vagrant-up
 3: 3-smoke-test
+4: 4-e2e-test
 
 0-fetch-k8s:
 	chmod +x fetch.sh
@@ -56,6 +57,6 @@ all: 0-fetch-k8s 1-build-binaries 2-vagrant-up 3-smoke-test
 	vagrant ssh controlplane -c "kubectl get pods; sleep 5"
 	vagrant ssh controlplane -c "kubectl exec -it netshoot -- curl http://whoami-windows:80/"
 
-# TODO
-#4-e2e-test:
-#	sonobuoy run --e2e-focus=...
+4-e2e-test:
+	vagrant ssh controlplane -c "cd /var/sync/linux && chmod +x ./e2e.sh && ./e2e.sh"
+
