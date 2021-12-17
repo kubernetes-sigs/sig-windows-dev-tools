@@ -60,3 +60,9 @@ all: 0-fetch-k8s 1-build-binaries 2-vagrant-up 3-smoke-test 4-e2e-test
 4-e2e-test:
 	vagrant ssh controlplane -c "cd /var/sync/linux && chmod +x ./e2e.sh && ./e2e.sh"
 
+clean:
+	rm -rf sync/linux/bin/
+	rm -rf sync/windows/bin/
+	rm -f sync/shared/config
+	rm -f sync/shared/kubeadm.yaml
+	rm -f sync/shared/kubejoin.ps1
