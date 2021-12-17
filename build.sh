@@ -25,7 +25,7 @@ build_binaries () {
 	echo "skipping compilation of windows bits... _output is present"
 	else
 		echo "running docker build ~ checking memory, make sure its > 4G!!!"
-		if [[ `docker system info | grep Memory | cut -d' ' -f 4 |cut -d'.' -f 1` -gt 4 ]]; then
+		if [[ `docker system info | grep Memory | cut -d' ' -f 4 |cut -d'.' -f 1` -gt 4 ]] || [[ `docker system info | grep memFree | cut -d' ' -f 4 |cut -d'.' -f 1` -gt 4000000000 ]]; then
 			echo "Proceeding with build, docker daemon memory is ok"
 		else
 			echo "Insufficient LOCAL memory to build k8s before the vagrant builder starts"
