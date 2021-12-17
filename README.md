@@ -121,6 +121,12 @@ To run a *command* on the Windows boxes without actually using the UI, you can u
 vagrant winrm winw1 --shell=powershell --command="ls"
 ```
 
+IF you want to debug on the windows node, you can also run crictl:
+
+```
+.\crictl config --set runtime-endpoint=npipe:////./pipe/containerd-containerd
+```
+
 ## Where we derived these recipes from 
 
 - This guide is based on [this very nice Vagrantfile](https://gist.github.com/danielepolencic/ef4ddb763fd9a18bf2f1eaaa2e337544)
