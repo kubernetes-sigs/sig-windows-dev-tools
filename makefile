@@ -34,9 +34,6 @@ all: 0-fetch-k8s 1-build-binaries 2-vagrant-up 3-smoke-test 4-e2e-test
 	echo "cleaning up semaphores..."
 	rm -f up joined cni
 
-	echo "installing vagrant vbguest plugin..."
-	vagrant plugin install vagrant-vbguest
-
 	echo "######################################"
 	echo "Retry vagrant up if the first time the windows node failed"
 	echo "Starting the control plane"

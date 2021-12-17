@@ -28,7 +28,7 @@ viable alternative to Linux thanks to the recent introduction of Windows HostPro
 ## Prerequisites
 
 - Vagrant
-- Vagrant reload, winrm and winrm-elevated plugins
+- Vagrant vagrant-vbguest, reload, winrm and winrm-elevated plugins
 - some Vagrant provider (we only have VirtualBox automated here, but these recipes have been used with others, like HyperV and Fusion).
 
 # Lets run it!
