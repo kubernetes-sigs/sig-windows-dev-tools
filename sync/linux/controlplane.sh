@@ -122,7 +122,7 @@ sudo crictl config --set runtime-endpoint=unix:///run/containerd/containerd.sock
 # sudo kubeadm init --apiserver-advertise-address=10.20.30.10 --pod-network-cidr=10.244.0.0/16 --image-repository="k8s.gcr.io" --kubernetes-version="v1.22.0-alpha.3.31+a3abd06ad53b2f"
 
 cat << EOF > /var/sync/shared/kubeadm.yaml
-apiVersion: kubeadm.k8s.io/v1beta2
+apiVersion: kubeadm.k8s.io/v1beta3
 kind: InitConfiguration
 localAPIEndpoint:
   advertiseAddress: $k8s_kubelet_node_ip
@@ -131,7 +131,7 @@ nodeRegistration:
     node-ip: $k8s_kubelet_node_ip
     cgroup-driver: cgroupfs
 ---
-apiVersion: kubeadm.k8s.io/v1beta2
+apiVersion: kubeadm.k8s.io/v1beta3
 kind: ClusterConfiguration
 kubernetesVersion: $k8s_linux_apiserver
 networking:
@@ -154,6 +154,8 @@ cp $HOME/.kube/config /var/sync/shared/config
 rm -f /var/sync/shared/kubejoin.ps1
 
 cat << EOF > /var/sync/shared/kubejoin.ps1
+cp C:\Users\vagrant\crictl.exe "C:\Program Files\containerd"
+cp C:\sync\windows\bin\* c:\k
 \$env:path += ";C:\Program Files\containerd"
 [Environment]::SetEnvironmentVariable("Path", \$env:Path, [System.EnvironmentVariableTarget]::Machine)
 EOF

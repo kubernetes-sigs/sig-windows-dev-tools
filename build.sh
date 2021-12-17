@@ -34,6 +34,7 @@ build_binaries () {
 		# use the kubernetes/build/run script to build specific targets...
 		./build/run.sh make kubelet KUBE_BUILD_PLATFORMS=windows/amd64
 		./build/run.sh make kube-proxy KUBE_BUILD_PLATFORMS=windows/amd64
+		./build/run.sh make kubeadm KUBE_BUILD_PLATFORMS=windows/amd64
 
 		./build/run.sh make kubelet KUBE_BUILD_PLATFORMS=linux/amd64
 		./build/run.sh make kubectl KUBE_BUILD_PLATFORMS=linux/amd64
@@ -45,6 +46,8 @@ build_binaries () {
 	mkdir -p $startDir/sync/windows/bin
 	cp -f ./_output/dockerized/bin/windows/amd64/kubelet.exe $startDir/sync/windows/bin
 	cp -f ./_output/dockerized/bin/windows/amd64/kube-proxy.exe $startDir/sync/windows/bin
+	cp -f ./_output/dockerized/bin/windows/amd64/kubeadm.exe $startDir/sync/windows/bin
+
 	#linux
 	mkdir -p $startDir/sync/linux/bin
 	cp -f ./_output/dockerized/bin/linux/amd64/kubelet $startDir/sync/linux/bin
