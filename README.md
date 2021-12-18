@@ -144,9 +144,6 @@ We are a new project and we need help with...
 
 - contributing / testing recipes on different Vagrant providers
 - docs of existing workflows
-- ideas about how we can make this repository easier to use
-- test automation ([Sonobuoy](https://github.com/vmware-tanzu/sonobuoy), [E2E Framework](https://github.com/kubernetes-sigs/e2e-framework), and so on)
-- new CNIs like [Calico](https://www.projectcalico.org) or [Cillium](https://cilium.io)
 - CSI support and testing
 - privileged container support
 - recipes with active directory
