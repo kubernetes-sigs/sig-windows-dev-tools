@@ -67,12 +67,20 @@ foreach ($theURL in $antreaInstallationFiles.keys) {
   }
   if (!(Test-Path $outPath)) {
     Write-Error "That download totally failed $outPath is not created...."
-    exit 1
+    exit 123
   }
 }
 
+
+Write-Output("Now trying to execute VCD.exe")
+
 C:/vcd.exe /quiet /norestart
+
+
+Write-Output("Now trying to execute SSL.exe")
+
 C:/ssl.exe /silent /verysilent /sp- /suppressmsgboxes
+
 Start-Sleep -s 30
 
 # Signing binaries
