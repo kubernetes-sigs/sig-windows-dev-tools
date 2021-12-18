@@ -38,12 +38,13 @@ $antreaInstallationFiles = @{
       "https://raw.githubusercontent.com/antrea-io/antrea/main/build/yamls/base/conf/antrea-cni.conflist" = "C:/etc/cni/net.d/10-antrea.conflist"
       "https://raw.githubusercontent.com/antrea-io/antrea/main/hack/windows/Install-OVS.ps1" =  "C:/k/antrea/Install-OVS.ps1"
       "https://raw.githubusercontent.com/antrea-io/antrea/main/hack/windows/Helper.psm1" = "C:/k/antrea/Helper.psm1"
-      "https://github.com/antrea-io/antrea/releases/download/v1.2.3/antrea-agent-windows-x86_64.exe" = "C:/k/antrea/bin/antrea-agent.exe"
+      "https://github.com/antrea-io/antrea/releases/download/v1.4/antrea-agent-windows-x86_64.exe" = "C:/k/antrea/bin/antrea-agent.exe"
       "https://github.com/containernetworking/plugins/releases/download/v0.9.1/cni-plugins-windows-amd64-v0.9.1.tgz" = "C:/k/antrea/bin/cni-plugins-windows-amd64-v0.9.1.tgz"
       "https://dl.k8s.io/release/v1.21.0/bin/windows/amd64/kubectl.exe" = "C:/k/kubectl.exe"
       "https://gist.githubusercontent.com/knabben/5dec7c059916d3b487aeb2efd3a689b6/raw/5ae62d1bf8fddac44f81ba3cc532cce685ef8995/antrea.yaml" = "C:/k/antrea/etc/antrea-agent.conf"
       "https://slproweb.com/download/Win64OpenSSL-1_0_2u.exe" = "C:/ssl.exe"
-      "https://download.microsoft.com/download/2/E/6/2E61CFA4-993B-4DD4-91DA-3737CD5CD6E3/vcredist_x64.exe" = "C:/vcd.exe"
+      # this is on jay's bucket because its otherwise a flakey download from https://www.microsoft.com/en-us/download/details.aspx?id=48145
+      "https://storage.googleapis.com/jayunit100/vcd.exe" = "C:/vcd.exe"
 }
 
 foreach ($theURL in $antreaInstallationFiles.keys) {
