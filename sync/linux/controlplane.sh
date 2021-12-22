@@ -40,10 +40,8 @@ k8s_kubelet_node_ip=${5}
 echo "Using $kubernetes_version as the Kubernetes version"
 echo "Overwriting bins is set to '$overwrite_bins'"
 
-# Add GDP keys and repositories for both Docker and Kubernetes
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+# Add GPG keys and repository for Kubernetes
 curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
-sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
 cat << EOF | sudo tee /etc/apt/sources.list.d/kubernetes.list
 deb https://apt.kubernetes.io/ kubernetes-xenial main
 EOF
@@ -72,13 +70,13 @@ EOF
 # Apply sysctl params without reboot
 sudo sysctl --system
 
-# Install Docker and Kubernetes binaries
-sudo apt-get install -y docker-ce=5:20.10.5~3-0~ubuntu-$(lsb_release -cs) \
+# Install containerd and Kubernetes binaries
+sudo apt-get install -y containerd \
 kubelet=${k8s_linux_kubelet_deb}-00 \
 kubeadm=${k8s_linux_kubelet_deb}-00 \
 kubectl=${k8s_linux_kubelet_deb}-00
 
-sudo apt-mark hold docker-ce kubelet kubeadm kubectl
+sudo apt-mark hold kubelet kubeadm kubectl
 if $overwrite_linux_bins ; then
   echo "overwriting binaries ..."
   for BIN in kubeadm kubectl kubelet
@@ -98,6 +96,7 @@ fi
 sudo mkdir -p /etc/containerd
 containerd config default | sudo tee /etc/containerd/config.toml
 sudo systemctl restart containerd
+sudo crictl config --set runtime-endpoint=unix:///run/containerd/containerd.sock
 
 # TODO HELP WANTED
 #start cluster with Flannel:
@@ -121,12 +120,6 @@ sudo systemctl restart containerd
 # k8s.gcr.io/coredns:1.7.0
 # sudo ctr images tag k8s.gcr.io/etcd:3.4.13-0 k8s.gcr.io/etcd:v1.22.0-alpha.3.31_a3abd06ad53b2f
 # sudo kubeadm init --apiserver-advertise-address=10.20.30.10 --pod-network-cidr=10.244.0.0/16 --image-repository="k8s.gcr.io" --kubernetes-version="v1.22.0-alpha.3.31+a3abd06ad53b2f"
-sudo docker pull k8s.gcr.io/etcd:3.4.13-0
-sudo docker pull k8s.gcr.io/pause:3.4.1
-sudo docker pull k8s.gcr.io/coredns/coredns:v1.8.0
-sudo docker tag k8s.gcr.io/etcd:3.4.13-0 gcr.io/k8s-staging-ci-images/etcd:3.4.13-0
-sudo docker tag k8s.gcr.io/pause:3.4.1 gcr.io/k8s-staging-ci-images/pause:3.4.1
-sudo docker tag k8s.gcr.io/coredns/coredns:v1.8.0 gcr.io/k8s-staging-ci-images/coredns/coredns:v1.8.0
 
 cat << EOF > /var/sync/shared/kubeadm.yaml
 apiVersion: kubeadm.k8s.io/v1beta2
@@ -141,7 +134,6 @@ nodeRegistration:
 apiVersion: kubeadm.k8s.io/v1beta2
 kind: ClusterConfiguration
 kubernetesVersion: $k8s_linux_apiserver
-imageRepository: $k8s_linux_registry
 networking:
   podSubnet: "100.244.0.0/16"
 EOF
