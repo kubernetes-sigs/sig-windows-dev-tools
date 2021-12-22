@@ -52,15 +52,15 @@ foreach ($e in $avexceptions) {
 
 # Get HostIP and set in kubeadm-flags.env
 [Environment]::SetEnvironmentVariable("NODE_NAME", (hostname).ToLower())
-$env:HostIP = (
-  Get-NetIPConfiguration |
-  Where-Object {
-      $_.IPv4DefaultGateway -ne $null -and $_.NetAdapter.Status -ne "Disconnected"
-  }
-).IPv4Address.IPAddress
+#$env:HostIP = (
+#  Get-NetIPConfiguration |
+#  Where-Object {
+#      $_.IPv4DefaultGateway -ne $null -and $_.NetAdapter.Status -ne "Disconnected"
+#  }
+#).IPv4Address.IPAddress
 
 $file = 'C:\var\lib\kubelet\kubeadm-flags.env'
-$newstr ="--node-ip=" + $env:HostIP
+$newstr ="--node-ip=10.20.30.11"
 $raw = Get-Content -Path $file -TotalCount 1
 $raw = $raw -replace ".$"
 $new = "$($raw) $($newstr)`""
@@ -110,7 +110,7 @@ if (!(Test-Path $antrea_helper)) {
 }
 Import-Module $antrea_helper
 
-& Install-AntreaAgent -KubernetesVersion "v$KubernetesVersion" -KubernetesHome "c:/k" -KubeConfig "C:/etc/kubernetes/kubelet.conf" -AntreaVersion "v1.2.3" -AntreaHome "c:/k/antrea"
+& Install-AntreaAgent -KubernetesVersion "v$KubernetesVersion" -KubernetesHome "c:/k" -KubeConfig "C:/etc/kubernetes/kubelet.conf" -AntreaVersion "v1.4.0" -AntreaHome "c:/k/antrea"
 New-KubeProxyServiceInterface
 
 # ### Installing Kube-Proxy

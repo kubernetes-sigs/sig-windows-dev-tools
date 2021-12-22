@@ -35,7 +35,7 @@ mkdir -Force C:/k/antrea/etc/ # for antrea-agent.conf
 # Downloading from vcredist_x64.exe from microsoft.com is flaking inside the script, if this happens 
 # need to do it manually.
 $antreaInstallationFiles = @{
-      "https://raw.githubusercontent.com/antrea-io/antrea/main/build/yamls/base/conf/antrea-cni.conflist" = "C:/etc/cni/net.d/10-antrea.conflist"
+      "https://gist.githubusercontent.com/knabben/f478afc647152bf5c9702411296c604d/raw/fb093e42624411ba2e6933837d3664be34e09320/antrea-cni.conflist" = "C:/etc/cni/net.d/10-antrea.conflist"
       "https://raw.githubusercontent.com/antrea-io/antrea/main/hack/windows/Install-OVS.ps1" =  "C:/k/antrea/Install-OVS.ps1"
       "https://raw.githubusercontent.com/antrea-io/antrea/main/hack/windows/Helper.psm1" = "C:/k/antrea/Helper.psm1"
       "https://github.com/antrea-io/antrea/releases/download/v1.4.0/antrea-agent-windows-x86_64.exe" = "C:/k/antrea/bin/antrea-agent.exe"
