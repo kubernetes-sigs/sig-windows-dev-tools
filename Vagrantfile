@@ -55,10 +55,6 @@ Vagrant.configure(2) do |config|
     else
       controlplane.vm.provision "shell", path: "sync/linux/antrea-0.sh"
     end
-
-
-    controlplane.vm.provision :shell, privileged: false, inline: "kubectl create -f /var/sync/linux/smoke-test.yaml"
-
   end
 
   # WINDOWS WORKER (win server 2019)
@@ -86,17 +82,12 @@ Vagrant.configure(2) do |config|
       winw1.vm.provision "shell", path: "sync/shared/kubejoin.ps1", privileged: true #, run: "never"
     else
       # TODO should we pass KuberneteVersion to calico agent exe? and also service cidr if needed?
-      if cni == "calico" then
-        if not File.file?("cni") then
+      if not File.file?("cni") then
+        if cni == "calico" then
           # installs both felix and node
           winw1.vm.provision "shell", path: "forked/0-calico.ps1", privileged: true
           winw1.vm.provision "shell", path: "forked/1-calico.ps1", privileged: true
-        end
-      else
-        if File.file?("cni") then
-          print("cni already done for antrea")
         else
-          # Experimental at the moment...
           winw1.vm.provision "shell", path: "forked/0-antrea.ps1", privileged: true #, run: "always"
           winw1.vm.provision "shell", path: "forked/1-antrea.ps1", privileged: true, args: "-KubernetesVersion #{kubernetes_compatibility}" #, run: "always"
         end

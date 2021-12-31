@@ -14,6 +14,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
 #>
 
+# Force Kubernetes folder
+mkdir -Force C:/k/
+
+# Required configuration files symlink
+New-Item -ItemType HardLink -Target "C:\etc\kubernetes\kubelet.conf" -Path "C:\k\config"
+
 # Install NSSM: Workaround to privileged containers...
 mkdir C:/nssm/ -Force
 curl.exe -LO https://k8stestinfrabinaries.blob.core.windows.net/nssm-mirror/nssm-2.24.zip
@@ -26,14 +32,19 @@ mkdir -Force C:/k/antrea/ # scripts
 mkdir -Force C:/k/antrea/bin/ #executables
 mkdir -Force C:/k/antrea/etc/ # for antrea-agent.conf
 
+# Downloading from vcredist_x64.exe from microsoft.com is flaking inside the script, if this happens 
+# need to do it manually.
 $antreaInstallationFiles = @{
-      "https://raw.githubusercontent.com/antrea-io/antrea/main/build/yamls/base/conf/antrea-cni.conflist" = "C:/etc/cni/net.d/10-antrea.conflist"
+      "https://gist.githubusercontent.com/knabben/f478afc647152bf5c9702411296c604d/raw/fb093e42624411ba2e6933837d3664be34e09320/antrea-cni.conflist" = "C:/etc/cni/net.d/10-antrea.conflist"
       "https://raw.githubusercontent.com/antrea-io/antrea/main/hack/windows/Install-OVS.ps1" =  "C:/k/antrea/Install-OVS.ps1"
       "https://raw.githubusercontent.com/antrea-io/antrea/main/hack/windows/Helper.psm1" = "C:/k/antrea/Helper.psm1"
-      "https://github.com/antrea-io/antrea/releases/download/v1.3.0/antrea-agent-windows-x86_64.exe" = "C:/k/antrea/bin/antrea-agent.exe"
+      "https://github.com/antrea-io/antrea/releases/download/v1.4.0/antrea-agent-windows-x86_64.exe" = "C:/k/antrea/bin/antrea-agent.exe"
       "https://github.com/containernetworking/plugins/releases/download/v0.9.1/cni-plugins-windows-amd64-v0.9.1.tgz" = "C:/k/antrea/bin/cni-plugins-windows-amd64-v0.9.1.tgz"
       "https://dl.k8s.io/release/v1.21.0/bin/windows/amd64/kubectl.exe" = "C:/k/kubectl.exe"
-      "https://raw.githubusercontent.com/antrea-io/antrea/main/build/yamls/windows/base/conf/antrea-agent.conf" = "C:/k/antrea/etc/antrea-agent.conf"
+      "https://gist.githubusercontent.com/knabben/5dec7c059916d3b487aeb2efd3a689b6/raw/5ae62d1bf8fddac44f81ba3cc532cce685ef8995/antrea.yaml" = "C:/k/antrea/etc/antrea-agent.conf"
+      "https://slproweb.com/download/Win64OpenSSL-1_0_2u.exe" = "C:/ssl.exe"
+      # this is on jay's bucket because its otherwise a flakey download from https://www.microsoft.com/en-us/download/details.aspx?id=48145
+      "https://storage.googleapis.com/jayunit100/vcd.exe" = "C:/vcd.exe"
 }
 
 foreach ($theURL in $antreaInstallationFiles.keys) {
@@ -56,7 +67,22 @@ foreach ($theURL in $antreaInstallationFiles.keys) {
   }
   if (!(Test-Path $outPath)) {
     Write-Error "That download totally failed $outPath is not created...."
-    exit 1
+    exit 123
   }
 }
 
+
+Write-Output("Now trying to execute VCD.exe")
+
+C:/vcd.exe /quiet /norestart
+
+
+Write-Output("Now trying to execute SSL.exe")
+
+C:/ssl.exe /silent /verysilent /sp- /suppressmsgboxes
+
+Start-Sleep -s 30
+
+# Signing binaries
+Bcdedit.exe -set TESTSIGNING ON
+Restart-Computer
