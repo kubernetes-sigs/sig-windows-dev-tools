@@ -6,3 +6,6 @@ sync/shared/kubejoin.ps1
 sync/shared/kubeadm.yaml
 kubernetes
 .vagrant/
+
+# semaphores during build
+.lock/

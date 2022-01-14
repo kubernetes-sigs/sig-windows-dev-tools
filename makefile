@@ -31,8 +31,9 @@ all: 0-fetch-k8s 1-build-binaries 2-vagrant-up 3-smoke-test 4-e2e-test
 	./build.sh $(path)
 
 2-vagrant-up:
-	echo "cleaning up semaphores..."
-	rm -f up joined cni
+	@echo "cleaning up semaphores..."
+	@rm -rf .lock/
+	@mkdir -p .lock/
 
 	echo "######################################"
 	echo "Retry vagrant up if the first time the windows node failed"
@@ -42,11 +43,10 @@ all: 0-fetch-k8s 1-build-binaries 2-vagrant-up 3-smoke-test 4-e2e-test
 	
 	echo "*********** vagrant up first run done ~~~~ ENTERING WINDOWS BRINGUP LOOP ***"
 	until `vagrant status | grep winw1 | grep -q "running"` ; do vagrant up winw1 || echo failed_win_up ; done
-	touch up
 	until `vagrant ssh controlplane -c "kubectl get nodes" | grep -q winw1` ; do vagrant provision winw1 || echo failed_win_join; done
-	touch joined
+	@touch .lock/joined
 	vagrant provision winw1
-	touch cni
+	@touch .lock/cni
 
 3-smoke-test:
 	vagrant ssh controlplane -c "kubectl apply -f /var/sync/linux/smoke-test.yaml"
@@ -64,3 +64,4 @@ clean:
 	rm -f sync/shared/config
 	rm -f sync/shared/kubeadm.yaml
 	rm -f sync/shared/kubejoin.ps1
+	rm -rf .lock/
