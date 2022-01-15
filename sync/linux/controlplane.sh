@@ -154,6 +154,10 @@ cp $HOME/.kube/config /var/sync/shared/config
 rm -f /var/sync/shared/kubejoin.ps1
 
 cat << EOF > /var/sync/shared/kubejoin.ps1
+if(!(Test-Path ("C:\Program Files\containerd\crictl.exe"))) {
+    mv "C:\Users\vagrant\crictl.exe" "C:\Program Files\containerd\"
+}
+
 \$env:path += ";C:\Program Files\containerd"
 [Environment]::SetEnvironmentVariable("Path", \$env:Path, [System.EnvironmentVariableTarget]::Machine)
 EOF
