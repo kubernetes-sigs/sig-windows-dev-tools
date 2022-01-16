@@ -14,7 +14,10 @@ windows_node_ip: "10.20.30.11"
 # from https://apt.kubernetes.io/
 k8s_linux_registry: "gcr.io/k8s-staging-ci-images"
 k8s_linux_kubelet_deb:  "1.21.0"
-k8s_linux_apiserver: "ci/v1.22.0-alpha.3.31+a3abd06ad53b2f"
+
+# If no version provided for k8s_linux_apiserver it will take
+# the latest ci image version. Example: ci/v1.22.6-rc.0.55+487eef699dc8ad
+k8s_linux_apiserver: ""
 k8s_linux_kubelet_nodeip: "10.20.30.10"
 
 # WINDOWS KUBELET VERSION

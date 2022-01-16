@@ -7,7 +7,13 @@ settingsFile = ENV["VAGRANT_VARIABLES"] || 'sync/shared/variables.yaml'
 settings = YAML.load_file settingsFile
 k8s_linux_registry=settings['k8s_linux_registry']
 k8s_linux_kubelet_deb=settings['k8s_linux_kubelet_deb']
-k8s_linux_apiserver=settings['k8s_linux_apiserver']
+
+if settings['k8s_linux_apiserver'] == "" then
+    k8s_linux_apiserver="ci/" + `curl https://storage.googleapis.com/kubernetes-release-dev/ci/latest.txt | tr -d '\n'`
+else
+    k8s_linux_apiserver=settings['k8s_linux_apiserver']
+end
+
 k8s_linux_kubelet_nodeip=settings['k8s_linux_kubelet_nodeip']
 kubernetes_compatibility=settings['kubernetes_compatibility']
 
