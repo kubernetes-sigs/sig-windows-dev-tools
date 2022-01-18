@@ -77,12 +77,12 @@ Vagrant.configure(2) do |config|
     winw1.winrm.username = "vagrant"
     winw1.winrm.password = "vagrant"
 
-    if not File.file?("joined") then
+    if not File.file?(".lock/joined") then
       # Joining the controlplane
       winw1.vm.provision "shell", path: "sync/shared/kubejoin.ps1", privileged: true #, run: "never"
     else
       # TODO should we pass KuberneteVersion to calico agent exe? and also service cidr if needed?
-      if not File.file?("cni") then
+      if not File.file?(".lock/cni") then
         if cni == "calico" then
           # installs both felix and node
           winw1.vm.provision "shell", path: "forked/0-calico.ps1", privileged: true
