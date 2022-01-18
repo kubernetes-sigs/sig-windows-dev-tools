@@ -13,16 +13,23 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 '
+
 set -e
 
 # TODO Add these as command line options
 
-echo "ARGS: $1 $2 $3 $4 $5"
-if [[ "$1" == "" || "$2" == "" || "$3" == "" || "$4" == "" || "$5" == "" ]] ; then
+#k8s_version
+#k8s_linux_apiserver # can be discovered if version exists - otherwise fetch from master
+#k8s_kubelet_noip
+
+# deleted 1 - overwrite_linux_bins -- 2 - k8s_linux_registry
+
+echo "ARGS: $1 $2"
+if [[ "$1" == "" || "$2" == "" ]]; then
   cat << EOF
     Missing args.
-    You need to send overwrite_linux_bins, k8s_linux_registry, k8s_linux_kubelet_deb, k8s_linux_apiserver, k8s_kubelet_nodeip i.e. something like...
-    ./controlplane.sh false gcr.io/k8s-staging-ci-images 1.21.0 v1.22.0-alpha.3.31+a3abd06ad53b2f"}
+    You need to send kubernetes_version, k8s_kubelet_nodeip i.e.
+    ./controlplane.sh 1.21.0 10.20.30.10
     Normally these are in your variables.yml, and piped in by Vagrant.
     So, check that you didn't break the Vagrantfile :)
     BTW the only reason this error message is fancy is because friedrich said we should be curteous to people who want to
@@ -31,14 +38,13 @@ EOF
   exit 1
 fi
 
-overwrite_linux_bins=${1}
-k8s_linux_registry=${2}
-k8s_linux_kubelet_deb=${3}
-k8s_linux_apiserver=${4}
-k8s_kubelet_node_ip=${5}
+kubernetes_version=${1}
+k8s_kubelet_node_ip=${2}
+k8s_linux_apiserver="ci/latest-${kubernetes_version}"
 
 echo "Using $kubernetes_version as the Kubernetes version"
-echo "Overwriting bins is set to '$overwrite_bins'"
+
+# Installing packages
 
 # Add GPG keys and repository for Kubernetes
 curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
@@ -47,8 +53,7 @@ deb https://apt.kubernetes.io/ kubernetes-xenial main
 EOF
 sudo apt-get update
 
-
-#disable swap
+# Disable swap
 sudo swapoff -a
 sudo sed -i '/swap/d' /etc/fstab
 
@@ -70,27 +75,22 @@ EOF
 # Apply sysctl params without reboot
 sudo sysctl --system
 
-# Install containerd and Kubernetes binaries
-sudo apt-get install -y containerd \
-kubelet=${k8s_linux_kubelet_deb}-00 \
-kubeadm=${k8s_linux_kubelet_deb}-00 \
-kubectl=${k8s_linux_kubelet_deb}-00
+# Install containerd and Kubernetes binaries, using latest available, and
+# overwritting the binaries later.
+sudo apt-get install -y containerd kubelet kubeadm kubectl
 
 sudo apt-mark hold kubelet kubeadm kubectl
-if $overwrite_linux_bins ; then
-  echo "overwriting binaries ..."
-  for BIN in kubeadm kubectl kubelet
-  do
-      echo "=> $BIN" 
-      sudo cp /var/sync/linux/bin/$BIN /bin/ -f
-  done
-fi
 
-# #bridged traffic to iptables is enabled for kube-router:
-# echo "net.bridge.bridge-nf-call-iptables=1" | sudo tee -a /etc/sysctl.conf
-# echo "net.bridge.bridge-nf-call-ip6tables=1" | sudo tee -a /etc/sysctl.conf
-# echo "net.bridge.bridge-nf-call-arptables=1" | sudo tee -a /etc/sysctl.conf
-# sudo sysctl -p
+## Test if binaries folder exists
+#if $overwrite_linux_bins ; then
+for BIN in kubeadm kubectl kubelet
+do
+  file="/var/sync/linux/bin/$BIN"
+  if [ -f $file ]; then
+    echo "copying $file to node path.."
+    sudo cp $file /usr/bin/ -f
+  fi
+done
 
 # Configuring and starting containerd
 sudo mkdir -p /etc/containerd
@@ -98,31 +98,8 @@ containerd config default | sudo tee /etc/containerd/config.toml
 sudo systemctl restart containerd
 sudo crictl config --set runtime-endpoint=unix:///run/containerd/containerd.sock
 
-# TODO HELP WANTED
-#start cluster with Flannel:
-# https://stackoverflow.com/questions/60391127/kubeadm-init-apiserver-advertise-address-flag-equivalent-in-config-file
-# Someday consider
-  #cat <<EOF | sudo tee kubeadm-config.yaml
-  #kind: ClusterConfiguration
-  #apiVersion: kubeadm.k8s.io/v1beta2
-  #kubernetes_version: v$kubernetes_version
-  #networking:
-  #  podSubnet: "10.244.0.0/16"
-  #---
-  #kind: KubeletConfiguration
-  #apiVersion: kubelet.config.k8s.io/v1beta1
-  #cgroupDriver: systemd
-  #EOF
-# RIGHT NOW we NEED to use ApiSErverAdvertiseAddress... but not sure how to do that equivalent in kubeadm.
-
-# k8s.gcr.io/pause:3.2
-# k8s.gcr.io/etcd:3.4.13-0
-# k8s.gcr.io/coredns:1.7.0
-# sudo ctr images tag k8s.gcr.io/etcd:3.4.13-0 k8s.gcr.io/etcd:v1.22.0-alpha.3.31_a3abd06ad53b2f
-# sudo kubeadm init --apiserver-advertise-address=10.20.30.10 --pod-network-cidr=10.244.0.0/16 --image-repository="k8s.gcr.io" --kubernetes-version="v1.22.0-alpha.3.31+a3abd06ad53b2f"
-
 cat << EOF > /var/sync/shared/kubeadm.yaml
-apiVersion: kubeadm.k8s.io/v1beta2
+apiVersion: kubeadm.k8s.io/v1beta3
 kind: InitConfiguration
 localAPIEndpoint:
   advertiseAddress: $k8s_kubelet_node_ip
@@ -131,7 +108,7 @@ nodeRegistration:
     node-ip: $k8s_kubelet_node_ip
     cgroup-driver: cgroupfs
 ---
-apiVersion: kubeadm.k8s.io/v1beta2
+apiVersion: kubeadm.k8s.io/v1beta3
 kind: ClusterConfiguration
 kubernetesVersion: $k8s_linux_apiserver
 networking:
@@ -154,9 +131,8 @@ cp $HOME/.kube/config /var/sync/shared/config
 rm -f /var/sync/shared/kubejoin.ps1
 
 cat << EOF > /var/sync/shared/kubejoin.ps1
-if(!(Test-Path ("C:\Program Files\containerd\crictl.exe"))) {
-    mv "C:\Users\vagrant\crictl.exe" "C:\Program Files\containerd\"
-}
+stop-service -name kubelet
+cp C:\sync\windows\bin\* c:\k
 
 \$env:path += ";C:\Program Files\containerd"
 [Environment]::SetEnvironmentVariable("Path", \$env:Path, [System.EnvironmentVariableTarget]::Machine)
@@ -165,83 +141,6 @@ EOF
 kubeadm token create --print-join-command >> /var/sync/shared/kubejoin.ps1
 
 sed -i 's#--token#--cri-socket "npipe:////./pipe/containerd-containerd" --token#g' /var/sync/shared/kubejoin.ps1
-
-### NOW MAKE WINDOWS PROXY SECRETS...
-#### TODO Put these in a single file or something...
-
-cat << EOF > kube-proxy-and-antrea.yaml
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  labels:
-    app: kube-proxy
-  name: kube-proxy-windows
-  namespace: kube-system
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-metadata:
-  name: node:kube-proxy
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: system:node-proxier
-subjects:
-- kind: Group
-  name: system:node
-  apiGroup: rbac.authorization.k8s.io
-- kind: Group
-  name: system:nodes
-  apiGroup: rbac.authorization.k8s.io
-- kind: ServiceAccount
-  name: kube-proxy-windows
-  namespace: kube-system
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-metadata:
-  name: node:god2
-  namespace: kube-system
-subjects:
-- kind: User
-  name: system:node:winw1
-  apiGroup: rbac.authorization.k8s.io
-roleRef:
-  kind: ClusterRole
-  name: cluster-admin
-  apiGroup: rbac.authorization.k8s.io
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-metadata:
-  name: node:god3
-  namespace: kube-system
-subjects:
-- kind: Group
-  name: system:nodes
-  apiGroup: rbac.authorization.k8s.io
-roleRef:
-  kind: ClusterRole
-  name: cluster-admin
-  apiGroup: rbac.authorization.k8s.io
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-metadata:
-  name: node:god4
-  namespace: kube-system
-subjects:
-- kind: User
-  name: system:serviceaccount:kube-system:kube-proxy-windows
-  apiGroup: rbac.authorization.k8s.io
-roleRef:
-  kind: ClusterRole
-  name: cluster-admin
-  apiGroup: rbac.authorization.k8s.io
-EOF
-
-kubectl create -f kube-proxy-and-antrea.yaml
-
-echo "testing that we didnt blow anything up "
+echo "Testing controlplane nodes!"
 
 kubectl get pods -A

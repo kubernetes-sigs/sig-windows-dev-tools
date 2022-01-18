@@ -16,10 +16,21 @@ limitations under the License.
 '
 set -e
 
+START_DIR=`pwd`
+BUILD_FROM_SOURCE=0
+VARIABLES_FILE="sync/shared/variables.yaml"
+
+download_binaries () {
+    for bin in kubelet kube-proxy kubeadm kubectl
+    do
+        curl "https://storage.googleapis.com/k8s-release-dev/ci/${KUBERNETES_VERSION}/bin/windows/amd64/${bin}.exe" -o $START_DIR/sync/windows/bin/${bin}.exe
+        curl "https://storage.googleapis.com/k8s-release-dev/ci/${KUBERNETES_VERSION}/bin/linux/amd64/${bin}.exe" -o $START_DIR/sync/linux/bin/${bin}.exe
+    done
+}
+
 build_binaries () {
 	echo "building kube locally inside `pwd` from $1"
-	startDir=`pwd`
-  echo "changing into directory $1 to start the build"
+    echo "changing into directory $1 to start the build"
 	pushd $1
 	if [[ -d ./_output/dockerized/bin/windows/amd64/ ]]; then
 	echo "skipping compilation of windows bits... _output is present"
@@ -31,25 +42,31 @@ build_binaries () {
 			echo "Insufficient LOCAL memory to build k8s before the vagrant builder starts"
 			exit 1
 		fi
+
 		# use the kubernetes/build/run script to build specific targets...
 		./build/run.sh make kubelet KUBE_BUILD_PLATFORMS=windows/amd64
 		./build/run.sh make kube-proxy KUBE_BUILD_PLATFORMS=windows/amd64
+		./build/run.sh make kubeadm KUBE_BUILD_PLATFORMS=windows/amd64
 
 		./build/run.sh make kubelet KUBE_BUILD_PLATFORMS=linux/amd64
 		./build/run.sh make kubectl KUBE_BUILD_PLATFORMS=linux/amd64
 		./build/run.sh make kubeadm KUBE_BUILD_PLATFORMS=linux/amd64
 	fi
+}
+
+copy_to_sync () {
 	# TODO replace with https://github.com/kubernetes-sigs/sig-windows-tools/issues/152 at some point
-	echo "Copying files to sync in ... $startDir"
-	#win
-	mkdir -p $startDir/sync/windows/bin
-	cp -f ./_output/dockerized/bin/windows/amd64/kubelet.exe $startDir/sync/windows/bin
-	cp -f ./_output/dockerized/bin/windows/amd64/kube-proxy.exe $startDir/sync/windows/bin
-	#linux
-	mkdir -p $startDir/sync/linux/bin
-	cp -f ./_output/dockerized/bin/linux/amd64/kubelet $startDir/sync/linux/bin
-	cp -f ./_output/dockerized/bin/linux/amd64/kubectl $startDir/sync/linux/bin
-	cp -f ./_output/dockerized/bin/linux/amd64/kubeadm $startDir/sync/linux/bin
+	echo "Copying files to sync in ... $START_DIR"
+
+	# Windows binaries
+	cp -f ./_output/dockerized/bin/windows/amd64/kubelet.exe $START_DIR/sync/windows/bin
+	cp -f ./_output/dockerized/bin/windows/amd64/kube-proxy.exe $START_DIR/sync/windows/bin
+	cp -f ./_output/dockerized/bin/windows/amd64/kubeadm.exe $START_DIR/sync/windows/bin
+
+	# Linux binaries
+	cp -f ./_output/dockerized/bin/linux/amd64/kubelet $START_DIR/sync/linux/bin
+	cp -f ./_output/dockerized/bin/linux/amd64/kubectl $START_DIR/sync/linux/bin
+	cp -f ./_output/dockerized/bin/linux/amd64/kubeadm $START_DIR/sync/linux/bin
 	popd
 }
 
@@ -59,14 +76,29 @@ cleanup () {
     rm -rf ../kubernetes
 }
 
-echo "args $0 -- $1 - "
-# check if theres an input for the path
-if [[ ! -z "$1" ]] ;then
-	echo "Directory kubernetes provided... building"
-	build_binaries $1
-	cleanup
-else
-	echo "missing path argument $1 , need a kubernetes/ path"
-	exit 1
+# Check if variable is set
+if [ -z $1 ]; then
+    echo "No path passed to the script, exiting."
+    exit 1
 fi
 
+# Test if it should be build from source
+[[ 
+  $(awk '/build_from_source/ {print $2}' ${VARIABLES_FILE} | sed -e 's/^"//' -e 's/"$//' | head -1) =~ "true" 
+]] && BUILD_FROM_SOURCE=1
+
+version=`awk '/kubernetes_version/ {print $2}' ${VARIABLES_FILE} | sed -e 's/^"//' -e 's/"$//' | head -1`
+KUBERNETES_VERSION=`curl -f https://storage.googleapis.com/k8s-release-dev/ci/latest-${version}.txt`
+
+mkdir -p $START_DIR/sync/windows/bin
+mkdir -p $START_DIR/sync/linux/bin
+
+# check if theres an input for the path
+if [[ $BUILD_FROM_SOURCE -eq 1 ]] ;then
+	echo "Directory Kubernetes provided... building"
+	build_binaries $1
+    copy_to_sync
+	cleanup
+else
+    download_binaries
+fi
