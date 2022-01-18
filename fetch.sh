@@ -15,20 +15,18 @@ See the License for the specific language governing permissions and
 limitations under the License.
 '
 set -e
-variables_file="sync/shared/variables.yaml"
 
-# kubernetes version can be passed as param, otherwise it will be read from variables_file, otherwise it uses the default "1.21.0"
-kubernetes_sha=$1
-if [ -z ${kubernetes_sha} ]; then
-  if [ -f ${variables_file} ]; then
-    kubernetes_sha=$(awk '/kubernetes_sha/ {print $2}' ${variables_file} | sed -e 's/^"//' -e 's/"$//'); #read param from file
-    echo "using kubernetes version $kubernetes_version (read from ${variables_file})"
-  else
-    kubernetes_sha="cb303e613a121a29364f75cc67d3d580833a7479"
-    echo "using kubernetes version ${kubernetes_sha} (using default)"
-  fi
-else
-  echo "using kubernetes version ${kubernetes_sha} (passed as parameter)"
+# kubernetes version can be passed as param, otherwise it will be read from variables_file
+
+variables_file="sync/shared/variables.yaml"
+version=${1:-`awk '/kubernetes_version/ {print \$2}' ${variables_file} | sed -e 's/^"//' -e 's/"$//' | head -1`}
+kubernetes_latest_file=`curl -f https://storage.googleapis.com/k8s-release-dev/ci/latest-${version}.txt`
+
+kubernetes_sha=$(echo ${kubernetes_latest_file} | cut -d "+" -f 2)
+kubernetes_tag=$(echo ${kubernetes_latest_file} | cut -d "+" -f 1)
+
+if [ ! -z ${kubernetes_sha} ]; then
+  echo "Using Kubernetes version ${kubernetes_tag}-${kubernetes_sha} from upstream"
 fi
 
 if [[ -d "kubernetes" ]] ; then
@@ -43,11 +41,3 @@ else
   popd
 fi
 
-
-# BELOW THIS LINE ADD YOUR CUSTOM BUILD LOGIC #########
-# FOR EXAMPLE
-# pushd kubernetes
-# git fetch origin refs/pull/97812/head:antonio
-# git checkout -b antonio
-# rm -rf _output
-# pop
