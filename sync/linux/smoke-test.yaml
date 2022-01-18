@@ -56,6 +56,10 @@ spec:
       labels:
         app: whoami-windows
     spec:
+      securityContext:
+         windowsOptions:
+           hostProcess: true
+      hostNetwork: true
       containers:
       - image: stefanscherer/whoami:windows-amd64-2.0.1
         name: whoami-windows

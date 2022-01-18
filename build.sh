@@ -23,8 +23,10 @@ VARIABLES_FILE="sync/shared/variables.yaml"
 download_binaries () {
     for bin in kubelet kube-proxy kubeadm kubectl
     do
+        # windows binaries
         curl "https://storage.googleapis.com/k8s-release-dev/ci/${KUBERNETES_VERSION}/bin/windows/amd64/${bin}.exe" -o $START_DIR/sync/windows/bin/${bin}.exe
-        curl "https://storage.googleapis.com/k8s-release-dev/ci/${KUBERNETES_VERSION}/bin/linux/amd64/${bin}.exe" -o $START_DIR/sync/linux/bin/${bin}.exe
+        # linux binaries
+        curl "https://storage.googleapis.com/k8s-release-dev/ci/${KUBERNETES_VERSION}/bin/linux/amd64/${bin}" -o $START_DIR/sync/linux/bin/${bin}; chmod +x $START_DIR/sync/linux/bin/${bin}
     done
 }
 

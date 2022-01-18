@@ -14,15 +14,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 #>
 Param(
-    [parameter(HelpMessage="Kubernetes version to use")]
-    [string] $KubernetesVersion = "1.21.0",
-
-    [parameter(HelpMessage="Container runtime that Kubernets will use")]
-    [ValidateSet("containerD", "Docker")]
-    [string] $ContainerRuntime = "containerD"
+    [parameter(HelpMessage="Windows Node IP")]
+    [string] $windowsNodeIP = "10.20.30.11"
 )
 $ErrorActionPreference = 'Stop'
-Write-Output "Using Kubernetes version '$KubernetesVersion'"
 
 $folders = @('C:\k\antrea','C:\var\log\antrea','C:\k\antrea\bin', 'C:\var\log\kube-proxy', 'C:\opt\cni\bin', 'C:\etc\cni\net.d')
 foreach ($f in $folders) {
@@ -51,16 +46,9 @@ foreach ($e in $avexceptions) {
 }
 
 # Get HostIP and set in kubeadm-flags.env
-[Environment]::SetEnvironmentVariable("NODE_NAME", (hostname).ToLower())
-#$env:HostIP = (
-#  Get-NetIPConfiguration |
-#  Where-Object {
-#      $_.IPv4DefaultGateway -ne $null -and $_.NetAdapter.Status -ne "Disconnected"
-#  }
-#).IPv4Address.IPAddress
-
 $file = 'C:\var\lib\kubelet\kubeadm-flags.env'
-$newstr ="--node-ip=10.20.30.11"
+$newstr ="--node-ip=$($windowsNodeIP)"  # pass from args
+
 $raw = Get-Content -Path $file -TotalCount 1
 $raw = $raw -replace ".$"
 $new = "$($raw) $($newstr)`""
@@ -110,7 +98,7 @@ if (!(Test-Path $antrea_helper)) {
 }
 Import-Module $antrea_helper
 
-& Install-AntreaAgent -KubernetesVersion "v$KubernetesVersion" -KubernetesHome "c:/k" -KubeConfig "C:/etc/kubernetes/kubelet.conf" -AntreaVersion "v1.4.0" -AntreaHome "c:/k/antrea"
+& Install-AntreaAgent -KubernetesHome "c:/k" -KubeConfig "C:/etc/kubernetes/kubelet.conf" -AntreaVersion "v1.4.0" -AntreaHome "c:/k/antrea"
 New-KubeProxyServiceInterface
 
 # ### Installing Kube-Proxy
