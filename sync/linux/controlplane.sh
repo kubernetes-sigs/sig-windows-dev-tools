@@ -16,20 +16,12 @@ limitations under the License.
 
 set -e
 
-# TODO Add these as command line options
-
-#k8s_version
-#k8s_linux_apiserver # can be discovered if version exists - otherwise fetch from master
-#k8s_kubelet_noip
-
-# deleted 1 - overwrite_linux_bins -- 2 - k8s_linux_registry
-
 echo "ARGS: $1 $2"
 if [[ "$1" == "" || "$2" == "" ]]; then
   cat << EOF
     Missing args.
     You need to send kubernetes_version, k8s_kubelet_nodeip i.e.
-    ./controlplane.sh 1.21.0 10.20.30.10
+    ./controlplane.sh 1.21 10.20.30.10
     Normally these are in your variables.yml, and piped in by Vagrant.
     So, check that you didn't break the Vagrantfile :)
     BTW the only reason this error message is fancy is because friedrich said we should be curteous to people who want to
@@ -40,7 +32,7 @@ fi
 
 kubernetes_version=${1}
 k8s_kubelet_node_ip=${2}
-k8s_linux_apiserver="ci/latest-${kubernetes_version}"
+k8s_linux_apiserver="stable-${kubernetes_version}"
 
 echo "Using $kubernetes_version as the Kubernetes version"
 
@@ -115,7 +107,8 @@ networking:
   podSubnet: "100.244.0.0/16"
 EOF
 
-sudo kubeadm init --config=/var/sync/shared/kubeadm.yaml --v=6
+# Ignore kubelet mismatch in the copy process
+sudo kubeadm init --config=/var/sync/shared/kubeadm.yaml --v=6 --ignore-preflight-errors=KubeletVersion
 
 #to start the cluster with the current user:
 mkdir -p $HOME/.kube
@@ -141,6 +134,80 @@ EOF
 kubeadm token create --print-join-command >> /var/sync/shared/kubejoin.ps1
 
 sed -i 's#--token#--cri-socket "npipe:////./pipe/containerd-containerd" --token#g' /var/sync/shared/kubejoin.ps1
+
+cat << EOF > kube-proxy-and-antrea.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    app: kube-proxy
+  name: kube-proxy-windows
+  namespace: kube-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: node:kube-proxy
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: system:node-proxier
+subjects:
+- kind: Group
+  name: system:node
+  apiGroup: rbac.authorization.k8s.io
+- kind: Group
+  name: system:nodes
+  apiGroup: rbac.authorization.k8s.io
+- kind: ServiceAccount
+  name: kube-proxy-windows
+  namespace: kube-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: node:god2
+  namespace: kube-system
+subjects:
+- kind: User
+  name: system:node:winw1
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: ClusterRole
+  name: cluster-admin
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: node:god3
+  namespace: kube-system
+subjects:
+- kind: Group
+  name: system:nodes
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: ClusterRole
+  name: cluster-admin
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: node:god4
+  namespace: kube-system
+subjects:
+- kind: User
+  name: system:serviceaccount:kube-system:kube-proxy-windows
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: ClusterRole
+  name: cluster-admin
+  apiGroup: rbac.authorization.k8s.io
+EOF
+
+kubectl create -f kube-proxy-and-antrea.yaml
+
 echo "Testing controlplane nodes!"
 
 kubectl get pods -A

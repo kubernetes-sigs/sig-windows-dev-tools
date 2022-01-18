@@ -8,7 +8,6 @@ settings = YAML.load_file settingsFile
 
 kubernetes_version=settings["kubernetes_version"]
 k8s_linux_kubelet_nodeip=settings['k8s_linux_kubelet_nodeip']
-kubernetes_compatibility=settings['kubernetes_compatibility']
 
 linux_ram = settings['linux_ram']
 linux_cpus = settings['linux_cpus']
@@ -82,7 +81,7 @@ Vagrant.configure(2) do |config|
           winw1.vm.provision "shell", path: "sync/windows/1-calico.ps1", privileged: true
         else
           winw1.vm.provision "shell", path: "sync/windows/0-antrea.ps1", privileged: true #, run: "always"
-          winw1.vm.provision "shell", path: "sync/windows/1-antrea.ps1", privileged: true, args: "-KubernetesVersion #{kubernetes_compatibility}" #, run: "always"
+          winw1.vm.provision "shell", path: "sync/windows/1-antrea.ps1", privileged: true, args: "#{windows_node_ip}" #, run: "always"
         end
       end
     end
