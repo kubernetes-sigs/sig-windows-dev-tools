@@ -22,7 +22,7 @@ all: 0-fetch-k8s 1-build-binaries 2-vagrant-up 3-smoke-test 4-e2e-test
 3: 3-smoke-test
 4: 4-e2e-test
 
-0-fetch-k8s:
+0-fetch-k8s: clean
 	chmod +x fetch.sh
 	./fetch.sh
 
@@ -52,13 +52,15 @@ all: 0-fetch-k8s 1-build-binaries 2-vagrant-up 3-smoke-test 4-e2e-test
 	vagrant ssh controlplane -c "kubectl apply -f /var/sync/linux/smoke-test.yaml"
 	vagrant ssh controlplane -c "kubectl scale deployment whoami-windows --replicas 0"
 	vagrant ssh controlplane -c "kubectl scale deployment whoami-windows --replicas 3"
-	vagrant ssh controlplane -c "kubectl wait --for=condition=Ready=true pod -l 'app=whoami-windows'"
+	vagrant ssh controlplane -c "kubectl wait --for=condition=Ready=true pod -l 'app=whoami-windows' --timeout=300s"
 	vagrant ssh controlplane -c "kubectl exec -it netshoot -- curl http://whoami-windows:80/"
 
 4-e2e-test:
 	vagrant ssh controlplane -c "cd /var/sync/linux && chmod +x ./e2e.sh && ./e2e.sh"
 
 clean:
+	vagrant destroy --force
+	rm -fr kubernetes/
 	rm -rf sync/linux/bin/
 	rm -rf sync/windows/bin/
 	rm -f sync/shared/config

@@ -71,6 +71,7 @@ Vagrant.configure(2) do |config|
 
     if not File.file?(".lock/joined") then
       # Joining the controlplane
+      winw1.vm.provision "shell", path: "sync/windows/updates.ps1", privileged: true #, run: "never"
       winw1.vm.provision "shell", path: "sync/shared/kubejoin.ps1", privileged: true #, run: "never"
     else
       # TODO should we pass KuberneteVersion to calico agent exe? and also service cidr if needed?
