@@ -85,6 +85,20 @@ do
   fi
 done
 
+# kubetail
+echo "Installing kubetail..."
+sudo /var/sync/linux/tools/controlplane/kubetail/install
+
+# Installing krew
+echo "Installing krew..."
+/var/sync/linux/tools/controlplane/krew/install
+export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
+
+echo "Installing krew plugins..."
+kubectl krew install iexec
+kubectl krew install view-secret
+kubectl krew install ctx
+
 # Configuring and starting containerd
 sudo mkdir -p /etc/containerd
 containerd config default | sudo tee /etc/containerd/config.toml
