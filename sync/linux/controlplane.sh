@@ -70,7 +70,8 @@ sudo sysctl --system
 # Install containerd and Kubernetes binaries, using latest available, and
 # overwritting the binaries later.
 sudo apt-get install -y containerd kubelet kubeadm kubectl
-
+echo "alias k=kubectl" >> ~/.bashrc
+source ~/.bashrc
 sudo apt-mark hold kubelet kubeadm kubectl
 
 ## Test if binaries folder exists
