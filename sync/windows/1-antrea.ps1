@@ -112,7 +112,7 @@ $nssm = (Get-Command nssm).Source
 & nssm set antrea-agent Start SERVICE_DELAYED_AUTO_START
 
 # Start Services
-start-service kubelet
+restart-service kubelet
 start-service kube-proxy
 Write-Output("...sleeping for a second before smoke testing...")
 sleep 5

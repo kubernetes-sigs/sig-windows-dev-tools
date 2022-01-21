@@ -52,7 +52,8 @@ Vagrant.configure(2) do |config|
   # WINDOWS WORKER (win server 2019)
   config.vm.define :winw1 do |winw1|
     winw1.vm.host_name = "winw1"
-    winw1.vm.box = "FriedrichWilken/Windows_2019-sig-win-dev-tools"
+    winw1.vm.box = "sig-windows-dev-tools/windows-2019"
+    winw1.vm.box_version = "1.0"
 
     winw1.vm.provider :virtualbox do |vb|
       vb.memory = windows_ram
@@ -71,7 +72,6 @@ Vagrant.configure(2) do |config|
 
     if not File.file?(".lock/joined") then
       # Joining the controlplane
-      winw1.vm.provision "shell", path: "sync/windows/updates.ps1", privileged: true #, run: "never"
       winw1.vm.provision "shell", path: "sync/shared/kubejoin.ps1", privileged: true #, run: "never"
     else
       # TODO should we pass KuberneteVersion to calico agent exe? and also service cidr if needed?

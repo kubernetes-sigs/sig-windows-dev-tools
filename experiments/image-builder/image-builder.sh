@@ -49,12 +49,14 @@ function build_configuration {
     --arg iso_url "${VBOX_WINDOWS_ISO}"                 \
     --arg runtime "${VBOX_WINDOWS_RUNTIME}"             \
     --arg custom_role_names "${VBOX_WINDOWS_ROLES}"     \
-    --arg ansible_extra_vars "${ANSIBLE_VARS}"         \
+    --arg ansible_extra_vars "${ANSIBLE_VARS}"          \
+    --arg windows_updates_kbs "KB5009557"               \
     '{
         "os_iso_url": $iso_url,
         "runtime": $runtime,
         "ansible_extra_vars": $ansible_extra_vars,
         "custom_role_names": $custom_role_names,
+        "windows_updates_kbs": $windows_updates_kbs,
     }' > ${tmpfile}
 }
 
@@ -81,7 +83,7 @@ pushd ${CAPI_IMAGES_PATH}
     copy_overlay_files
 
     make clean-vbox
-    PACKER_VAR_FILES="${tmpfile}" make build-node-vbox-local-windows-2019
+    PACKER_VAR_FILES="${tmpfile}" make build-vbox-windows-2019
 popd
 
 clean
