@@ -7,8 +7,6 @@
       "disk_size": "{{user `disk_size`}}",
       "floppy_files": [
         "./packer/vbox/windows/{{user `build_name`}}/autounattend.xml",
-        "./packer/vbox/windows/disable-network-discovery.cmd",
-        "./packer/vbox/windows/disable-winrm.ps1",
         "./packer/vbox/windows/enable-winrm.ps1",
         "./packer/vbox/windows/sysprep.ps1"
       ],
@@ -31,7 +29,7 @@
       "vboxmanage": [
         ["modifyvm", "{{.Name}}", "--nic2", "hostonly"],
         ["modifyvm", "{{.Name}}", "--hostonlyadapter2", "vboxnet0"]
-      ]  
+      ]
     }
   ],
   "post-processors": [
@@ -58,12 +56,6 @@
       "type": "ansible",
       "use_proxy": false,
       "user": "vagrant"
-    },
-    {
-      "scripts": [
-        "./packer/vbox/windows/vm-guest-tools.ps1"
-      ],
-      "type": "powershell"
     },
     {
       "restart_check_command": "powershell -command \"& {if ((get-content C:\\ProgramData\\lastboot.txt) -eq (Get-WmiObject win32_operatingsystem).LastBootUpTime) {Write-Output 'Sleeping for 600 seconds to wait for reboot'; start-sleep 600} else {Write-Output 'Reboot complete'}}\"",
@@ -94,7 +86,7 @@
       "vars_file": "{{user `goss_vars_file`}}",
       "vars_inline": {
         "OS": "{{user `distro_name` | lower}}",
-        "PROVIDER": "ova",
+        "PROVIDER": "virtualbox",
         "containerd_version": "{{user `containerd_version`}}",
         "distribution_version": "{{user `distro_version`}}",
         "docker_ee_version": "{{user `docker_ee_version`}}",
@@ -113,8 +105,6 @@
     "build_timestamp": "{{timestamp}}",
     "build_version": "{{user `build_name`}}-kube-{{user `kubernetes_semver`}}",
     "cloudbase_init_url": "https://github.com/cloudbase/cloudbase-init/releases/download/{{user `cloudbase_init_version`}}/CloudbaseInitSetup_{{user `cloudbase_init_version` | replace_all `.` `_` }}_x64.msi",
-    "cloudbase_metadata_services": "cloudbaseinit.metadata.services.vmwareguestinfoservice.VMwareGuestInfoService",
-    "cloudbase_metadata_services_unattend": "cloudbaseinit.metadata.services.vmwareguestinfoservice.VMwareGuestInfoService",
     "cloudbase_plugins": "cloudbaseinit.plugins.common.ephemeraldisk.EphemeralDiskPlugin, cloudbaseinit.plugins.common.mtu.MTUPlugin, cloudbaseinit.plugins.common.sethostname.SetHostNamePlugin,  cloudbaseinit.plugins.common.sshpublickeys.SetUserSSHPublicKeysPlugin, cloudbaseinit.plugins.common.userdata.UserDataPlugin, cloudbaseinit.plugins.common.localscripts.LocalScriptsPlugin, cloudbaseinit.plugins.windows.createuser.CreateUserPlugin, cloudbaseinit.plugins.windows.extendvolumes.ExtendVolumesPlugin",
     "cloudbase_plugins_unattend": "cloudbaseinit.plugins.common.mtu.MTUPlugin",
     "containerd_sha256": null,
