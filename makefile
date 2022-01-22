@@ -22,7 +22,7 @@ all: 0-fetch-k8s 1-build-binaries 2-vagrant-up 3-smoke-test 4-e2e-test
 3: 3-smoke-test
 4: 4-e2e-test
 
-0-fetch-k8s: clean
+0-fetch-k8s:
 	chmod +x fetch.sh
 	./fetch.sh
 
