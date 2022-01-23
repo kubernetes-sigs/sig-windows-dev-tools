@@ -95,13 +95,19 @@ controlplane    Ready    control-plane,controlplane     16m     v1.20.4
 winw1           Ready    <none>                         9m11s   v1.20.4
 ```
 
-## Accessing the Windows box
+## Accessing and Copying files to the Windows box
 
 You'll obviously want to run commands on the Windows box. The easiest way is to SSH into the Windows machine and use powershell from there:
 
 ```
 vagrant ssh winw1
 C:\ > powershell
+```
+
+Copying files to Windows box
+```
+# vagrant plugin install vagrant-scp
+# vagrant scp kpng.exe :c:/kpng.exe
 ```
 
 Optionally, you can do this by noting the IP address during `vagrant provision` and running *any* RDP client (vagrant/vagrant for username/password, works for SSH).
