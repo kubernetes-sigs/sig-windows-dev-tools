@@ -6,6 +6,7 @@ KUBECONFIG=/home/vagrant/.kube/config
 
 kubectl create -f /var/sync/forked/calico.yaml
 kubectl taint nodes --all node-role.kubernetes.io/master-
+kubectl create clusterrolebinding calico-node --clusterrole=calico-node --serviceaccount=kube-system:calico-node
 
 echo "waiting 20s for calico pods..."
 sleep 20
