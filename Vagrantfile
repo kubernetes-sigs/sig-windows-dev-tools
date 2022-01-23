@@ -81,8 +81,9 @@ Vagrant.configure(2) do |config|
           winw1.vm.provision "shell", path: "sync/windows/0-calico.ps1", privileged: true
           winw1.vm.provision "shell", path: "sync/windows/1-calico.ps1", privileged: true
         else
-          winw1.vm.provision "shell", path: "sync/windows/0-antrea.ps1", privileged: true #, run: "always"
-          winw1.vm.provision "shell", path: "sync/windows/1-antrea.ps1", privileged: true, args: "#{windows_node_ip}" #, run: "always"
+          winw1.vm.provision "shell", path: "sync/windows/0-antrea.ps1", privileged: true
+          winw1.vm.provision "shell", path: "sync/windows/1-antrea.ps1", privileged: true, args: "#{windows_node_ip}"
+          winw1.vm.provision "shell", path: "sync/windows/2-antrea.ps1", privileged: true 
         end
       end
     end
