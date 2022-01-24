@@ -3369,6 +3369,14 @@ rules:
       - list
       # Used to discover Typhas.
       - get
+  # EndpointSlices are used for Service-based network policy rule
+  # enforcement.
+  - apiGroups: ["discovery.k8s.io"]
+    resources:
+      - endpointslices
+    verbs:
+      - watch
+      - list
   # Pod CIDR auto-detection on kubeadm needs access to config maps.
   - apiGroups: [""]
     resources:
