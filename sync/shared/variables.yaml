@@ -17,3 +17,8 @@ windows_cpus: 4
 ## CHOOSE YOUR CNI ($)
 # cni: "calico" || "antrea"
 cni: "antrea"
+
+# Proxy Settings
+# Examples:
+#    proxy: "kpng" or "kube-proxy"
+proxy: "kube-proxy"

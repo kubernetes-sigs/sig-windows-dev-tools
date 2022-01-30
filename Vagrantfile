@@ -14,6 +14,7 @@ linux_cpus = settings['linux_cpus']
 windows_ram = settings['windows_ram']
 windows_cpus = settings['windows_cpus']
 windows_node_ip = settings['windows_node_ip']
+proxy = settings['proxy']
 
 cni = settings['cni']
 
@@ -37,6 +38,15 @@ Vagrant.configure(2) do |config|
 
     ### This allows the node to default to the right IP i think....
     # 1) this seems to break the ability to get to the internet
+    if proxy == "kpng" then
+        controlplane.vm.provision "shell", path: "sync/linux/kpng/installdeps"
+        controlplane.vm.provision "shell",
+            inline: "echo 'proxy=kpng' > /var/sync/linux/vars.env"
+    else
+     controlplane.vm.provision "shell",
+         inline: "echo 'proxy=kube-proxy' > /var/sync/linux/vars.env"
+    end
+
 
     controlplane.vm.provision :shell, privileged: false, path: "sync/linux/controlplane.sh", args: "#{kubernetes_version} #{k8s_linux_kubelet_nodeip}"
 

@@ -208,6 +208,12 @@ EOF
 
 kubectl create -f kube-proxy-and-antrea.yaml
 
+source /var/sync/linux/vars.env
+if [[ "${proxy}" == "kpng" ]]; then
+    echo "Installing kpng..."
+    /var/sync/linux/kpng/install
+fi
+
 echo "Testing controlplane nodes!"
 
 kubectl get pods -A

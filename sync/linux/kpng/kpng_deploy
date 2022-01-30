@@ -1,0 +1,133 @@
+#!/bin/bash
+# shellcheck disable=SC2181,SC2155,SC2128,SC1091
+#
+# Copyright 2021 The Kubernetes Authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#         http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+# system data
+NAMESPACE="kube-system"
+CONFIG_MAP_NAME="kpng"
+SERVICE_ACCOUNT_NAME="kpng"
+CLUSTER_ROLE_NAME="system:node-proxier"
+CLUSTER_ROLE_BINDING_NAME="kpng"
+E2E_BACKEND="iptables"
+KPNG_IMAGE_TAG_NAME="kpng:test"
+
+source /var/sync/linux/kpng/variables.env
+
+function if_error_exit {
+    ###########################################################################
+    # Description:                                                            #
+    # Validate if previous command failed and show an error msg (if provided) #
+    #                                                                         #
+    # Arguments:                                                              #
+    #   $1 - error message if not provided, it will just exit                 #
+    ###########################################################################
+    if [ "$?" != "0" ]; then
+        if [ -n "$1" ]; then
+            RED="\e[31m"
+            ENDCOLOR="\e[0m"
+            echo -e "[ ${RED}FAILED${ENDCOLOR} ] ${1}"
+        fi
+        exit 1
+    fi
+}
+
+function pass_message {
+    ###########################################################################
+    # Description:                                                            #
+    # show [PASSED] in green and a message as the validation passed.          #
+    #                                                                         #
+    # Arguments:                                                              #
+    #   $1 - message to output                                                #
+    ###########################################################################
+    if [ -z "${1}" ]; then
+        echo "pass_message() requires a message"
+        exit 1
+    fi
+    GREEN="\e[32m"
+    ENDCOLOR="\e[0m"
+    echo -e "[ ${GREEN}PASSED${ENDCOLOR} ] ${1}"
+}
+
+
+function install_kpng {
+    ###########################################################################
+    # Description:                                                            #
+    # Install kpng                                                            #
+    ###########################################################################
+
+    # Delete kube-proxy
+    kubectl delete \
+        --namespace "${NAMESPACE}" \
+        daemonset.apps/kube-proxy 1> /dev/null
+    if_error_exit "cannot delete delete daemonset.apps kube-proxy"
+    pass_message "Removed daemonset.apps/kube-proxy."
+
+    kubectl create serviceaccount \
+        --namespace "${NAMESPACE}" \
+        "${SERVICE_ACCOUNT_NAME}" 1> /dev/null
+    if_error_exit "error creating serviceaccount ${SERVICE_ACCOUNT_NAME}"
+    pass_message "Created service account ${SERVICE_ACCOUNT_NAME}."
+
+    kubectl create clusterrolebinding \
+        "${CLUSTER_ROLE_BINDING_NAME}" \
+        --clusterrole="${CLUSTER_ROLE_NAME}" \
+        --serviceaccount="${NAMESPACE}":"${SERVICE_ACCOUNT_NAME}" 1> /dev/null
+    #if_error_exit "error creating clusterrolebinding ${CLUSTER_ROLE_BINDING_NAME}"
+    pass_message "Created clusterrolebinding ${CLUSTER_ROLE_BINDING_NAME}."
+
+    KPNG_DIR="/var/lib/kpng"
+    KUBECONFIG="/var/lib/kpng/kubeconfig.conf"
+    sudo mkdir -p "${KPNG_DIR}"
+    sudo cp /etc/kubernetes/admin.conf "${KUBECONFIG}"
+    sudo chmod -R a+rwx "${KPNG_DIR}"
+    sudo chown "${USER}":"${USER}" "${KUBECONFIG}"
+
+    kubectl create configmap \
+        "${CONFIG_MAP_NAME}" \
+        --namespace "${NAMESPACE}" \
+        --from-file "${KUBECONFIG}"
+    if_error_exit "error creating configmap ${CONFIG_MAP_NAME}"
+    pass_message "Created configmap ${CONFIG_MAP_NAME}."
+
+    # Setting vars for generate the kpng deployment based on template
+    export IMAGE="${KPNG_IMAGE_TAG_NAME}"
+    export PULL=IfNotPresent
+    export E2E_BACKEND
+    export CONFIG_MAP_NAME
+    export SERVICE_ACCOUNT_NAME
+    export NAMESPACE
+
+    DIRDEPLOYMENT="/var/sync/linux/kpng/"
+
+    git clone https://github.com/kubernetes-sigs/kpng
+    cd kpng
+    "${CONTAINER_RUNTIME}" build -t "${KPNG_IMAGE_TAG_NAME}" -f Dockerfile  .
+
+    cd "${DIRDEPLOYMENT}"
+    envsubst < "${DIRDEPLOYMENT}"/kpng-deployment-ds.yaml.tmpl > "${DIRDEPLOYMENT}"/kpng-deployment-ds.yaml
+    if_error_exit "error generating kpng deployment YAML"
+
+    kubectl create -f "${DIRDEPLOYMENT}"/kpng-deployment-ds.yaml 1> /dev/null
+    if_error_exit "error creating kpng deployment"
+
+    kubectl --namespace="${NAMESPACE}" rollout status daemonset kpng -w --request-timeout=3m 1> /dev/null
+    if_error_exit "timeout waiting kpng rollout"
+
+    pass_message "Installation of kpng is done.\n"
+}
+
+install_kpng
