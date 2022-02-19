@@ -34,26 +34,22 @@ build_binaries () {
 	echo "building kube locally inside `pwd` from $1"
     echo "changing into directory $1 to start the build"
 	pushd $1
-	if [[ -d ./_output/dockerized/bin/windows/amd64/ ]]; then
-	echo "skipping compilation of windows bits... _output is present"
+	echo "running docker build ~ checking memory, make sure its > 4G!!!"
+	if [[ `docker system info | grep Memory | cut -d' ' -f 4 |cut -d'.' -f 1` -gt 4 ]] || [[ `docker system info | grep memFree | cut -d' ' -f 4 |cut -d'.' -f 1` -gt 4000000000 ]]; then
+		echo "Proceeding with build, docker daemon memory is ok"
 	else
-		echo "running docker build ~ checking memory, make sure its > 4G!!!"
-		if [[ `docker system info | grep Memory | cut -d' ' -f 4 |cut -d'.' -f 1` -gt 4 ]] || [[ `docker system info | grep memFree | cut -d' ' -f 4 |cut -d'.' -f 1` -gt 4000000000 ]]; then
-			echo "Proceeding with build, docker daemon memory is ok"
-		else
-			echo "Insufficient LOCAL memory to build k8s before the vagrant builder starts"
-			exit 1
-		fi
-
-		# use the kubernetes/build/run script to build specific targets...
-		./build/run.sh make kubelet KUBE_BUILD_PLATFORMS=windows/amd64
-		./build/run.sh make kube-proxy KUBE_BUILD_PLATFORMS=windows/amd64
-		./build/run.sh make kubeadm KUBE_BUILD_PLATFORMS=windows/amd64
-
-		./build/run.sh make kubelet KUBE_BUILD_PLATFORMS=linux/amd64
-		./build/run.sh make kubectl KUBE_BUILD_PLATFORMS=linux/amd64
-		./build/run.sh make kubeadm KUBE_BUILD_PLATFORMS=linux/amd64
+		echo "Insufficient LOCAL memory to build k8s before the vagrant builder starts"
+		exit 1
 	fi
+
+	# use the kubernetes/build/run script to build specific targets...
+	./build/run.sh make kubelet KUBE_BUILD_PLATFORMS=windows/amd64
+	./build/run.sh make kube-proxy KUBE_BUILD_PLATFORMS=windows/amd64
+	./build/run.sh make kubeadm KUBE_BUILD_PLATFORMS=windows/amd64
+
+	./build/run.sh make kubelet KUBE_BUILD_PLATFORMS=linux/amd64
+	./build/run.sh make kubectl KUBE_BUILD_PLATFORMS=linux/amd64
+	./build/run.sh make kubeadm KUBE_BUILD_PLATFORMS=linux/amd64
 }
 
 copy_to_sync () {
@@ -78,29 +74,28 @@ cleanup () {
     rm -rf ../kubernetes
 }
 
-# Check if variable is set
-if [ -z $1 ]; then
-    echo "No path passed to the script, exiting."
-    exit 1
-fi
-
 # Test if it should be build from source
 [[ 
   $(awk '/build_from_source/ {print $2}' ${VARIABLES_FILE} | sed -e 's/^"//' -e 's/"$//' | head -1) =~ "true" 
 ]] && BUILD_FROM_SOURCE=1
-
-version=`awk '/kubernetes_version/ {print $2}' ${VARIABLES_FILE} | sed -e 's/^"//' -e 's/"$//' | head -1`
-KUBERNETES_VERSION=`curl -f https://storage.googleapis.com/k8s-release-dev/ci/latest-${version}.txt`
 
 mkdir -p $START_DIR/sync/windows/bin
 mkdir -p $START_DIR/sync/linux/bin
 
 # check if theres an input for the path
 if [[ $BUILD_FROM_SOURCE -eq 1 ]] ;then
+	# Check if variable is set
+	if [ -z "$1" ]; then
+		echo "build_from_source is true but no path passed to the script, exiting."
+		exit 1
+	fi
+
 	echo "Directory Kubernetes provided... building"
 	build_binaries $1
     copy_to_sync
 	cleanup
 else
+	version=`awk '/kubernetes_version/ {print $2}' ${VARIABLES_FILE} | sed -e 's/^"//' -e 's/"$//' | head -1`
+	KUBERNETES_VERSION=`curl -f https://storage.googleapis.com/k8s-release-dev/ci/latest-${version}.txt`
     download_binaries
 fi
