@@ -1,14 +1,7 @@
 - name: Enable ssh login with password
   win_shell: Set-Content -Path "$env:ProgramData\ssh\sshd_config" -Value "PasswordAuthentication yes`nPubkeyAuthentication yes"
 
-## Calico CNI binary installation
-
-- name: Download Calico install
-  win_get_url:
-    url: "https://docs.projectcalico.org/scripts/install-calico-windows.ps1"
-    dest: 'c:\install-calico-windows.ps1'
-  retries: 5
-  delay: 3
+## Install Kube-Proxy 
 
 - name: Download Kubernetes kube-proxy
   win_get_url:

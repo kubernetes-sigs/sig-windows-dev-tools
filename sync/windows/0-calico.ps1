@@ -23,9 +23,12 @@ New-Item -ItemType HardLink -Target "C:\etc\kubernetes\kubelet.conf" -Path "C:\k
 ## ------------------------------------------
 Write-Output "Downloading Calico Artifacts"
 ## ------------------------------------------
+
+Invoke-WebRequest https://projectcalico.docs.tigera.io/scripts/install-calico-windows.ps1 -OutFile c:\install-calico-windows.ps1
 C:\install-calico-windows.ps1 -DownloadOnly yes
 
 ## ------------------------------------------
 Write-Output "Print installed files"
 ## ------------------------------------------
+
 ls C:\CalicoWindows
