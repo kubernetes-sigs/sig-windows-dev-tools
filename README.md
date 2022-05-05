@@ -42,7 +42,7 @@ For the happy path, just:
 0) Start Docker so that you can build K8s from source as needed.
 1) Install Vagrant, and then vagrant-reload
 ```
-vagrant plugin install vagrant-reload winrm winrm-elevated
+vagrant plugin install vagrant-reload winrm winrm-elevated vagrant-vbguest
 ```
 2) Modify CPU/memory in the variables.yml file. We recommend four cores 8G+ for your Windows node if you can spare it, and two cores 8G for your Linux node as well. 
  
