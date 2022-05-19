@@ -43,8 +43,8 @@ $antreaInstallationFiles = @{
       "https://github.com/antrea-io/antrea/releases/download/v1.4.0/antrea-agent-windows-x86_64.exe" = "C:/k/antrea/bin/antrea-agent.exe"
       "https://github.com/containernetworking/plugins/releases/download/v0.9.1/cni-plugins-windows-amd64-v0.9.1.tgz" = "C:/k/antrea/bin/cni-plugins-windows-amd64-v0.9.1.tgz"
       "https://gist.githubusercontent.com/knabben/5dec7c059916d3b487aeb2efd3a689b6/raw/90d50749fbce55fd80080d40585f14ce1e20b06a/antrea.yaml" = "C:/k/antrea/etc/antrea-agent.conf"
-      "https://slproweb.com/download/Win64OpenSSL-1_0_2u.exe" = "C:/ssl.exe"
-      # this is on jay's bucket because its otherwise a flakey download from https://www.microsoft.com/en-us/download/details.aspx?id=48145
+      # this is on jay's bucket because its otherwise a flakey download or not existent
+      "https://storage.googleapis.com/jayunit100/ssl.exe" = "C:/ssl.exe"
       "https://storage.googleapis.com/jayunit100/vcd.exe" = "C:/vcd.exe"
 }
 
