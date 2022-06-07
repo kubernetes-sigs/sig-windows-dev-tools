@@ -17,6 +17,9 @@ Param(
     [parameter(HelpMessage="Windows Node IP")]
     [string] $windowsNodeIP = "10.20.30.11"
 )
+
+Set-PSDebug -Trace 1
+
 $ErrorActionPreference = 'Stop'
 
 $folders = @('C:\k\antrea','C:\var\log\antrea','C:\k\antrea\bin', 'C:\var\log\kube-proxy', 'C:\opt\cni\bin', 'C:\etc\cni\net.d')
