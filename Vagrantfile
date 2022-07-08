@@ -72,9 +72,9 @@ Vagrant.configure(2) do |config|
 
     if not File.file?(".lock/joined") then
       # Joining the controlplane
+      winw1.vm.provision "shell", path: "sync/windows/forked.ps1", args: "#{kubernetes_version}", privileged: true
       winw1.vm.provision "shell", path: "sync/shared/kubejoin.ps1", privileged: true #, run: "never"
     else
-      # TODO should we pass KuberneteVersion to calico agent exe? and also service cidr if needed?
       if not File.file?(".lock/cni") then
         if cni == "calico" then
           # installs both felix and node

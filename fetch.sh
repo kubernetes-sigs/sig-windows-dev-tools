@@ -16,6 +16,12 @@ limitations under the License.
 '
 set -e
 
+VARIABLES_FILE="sync/shared/variables.yaml"
+BUILD_FROM_SOURCE=0
+[[
+  $(awk '/build_from_source/ {print $2}' ${VARIABLES_FILE} | sed -e 's/^"//' -e 's/"$//' | head -1) =~ "true"
+]] && BUILD_FROM_SOURCE=1
+
 # kubernetes version can be passed as param, otherwise it will be read from variables_file
 
 variables_file="sync/shared/variables.yaml"
@@ -29,15 +35,17 @@ if [ ! -z ${kubernetes_sha} ]; then
   echo "Using Kubernetes version ${kubernetes_tag}-${kubernetes_sha} from upstream"
 fi
 
-if [[ -d "kubernetes" ]] ; then
-  echo "kubernetes/ exists, not cloning..."
-  pushd kubernetes
-    git checkout $kubernetes_sha -f
-  popd
-else
-  git clone https://github.com/kubernetes/kubernetes.git
-  pushd kubernetes
-    git checkout $kubernetes_sha
-  popd
+if [[ $BUILD_FROM_SOURCE -eq 1 ]]; then
+  if [[ -d "kubernetes" ]] ; then
+      echo "kubernetes/ exists, not cloning..."
+      pushd kubernetes
+        git checkout $kubernetes_sha -f
+      popd
+    else
+      git clone https://github.com/kubernetes/kubernetes.git
+      pushd kubernetes
+        git checkout $kubernetes_sha
+      popd
+  fi
 fi
 
