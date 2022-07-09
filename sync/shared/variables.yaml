@@ -1,5 +1,5 @@
 # Kubernetes version, pick major and minor, patch will be the latest released.
-kubernetes_version: "1.23"
+kubernetes_version: "1.25"
 
 # if this options is used BINARIES will be downloaded instead of building from zero
 build_from_source: "false"
@@ -16,4 +16,4 @@ windows_cpus: 4
 
 ## CHOOSE YOUR CNI ($)
 # cni: "calico" || "antrea"
-cni: "antrea"
+cni: "calico"

@@ -28,7 +28,7 @@ all: 0-fetch-k8s 1-build-binaries 2-vagrant-up 3-smoke-test 4-e2e-test
 
 1-build-binaries:
 	@chmod +x build.sh
-	@./build.sh $(path)
+	@./build.sh $(PWD)/kubernetes
 
 2-vagrant-up:
 	@rm -rf .lock/
@@ -59,7 +59,6 @@ all: 0-fetch-k8s 1-build-binaries 2-vagrant-up 3-smoke-test 4-e2e-test
 
 clean:
 	vagrant destroy --force
-	rm -fr kubernetes/
 	rm -rf sync/linux/bin/
 	rm -rf sync/windows/bin/
 	rm -f sync/shared/config

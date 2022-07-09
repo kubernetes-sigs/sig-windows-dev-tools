@@ -27,7 +27,7 @@ spec:
         securityContext:
           privileged: true
       nodeSelector:
-        beta.kubernetes.io/os: linux
+        kubernetes.io/os: linux
 ---
 apiVersion: v1
 kind: Service
@@ -60,7 +60,7 @@ spec:
       - image: stefanscherer/whoami:windows-amd64-2.0.1
         name: whoami-windows
       nodeSelector:
-        beta.kubernetes.io/os: windows
+        kubernetes.io/os: windows
 ---
 apiVersion: v1
 kind: Service
