@@ -10,14 +10,33 @@ This is a fully batteries-included development environment for Windows on Kubern
 - Windows binaries for kube-proxy.exe and kubelet.exe that are fully built from source (K8s main branch)
 - kubeadm installation that can put the bleeding-edge Linux control plane in place, so you can test new features like privileged containers
 
-# Quick start
+# Quick Start
 
-- clone this repo (obviously!)
-- install vagrant & virtualbox (the base tools for this project)
+- Clone this repo (obviously!)
+- Install [Vagrant](https://www.vagrantup.com/downloads) & [VirtualBox](https://www.virtualbox.org/wiki/Downloads) (the base tools for this project)
 - `vagrant plugin install vagrant-reload winrm winrm-elevated`, vagrant-reload needed to easily reboot windows VMs during setup of containers features.
 - `make all`, this will create the entire cluster for you and compile windows binaries from source
-- if the above failed, run `vagrant provision winw1`, just in case you have a flake during windows installation.
+- If the above failed, run `vagrant provision winw1`, just in case you have a flake during windows installation.
 - `vagrant ssh controlplane` and run `kubectl get nodes` to see your running dual-os linux+windows k8s cluster.
+
+## Windows with WSL
+All the above Quick Start steps apply except you have to run the `Makefile` targets in WSL while using 
+vagrant.exe on the host. To do this pass the mount path to the executable on the host with the `VAGRANT` environment variable. 
+To get the path for your `vagrant.exe` on the host use `Get-Command vagrant` in PowerShell like the following example.
+
+```powershell
+~ > $(get-command vagrant).Source.Replace("\","/").Replace("C:/", "/mnt/c/")
+/mnt/c/HashiCorp/Vagrant/bin/vagrant.exe
+```
+
+Use that string in WSL by exporting an Environment variable and then use all the make calls freely.
+
+```bash
+export VAGRANT=/mnt/c/HashiCorp/Vagrant/bin/vagrant.exe
+make all
+# ...
+make clean
+```
 
 ## Ubuntu
 
