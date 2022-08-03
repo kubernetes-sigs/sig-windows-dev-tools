@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+VAGRANT?="vagrant"
+
 .SILENT: clean
 
 all: 0-fetch-k8s 1-build-binaries 2-vagrant-up 3-smoke-test 4-e2e-test
@@ -38,27 +40,27 @@ all: 0-fetch-k8s 1-build-binaries 2-vagrant-up 3-smoke-test 4-e2e-test
 	@echo "Retry vagrant up if the first time the windows node failed"
 	@echo "Starting the control plane"
 	@echo "######################################"
-	@vagrant up controlplane
+	@$(VAGRANT) up controlplane
 	
 	@echo "*********** vagrant up first run done ~~~~ ENTERING WINDOWS BRINGUP LOOP ***"
-	@until `vagrant status | grep winw1 | grep -q "running"` ; do vagrant up winw1 || echo failed_win_up ; done
-	@until `vagrant ssh controlplane -c "kubectl get nodes" | grep -q winw1` ; do vagrant provision winw1 || echo failed_win_join; done
+	@until `$(VAGRANT) status | grep winw1 | grep -q "running"` ; do $(VAGRANT) up winw1 || echo failed_win_up ; done
+	@until `$(VAGRANT) ssh controlplane -c "kubectl get nodes" | grep -q winw1` ; do $(VAGRANT) provision winw1 || echo failed_win_join; done
 	@touch .lock/joined
-	@vagrant provision winw1
+	@$(VAGRANT) provision winw1
 	@touch .lock/cni
 
 3-smoke-test:
-	@vagrant ssh controlplane -c "kubectl apply -f /var/sync/linux/smoke-test.yaml"
-	@vagrant ssh controlplane -c "kubectl scale deployment whoami-windows --replicas 0"
-	@vagrant ssh controlplane -c "kubectl scale deployment whoami-windows --replicas 3"
-	@vagrant ssh controlplane -c "kubectl wait --for=condition=Ready=true pod -l 'app=whoami-windows' --timeout=600s"
-	@vagrant ssh controlplane -c "kubectl exec -it netshoot -- curl http://whoami-windows:80/"
+	@$(VAGRANT) ssh controlplane -c "kubectl apply -f /var/sync/linux/smoke-test.yaml"
+	@$(VAGRANT) ssh controlplane -c "kubectl scale deployment whoami-windows --replicas 0"
+	@$(VAGRANT) ssh controlplane -c "kubectl scale deployment whoami-windows --replicas 3"
+	@$(VAGRANT) ssh controlplane -c "kubectl wait --for=condition=Ready=true pod -l 'app=whoami-windows' --timeout=600s"
+	@$(VAGRANT) ssh controlplane -c "kubectl exec -it netshoot -- curl http://whoami-windows:80/"
 
 4-e2e-test:
-	@vagrant ssh controlplane -c "cd /var/sync/linux && chmod +x ./e2e.sh && ./e2e.sh"
+	@$(VAGRANT) ssh controlplane -c "cd /var/sync/linux && chmod +x ./e2e.sh && ./e2e.sh"
 
 clean:
-	vagrant destroy --force
+	$(VAGRANT) destroy --force
 	rm -rf sync/linux/bin/
 	rm -rf sync/windows/bin/
 	rm -f sync/shared/config
