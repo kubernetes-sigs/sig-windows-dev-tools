@@ -14,7 +14,7 @@ This is a fully batteries-included development environment for Windows on Kubern
 
 - Clone this repo (obviously!)
 - Install [Vagrant](https://www.vagrantup.com/downloads) & [VirtualBox](https://www.virtualbox.org/wiki/Downloads) (the base tools for this project)
-- `vagrant plugin install vagrant-reload winrm winrm-elevated`, vagrant-reload needed to easily reboot windows VMs during setup of containers features.
+- `vagrant plugin install vagrant-reload vagrant-vbguest winrm winrm-elevated`, vagrant-reload needed to easily reboot windows VMs during setup of containers features.
 - `make all`, this will create the entire cluster for you and compile windows binaries from source
 - If the above failed, run `vagrant provision winw1`, just in case you have a flake during windows installation.
 - `vagrant ssh controlplane` and run `kubectl get nodes` to see your running dual-os linux+windows k8s cluster.
@@ -55,7 +55,7 @@ sudo apt-get update
 Installing packages:
 ```
 sudo apt install build-essential vagrant virtualbox virtualbox-ext-pack -y
-sudo vagrant plugin install vagrant-reload winrm winrm-elevated vagrant-ssh
+sudo vagrant plugin install vagrant-reload vagrant-vbguest winrm winrm-elevated vagrant-ssh
 ```
 
 **2.** Create `/etc/vbox/networks.conf` to set the [network bits](https://www.virtualbox.org/manual/ch06.html#network_hostonly):
@@ -114,7 +114,7 @@ For the happy path, just:
 0) Start Docker so that you can build K8s from source as needed.
 1) Install Vagrant, and then vagrant-reload
 ```
-vagrant plugin install vagrant-reload winrm winrm-elevated vagrant-vbguest
+vagrant plugin install vagrant-reload vagrant-vbguest winrm winrm-elevated 
 ```
 2) Modify CPU/memory in the variables.yml file. We recommend four cores 8G+ for your Windows node if you can spare it, and two cores 8G for your Linux node as well. 
  
