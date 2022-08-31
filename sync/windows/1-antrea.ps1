@@ -98,7 +98,7 @@ if (!(Test-Path $antrea_helper)) {
 }
 Import-Module $antrea_helper
 
-& Install-AntreaAgent -KubernetesHome "c:/k" -KubeConfig "C:/etc/kubernetes/kubelet.conf" -AntreaVersion "v1.4.0" -AntreaHome "c:/k/antrea"
+& Install-AntreaAgent -KubernetesHome "c:/k" -KubeConfig "C:/etc/kubernetes/kubelet.conf" -AntreaVersion "v1.8.0" -AntreaHome "c:/k/antrea"
 New-KubeProxyServiceInterface
 
 # ### Installing Kube-Proxy
