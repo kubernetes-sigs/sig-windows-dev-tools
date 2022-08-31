@@ -58,7 +58,7 @@ $KubeConfigFile='C:\etc\kubernetes\kubelet.conf'
 # Setup kube-proxy config file
 $KubeProxyConfig="C:/k/antrea/etc/kube-proxy.conf"
 $KubeAPIServer=$(kubectl --kubeconfig=$KubeConfigFile config view -o jsonpath='{.clusters[0].cluster.server}')
-$KubeProxyTOKEN=$(kubectl --kubeconfig=$KubeConfigFile get secrets -n kube-system -o jsonpath="{.items[?(@.metadata.annotations['kubernetes\.io/service-account\.name']=='kube-proxy-windows')].data.token}")
+$KubeProxyTOKEN=$(kubectl --kubeconfig=$KubeConfigFile get secrets -n kube-system -o jsonpath="{.items[?(@.metadata.annotations['kubernetes\.io/service-account\.name']=='antrea-agent')].data.token}")
 $KubeProxyTOKEN=$([System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($KubeProxyTOKEN)))
 
 # This writes out a kubeconfig file... i think !
