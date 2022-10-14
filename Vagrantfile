@@ -1,9 +1,12 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 require 'yaml'
+require 'fileutils'
 
 # Modify these in the variables.yaml file... they are described there in gory detail...
-settingsFile = ENV["VAGRANT_VARIABLES"] || 'sync/shared/variables.yaml'
+# This will get copied down later to synch/shared/variables... and read by the controlplane.sh etc...
+settingsFile = "variables.yaml" || ENV["VAGRANT_VARIABLES"]
+FileUtils.cp(settingsFile, "sync/shared/variables.yaml")
 settings = YAML.load_file settingsFile
 
 kubernetes_version=settings["kubernetes_version"]
