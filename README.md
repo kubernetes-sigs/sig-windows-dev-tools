@@ -1,3 +1,16 @@
+
+# Quick Start
+
+3 easy steps to a Windows Kubernetes cluster, from scratch, built from source...
+
+- Install [Vagrant](https://www.vagrantup.com/downloads) & [VirtualBox](https://www.virtualbox.org/wiki/Downloads) (the base tools for this project)
+- `vagrant plugin install vagrant-reload vagrant-vbguest winrm winrm-elevated`, vagrant-reload needed to easily reboot windows VMs during setup of containers features.
+- `make all`, this will create the entire cluster for you.  To compile k/k/ from local source, see instructions later in this doc. 
+- If the above failed, run `vagrant provision winw1`, just in case you have a flake during windows installation.
+- `vagrant ssh controlplane` and run `kubectl get nodes` to see your running dual-os linux+windows k8s cluster.
+
+
+
 # Welcome to the SIG Windows Development Environment!
 
 This is a fully batteries-included development environment for Windows on Kubernetes, including:
@@ -9,15 +22,6 @@ This is a fully batteries-included development environment for Windows on Kubern
 - NetworkPolicy support for Windows and Linux provided by [Antrea](https://antrea.io) and [Calico](https://www.tigera.io/project-calico/)
 - Windows binaries for kube-proxy.exe and kubelet.exe that are fully built from source (K8s main branch)
 - kubeadm installation that can put the bleeding-edge Linux control plane in place, so you can test new features like privileged containers
-
-# Quick Start
-
-- Clone this repo (obviously!)
-- Install [Vagrant](https://www.vagrantup.com/downloads) & [VirtualBox](https://www.virtualbox.org/wiki/Downloads) (the base tools for this project)
-- `vagrant plugin install vagrant-reload vagrant-vbguest winrm winrm-elevated`, vagrant-reload needed to easily reboot windows VMs during setup of containers features.
-- `make all`, this will create the entire cluster for you and compile windows binaries from source
-- If the above failed, run `vagrant provision winw1`, just in case you have a flake during windows installation.
-- `vagrant ssh controlplane` and run `kubectl get nodes` to see your running dual-os linux+windows k8s cluster.
 
 ## Windows with WSL
 All the above Quick Start steps apply except you have to run the `Makefile` targets in WSL while using 
