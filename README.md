@@ -1,30 +1,33 @@
-
-# Quick Start
-
-3 easy steps to a Windows Kubernetes cluster, from scratch, built from source...
-
-- Install [Vagrant](https://www.vagrantup.com/downloads) & [VirtualBox](https://www.virtualbox.org/wiki/Downloads) (the base tools for this project)
-- `vagrant plugin install vagrant-reload vagrant-vbguest winrm winrm-elevated`, vagrant-reload needed to easily reboot windows VMs during setup of containers features.
-- `make all`, this will create the entire cluster for you.  To compile k/k/ from local source, see instructions later in this doc. 
-- If the above failed, run `vagrant provision winw1`, just in case you have a flake during windows installation.
-- `vagrant ssh controlplane` and run `kubectl get nodes` to see your running dual-os linux+windows k8s cluster.
-
-
-
 # Welcome to the SIG Windows Development Environment!
 
 This is a fully batteries-included development environment for Windows on Kubernetes, including:
 - Vagrant file for launching a two-node cluster
-- the latest Containerd
+- The latest Containerd
 - Support for two CNIs: antrea, or calico on containerd:  configure your CNI option in variables.yml
-  - calico 3.19 on containerd runs containers out of the box
-  - antrea 0.13.2 runs but requires running with a patch for https://github.com/antrea-io/antrea/issues/2344 which was recently made available
+  - Calico 3.19 on containerd runs containers out of the box
+  - Antrea 0.13.2 runs but requires running with a patch for https://github.com/antrea-io/antrea/issues/2344 which was recently made available
 - NetworkPolicy support for Windows and Linux provided by [Antrea](https://antrea.io) and [Calico](https://www.tigera.io/project-calico/)
 - Windows binaries for kube-proxy.exe and kubelet.exe that are fully built from source (K8s main branch)
-- kubeadm installation that can put the bleeding-edge Linux control plane in place, so you can test new features like privileged containers
+- Kubeadm installation that can put the bleeding-edge Linux control plane in place, so you can test new features like privileged containers
+
+## Quick Start
+
+### Prerequisites 
+- [Vagrant](https://www.vagrantup.com/downloads)
+- [VirtualBox](https://www.virtualbox.org/wiki/Downloads) (we only have VirtualBox automated here, but these recipes have been used with others, like Microsoft HyperV and VMware Fusion).
+- [Kubectl](https://kubernetes.io/docs/tasks/tools/#kubectl)
+
+### Getting a cluster up and running
+
+Simple steps to a Windows Kubernetes cluster, from scratch, built from source...
+
+- `vagrant plugin install vagrant-reload vagrant-vbguest winrm winrm-elevated`, vagrant-reload needed to easily reboot windows VMs during setup of containers features.
+- `make all`, this will create the entire cluster for you.  To compile k/k/ from local source, see instructions later in this doc. 
+	- *If the above failed, run `vagrant provision winw1`, just in case you have a flake during windows installation.*
+- `vagrant ssh controlplane` and run `kubectl get nodes` to see your running dual-os linux+windows k8s cluster.
 
 ## Windows with WSL
-All the above Quick Start steps apply except you have to run the `Makefile` targets in WSL while using 
+All the above Quick Start steps apply, except you have to run the `Makefile` targets in WSL while using 
 vagrant.exe on the host. To do this pass the mount path to the executable on the host with the `VAGRANT` environment variable. 
 To get the path for your `vagrant.exe` on the host use `Get-Command vagrant` in PowerShell like the following example.
 
@@ -101,11 +104,7 @@ Our goal is to make Windows ridiculously easy to contribute to, play with, and l
 in using or contributing to the ongoing Kubernetes-on-Windows story. Windows is rapidly becoming an increasingly
 viable alternative to Linux thanks to the recent introduction of Windows HostProcess containers and Windows support for NetworkPolicies + Containerd integration.
 
-## Prerequisites
 
-- Vagrant
-- Vagrant vagrant-vbguest, reload, winrm and winrm-elevated plugins
-- some Vagrant provider (we only have VirtualBox automated here, but these recipes have been used with others, like HyperV and Fusion).
 
 # Lets run it!
 
