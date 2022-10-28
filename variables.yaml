@@ -5,13 +5,10 @@ kubernetes_version: "1.25"
 build_from_source: "false"
 
 ## Linux settings
-k8s_linux_kubelet_nodeip: "10.20.30.10"
-linux_ram: 4096
-linux_cpus: 4
-
-## Windows settings
-windows_node_ip: "10.20.30.11"
+k8s_linux_kubelet_nodeip: "192.168.56.100"
+windows_node_ip: "192.168.56.200"
 windows_ram: 6048
+linux_ram: 4028
 windows_cpus: 4
 
 ## CHOOSE YOUR CNI ($)
