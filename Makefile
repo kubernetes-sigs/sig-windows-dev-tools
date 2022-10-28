@@ -25,17 +25,21 @@ all: 0-fetch-k8s 1-build-binaries 2-vagrant-up 3-smoke-test 4-e2e-test
 4: 4-e2e-test
 
 0-fetch-k8s: clean
+	@echo "clean"
 	@chmod +x fetch.sh
 	@./fetch.sh
 
 1-build-binaries:
+	@echo "build"
 	@chmod +x build.sh
 	@./build.sh $(PWD)/kubernetes
 
 2-vagrant-up:
+	@echo "vagrant phase"
 	@rm -rf .lock/
 	@mkdir -p .lock/
-
+	@echo "making mock kubejoin file to keep Vagrantfile happy in sync/shared"
+	@touch ./sync/shared/kubejoin.ps1
 	@echo "######################################"
 	@echo "Retry vagrant up if the first time the windows node failed"
 	@echo "Starting the control plane"
@@ -60,6 +64,7 @@ all: 0-fetch-k8s 1-build-binaries 2-vagrant-up 3-smoke-test 4-e2e-test
 	@$(VAGRANT) ssh controlplane -c "cd /var/sync/linux && chmod +x ./e2e.sh && ./e2e.sh"
 
 clean:
+	@touch sync/shared/kubejoin.ps1
 	$(VAGRANT) destroy --force
 	rm -rf sync/linux/bin/
 	rm -rf sync/windows/bin/

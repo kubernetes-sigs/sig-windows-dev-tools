@@ -9,6 +9,7 @@ settingsFile = "variables.yaml" || ENV["VAGRANT_VARIABLES"]
 FileUtils.cp(settingsFile, "sync/shared/variables.yaml")
 settings = YAML.load_file settingsFile
 
+
 kubernetes_version=settings["kubernetes_version"]
 k8s_linux_kubelet_nodeip=settings['k8s_linux_kubelet_nodeip']
 
@@ -24,7 +25,7 @@ Vagrant.configure(2) do |config|
   puts "cni:"
   puts cni
 
-  # LINUX Control Plane
+#   LINUX Control Plane
   config.vm.define :controlplane do |controlplane|
     controlplane.vm.host_name = "controlplane"
     controlplane.vm.box = "roboxes/ubuntu2004"
