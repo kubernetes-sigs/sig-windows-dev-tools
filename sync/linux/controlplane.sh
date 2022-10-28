@@ -39,8 +39,9 @@ echo "Using $kubernetes_version as the Kubernetes version"
 # Installing packages
 
 # Add GPG keys and repository for Kubernetes
-sudo apt-get update -y
-sudo apt-get install ca-certificates -y
+echo "Setting up internet connectivity to /etc/resolv.conf"
+sudo echo "nameserver 8.8.8.8" > /etc/resolv.conf
+
 echo "now curling to add keys..."
 curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
 cat << EOF | sudo tee /etc/apt/sources.list.d/kubernetes.list
