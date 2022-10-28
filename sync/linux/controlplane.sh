@@ -39,11 +39,18 @@ echo "Using $kubernetes_version as the Kubernetes version"
 # Installing packages
 
 # Add GPG keys and repository for Kubernetes
+echo "Setting up internet connectivity to /etc/resolv.conf"
+cat <<EOF | sudo tee /etc/resolv.conf
+nameserver 8.8.8.8
+nameserver 1.1.1.1
+EOF
+
+echo "now curling to add keys..."
 curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
 cat << EOF | sudo tee /etc/apt/sources.list.d/kubernetes.list
 deb https://apt.kubernetes.io/ kubernetes-xenial main
 EOF
-sudo apt-get update
+sudo apt-get update 
 
 # Disable swap
 sudo swapoff -a
