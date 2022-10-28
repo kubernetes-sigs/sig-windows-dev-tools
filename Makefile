@@ -35,7 +35,8 @@ all: 0-fetch-k8s 1-build-binaries 2-vagrant-up 3-smoke-test 4-e2e-test
 2-vagrant-up:
 	@rm -rf .lock/
 	@mkdir -p .lock/
-
+	@echo "making mock kubejoin file to keep Vagrantfile happy in sync/shared"
+	@touch sync/shared/kubejoin.ps1
 	@echo "######################################"
 	@echo "Retry vagrant up if the first time the windows node failed"
 	@echo "Starting the control plane"
