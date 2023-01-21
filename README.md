@@ -70,7 +70,7 @@ sudo vagrant plugin install vagrant-reload vagrant-vbguest winrm winrm-elevated 
 *Example*:
 ```
 sudo mkdir /etc/vbox
-sudo vi /etc/vbox
+sudo vi /etc/vbox/networks.conf
 
 * 10.0.0.0/8 192.168.0.0/16
 * 2001::/64
