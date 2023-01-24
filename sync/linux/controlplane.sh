@@ -74,11 +74,29 @@ EOF
 # Apply sysctl params without reboot
 sudo sysctl --system
 
-# Install containerd and Kubernetes binaries, using latest available, and
+# Install Kubernetes binaries, using latest available, and
 # overwritting the binaries later.
-sudo apt-get install -y containerd kubelet kubeadm kubectl
+sudo apt-get install -y kubelet kubeadm kubectl
 
 sudo apt-mark hold kubelet kubeadm kubectl
+
+# Install containerd - latest version
+echo "Configuring Containerd"
+sudo apt-get install \
+    ca-certificates \
+    gnupg \
+    lsb-release
+
+sudo mkdir -p /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+  $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+sudo apt-get update
+
+sudo apt-get install containerd.io
 
 ## Test if binaries folder exists
 #if $overwrite_linux_bins ; then
