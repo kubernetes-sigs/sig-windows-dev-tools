@@ -1,0 +1,15 @@
+2023-01-26 11:41:53.597 [INFO][4660] startup/startup.go 561: Node IPv4 changed, will check for conflicts                                                                                   
+2023-01-26 11:41:53.598 [INFO][4660] startup/startup.go 701: No AS number configured on node resource, using global value                                                                  
+2023-01-26 11:41:53.613 [INFO][4660] startup/startup.go 818: Selected default IP pool is '192.168.0.0/16'                                                                                  
+2023-01-26 11:41:53.622 [INFO][4660] startup/startup.go 218: Using node name: winw1                                                                                                        
+2023-01-26 11:41:53.622 [INFO][4660] startup/ipam.go 2098: Ensure block for host winw1, ipv4 attr &{3 1 windows-reserved-ipam-handle windows host rsvd} ipv6 attr <nil>                    
+2023-01-26 11:41:53.622 [INFO][4660] startup/ipam.go 2169: Looking up existing affinities for host host="winw1"                                                                            
+
+
+
+2023-01-26 11:41:54.032 [WARNING][4784] felix/l3_route_resolver.go 662: Unable to create route for IP; the node it belongs to was not recorded in IPAM IP=100.244.206.64                   
+2023-01-26 11:41:54.032 [WARNING][4784] felix/l3_route_resolver.go 662: Unable to create route for IP; the node it belongs to was not recorded in IPAM IP=100.244.206.65                   
+2023-01-26 11:41:54.032 [INFO][4784] felix/watchercache.go 294: Sending synced update ListRoot="/calico/resources/v3/projectcalico.org/kubernetesnetworkpolicies"                          
+2023-01-26 11:41:54.032 [WARNING][4784] felix/l3_route_resolver.go 662: Unable to create route for IP; the node it belongs to was not recorded in IPAM IP=100.244.206.66                   
+2023-01-26 11:41:54.032 [WARNING][4784] felix/l3_route_resolver.go 662: Unable to create route for IP; the node it belongs to was not recorded in IPAM IP=100.244.206.127                  
+2023-01-26 11:41:54.032 [INFO][4784] felix/watchersyncer.go 209: Received InSync event from one of the watcher caches                              
