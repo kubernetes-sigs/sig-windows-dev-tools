@@ -12,6 +12,9 @@ settings = YAML.load_file settingsFile
 
 kubernetes_version=settings["kubernetes_version"]
 k8s_linux_kubelet_nodeip=settings['k8s_linux_kubelet_nodeip']
+pod_cidr=settings['pod_cidr']
+containerd_version=settings['containerd_version']
+
 
 linux_ram = settings['linux_ram']
 linux_cpus = settings['linux_cpus']
@@ -42,12 +45,12 @@ Vagrant.configure(2) do |config|
     ### This allows the node to default to the right IP i think....
     # 1) this seems to break the ability to get to the internet
 
-    controlplane.vm.provision :shell, privileged: false, path: "sync/linux/controlplane.sh", args: "#{kubernetes_version} #{k8s_linux_kubelet_nodeip}"
+    controlplane.vm.provision :shell, privileged: false, path: "sync/linux/controlplane.sh", args: "#{kubernetes_version} #{k8s_linux_kubelet_nodeip} #{pod_cidr}"
 
     # TODO shoudl we pass KuberneteVersion to calico agent exe? and also service cidr if needed?
     # dont run as priveliged cuz we need the kubeconfig from regular user
     if cni == "calico" then
-      controlplane.vm.provision "shell", path: "sync/linux/calico-0.sh"
+      controlplane.vm.provision "shell", path: "sync/linux/calico-0.sh", args: "#{pod_cidr}"
     else
       controlplane.vm.provision "shell", path: "sync/linux/antrea-0.sh"
     end
@@ -75,15 +78,20 @@ Vagrant.configure(2) do |config|
     winw1.winrm.password = "vagrant"
 
     if not File.file?(".lock/joined") then
+     # Update contaienrd
+     winw1.vm.provision "shell", path: "sync/windows/0-containerd.ps1", args: "#{containerd_version}", privileged: true
+
       # Joining the controlplane
       winw1.vm.provision "shell", path: "sync/windows/forked.ps1", args: "#{kubernetes_version}", privileged: true
       winw1.vm.provision "shell", path: "sync/shared/kubejoin.ps1", privileged: true #, run: "never"
     else
       if not File.file?(".lock/cni") then
         if cni == "calico" then
+          # we don't need to run Calico agents as service now,
+          # calico will be installed as a HostProcess container
           # installs both felix and node
-          winw1.vm.provision "shell", path: "sync/windows/0-calico.ps1", privileged: true
-          winw1.vm.provision "shell", path: "sync/windows/1-calico.ps1", privileged: true
+          #winw1.vm.provision "shell", path: "sync/windows/0-calico.ps1", privileged: true
+          #winw1.vm.provision "shell", path: "sync/windows/1-calico.ps1", privileged: true
         else
           winw1.vm.provision "shell", path: "sync/windows/0-antrea.ps1", privileged: true #, run: "always"
           winw1.vm.provision "shell", path: "sync/windows/1-antrea.ps1", privileged: true, args: "#{windows_node_ip}" #, run: "always"

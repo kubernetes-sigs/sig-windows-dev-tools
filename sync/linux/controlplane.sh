@@ -16,12 +16,12 @@ limitations under the License.
 
 set -e
 
-echo "ARGS: $1 $2"
-if [[ "$1" == "" || "$2" == "" ]]; then
+echo "ARGS: $1 $2 $3"
+if [[ "$1" == "" || "$2" == "" || "$3" == "" ]]; then
   cat << EOF
     Missing args.
-    You need to send kubernetes_version, k8s_kubelet_nodeip i.e.
-    ./controlplane.sh 1.21 10.20.30.10
+    You need to send kubernetes_version, k8s_kubelet_nodeip and pod_cidr i.e.
+    ./controlplane.sh 1.21 10.20.30.10 100.244.0.0/16
     Normally these are in your variables.yml, and piped in by Vagrant.
     So, check that you didn't break the Vagrantfile :)
     BTW the only reason this error message is fancy is because friedrich said we should be curteous to people who want to
@@ -32,7 +32,12 @@ fi
 
 kubernetes_version=${1}
 k8s_kubelet_node_ip=${2}
+pod_cidr=${3}
 k8s_linux_apiserver="stable-${kubernetes_version}"
+
+if [[ "$3" == "" ]]; then
+  pod_cidr="100.244.0.0/16"
+fi
 
 echo "Using $kubernetes_version as the Kubernetes version"
 
@@ -129,7 +134,7 @@ apiVersion: kubeadm.k8s.io/v1beta3
 kind: ClusterConfiguration
 kubernetesVersion: $k8s_linux_apiserver
 networking:
-  podSubnet: "100.244.0.0/16"
+  podSubnet: "${pod_cidr}"
 EOF
 
 # Ignore kubelet mismatch in the copy process
