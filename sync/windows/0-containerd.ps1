@@ -32,5 +32,5 @@ Write-Output "Downloading ContainerD - [version: $containerd_version]"
 ## ------------------------------------------
 
 # download and extract binaries
-Invoke-WebRequest https://projectcalico.docs.tigera.io/scripts/Install-Containerd.ps1 -OutFile c:\Install-Containerd.ps1
+Invoke-WebRequest https://docs.tigera.io/calico/3.25/scripts/Install-Containerd.ps1 -OutFile c:\Install-Containerd.ps1
 c:\Install-Containerd.ps1 -ContainerDVersion $containerd_version -CNIConfigPath "c:/etc/cni/net.d" -CNIBinPath "c:/opt/cni/bin"
