@@ -79,7 +79,7 @@ Vagrant.configure(2) do |config|
     winw1.winrm.password = "vagrant"
 
     if not File.file?(".lock/joined") then
-     # Update contaienrd
+     # Update containerd
      winw1.vm.provision "shell", path: "sync/windows/0-containerd.ps1", args: "#{calico_version}" "#{containerd_version}", privileged: true
 
       # Joining the controlplane
