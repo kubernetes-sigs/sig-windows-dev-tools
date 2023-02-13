@@ -87,6 +87,7 @@
       "vars_inline": {
         "OS": "{{user `distro_name` | lower}}",
         "PROVIDER": "virtualbox",
+        "calico_version": "{{user `calico_version`}}",
         "containerd_version": "{{user `containerd_version`}}",
         "distribution_version": "{{user `distro_version`}}",
         "docker_ee_version": "{{user `docker_ee_version`}}",
@@ -109,6 +110,7 @@
     "cloudbase_plugins_unattend": "cloudbaseinit.plugins.common.mtu.MTUPlugin",
     "containerd_sha256": null,
     "containerd_url": "",
+    "calico_version": null,
     "containerd_version": null,
     "disable_hypervisor": null,
     "disk_size": "81920",

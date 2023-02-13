@@ -13,6 +13,7 @@ settings = YAML.load_file settingsFile
 kubernetes_version=settings["kubernetes_version"]
 k8s_linux_kubelet_nodeip=settings['k8s_linux_kubelet_nodeip']
 pod_cidr=settings['pod_cidr']
+calico_version=settings['calico_version']
 containerd_version=settings['containerd_version']
 
 
@@ -79,7 +80,7 @@ Vagrant.configure(2) do |config|
 
     if not File.file?(".lock/joined") then
      # Update contaienrd
-     winw1.vm.provision "shell", path: "sync/windows/0-containerd.ps1", args: "#{containerd_version}", privileged: true
+     winw1.vm.provision "shell", path: "sync/windows/0-containerd.ps1", args: ""#{calico_version}"" "#{containerd_version}", privileged: true
 
       # Joining the controlplane
       winw1.vm.provision "shell", path: "sync/windows/forked.ps1", args: "#{kubernetes_version}", privileged: true
