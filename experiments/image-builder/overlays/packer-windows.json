@@ -87,7 +87,6 @@
       "vars_inline": {
         "OS": "{{user `distro_name` | lower}}",
         "PROVIDER": "virtualbox",
-        "calico_version": "{{user `calico_version`}}",
         "containerd_version": "{{user `containerd_version`}}",
         "distribution_version": "{{user `distro_version`}}",
         "docker_ee_version": "{{user `docker_ee_version`}}",
