@@ -20,6 +20,8 @@ Param(
         [string] $containerd_version=""
         )
 
+# download url doesn't use revision
+$calico_version = $calico_version  | select-string "(?<majorminor>[0-9]+.[0-9]+)" | %{ $_.Matches[0].Value }
 
 ## ------------------------------------------
 Write-Output "Stopping  ContainerD & Kubelet"
