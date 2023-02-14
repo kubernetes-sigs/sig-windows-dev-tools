@@ -9,7 +9,7 @@ pod_cidr: "100.244.0.0/16"
 
 # containerd version
 containerd_version: "1.6.15"
-calico_version: "3.25"
+calico_version: "3.25.0"
 
 ## Linux settings
 k8s_linux_kubelet_nodeip: "10.20.30.10"

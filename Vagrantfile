@@ -51,7 +51,7 @@ Vagrant.configure(2) do |config|
     # TODO shoudl we pass KuberneteVersion to calico agent exe? and also service cidr if needed?
     # dont run as priveliged cuz we need the kubeconfig from regular user
     if cni == "calico" then
-      controlplane.vm.provision "shell", path: "sync/linux/calico-0.sh", args: "#{pod_cidr}"
+      controlplane.vm.provision "shell", path: "sync/linux/calico-0.sh", args: "#{pod_cidr} #{calico_version}"
     else
       controlplane.vm.provision "shell", path: "sync/linux/antrea-0.sh"
     end
