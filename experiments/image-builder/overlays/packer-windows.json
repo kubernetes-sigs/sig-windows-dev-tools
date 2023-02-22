@@ -109,6 +109,7 @@
     "cloudbase_plugins_unattend": "cloudbaseinit.plugins.common.mtu.MTUPlugin",
     "containerd_sha256": null,
     "containerd_url": "",
+    "calico_version": null,
     "containerd_version": null,
     "disable_hypervisor": null,
     "disk_size": "81920",

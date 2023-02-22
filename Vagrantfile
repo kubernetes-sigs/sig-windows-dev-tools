@@ -13,6 +13,7 @@ settings = YAML.load_file settingsFile
 kubernetes_version=settings["kubernetes_version"]
 k8s_linux_kubelet_nodeip=settings['k8s_linux_kubelet_nodeip']
 pod_cidr=settings['pod_cidr']
+calico_version=settings['calico_version']
 containerd_version=settings['containerd_version']
 
 
@@ -50,7 +51,7 @@ Vagrant.configure(2) do |config|
     # TODO shoudl we pass KuberneteVersion to calico agent exe? and also service cidr if needed?
     # dont run as priveliged cuz we need the kubeconfig from regular user
     if cni == "calico" then
-      controlplane.vm.provision "shell", path: "sync/linux/calico-0.sh", args: "#{pod_cidr}"
+      controlplane.vm.provision "shell", path: "sync/linux/calico-0.sh", args: "#{pod_cidr} #{calico_version}"
     else
       controlplane.vm.provision "shell", path: "sync/linux/antrea-0.sh"
     end
@@ -78,8 +79,8 @@ Vagrant.configure(2) do |config|
     winw1.winrm.password = "vagrant"
 
     if not File.file?(".lock/joined") then
-     # Update contaienrd
-     winw1.vm.provision "shell", path: "sync/windows/0-containerd.ps1", args: "#{containerd_version}", privileged: true
+     # Update containerd
+     winw1.vm.provision "shell", path: "sync/windows/0-containerd.ps1", args: "#{calico_version}" "#{containerd_version}", privileged: true
 
       # Joining the controlplane
       winw1.vm.provision "shell", path: "sync/windows/forked.ps1", args: "#{kubernetes_version}", privileged: true

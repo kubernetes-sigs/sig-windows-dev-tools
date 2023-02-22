@@ -16,9 +16,12 @@ limitations under the License.
 
 Param(
     [parameter(HelpMessage="ContainerD Version")]
+        [string] $calico_version="",
         [string] $containerd_version=""
         )
 
+# download url doesn't use revision
+$calico_version = $calico_version  | select-string "(?<majorminor>[0-9]+.[0-9]+)" | %{ $_.Matches[0].Value }
 
 ## ------------------------------------------
 Write-Output "Stopping  ContainerD & Kubelet"
@@ -28,9 +31,9 @@ Stop-Service containerd -Force
 
 
 ## ------------------------------------------
-Write-Output "Downloading ContainerD - [version: $containerd_version]"
+Write-Output "Downloading Calico using ContainerD - [version: $calico_version] [version: $containerd_version]"
 ## ------------------------------------------
 
 # download and extract binaries
-Invoke-WebRequest https://docs.tigera.io/calico/3.25/scripts/Install-Containerd.ps1 -OutFile c:\Install-Containerd.ps1
-c:\Install-Containerd.ps1 -ContainerDVersion $containerd_version -CNIConfigPath "c:/etc/cni/net.d" -CNIBinPath "c:/opt/cni/bin"
+Invoke-WebRequest https://docs.tigera.io/calico/${calico_version}/scripts/Install-Containerd.ps1 -OutFile c:\Install-Containerd.ps1
+c:\Install-Containerd.ps1 -ContainerDVersion ${containerd_version} -CNIConfigPath "c:/etc/cni/net.d" -CNIBinPath "c:/opt/cni/bin"
