@@ -26,8 +26,7 @@ windows_node_ip = settings['windows_node_ip']
 cni = settings['cni']
 
 Vagrant.configure(2) do |config|
-  puts "cni:"
-  puts cni
+  puts "cni: #{cni}"
 
 #   LINUX Control Plane
   config.vm.define :controlplane do |controlplane|
@@ -80,6 +79,7 @@ Vagrant.configure(2) do |config|
 
     if not File.file?(".lock/joined") then
      # Update containerd
+     puts "calico: #{calico_version}; containerd: #{containerd_version}"
      winw1.vm.provision "shell", path: "sync/windows/0-containerd.ps1", args: "#{calico_version} #{containerd_version}", privileged: true
 
       # Joining the controlplane
