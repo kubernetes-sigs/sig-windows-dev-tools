@@ -31,7 +31,7 @@ Stop-Service containerd -Force
 
 
 ## ------------------------------------------
-Write-Output "Downloading Calico using ContainerD - [version: $calico_version] [version: $containerd_version]"
+Write-Output "Downloading Calico using ContainerD - [calico: $calico_version] [containerd: $containerd_version]"
 ## ------------------------------------------
 
 # download and extract binaries
