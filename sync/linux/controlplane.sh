@@ -55,8 +55,9 @@ curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add
 cat << EOF | sudo tee /etc/apt/sources.list.d/kubernetes.list
 deb https://apt.kubernetes.io/ kubernetes-xenial main
 EOF
-sudo apt-get update 
 
+echo "SWDT: Running apt get update -y"
+sudo apt-get update -y
 # Disable swap
 sudo swapoff -a
 sudo sed -i '/swap/d' /etc/fstab
@@ -66,6 +67,7 @@ overlay
 br_netfilter
 EOF
 
+echo "SWDT: Running modprobes"
 sudo modprobe overlay
 sudo modprobe br_netfilter
 
@@ -81,6 +83,8 @@ sudo sysctl --system
 
 # Install Kubernetes binaries, using latest available, and
 # overwritting the binaries later.
+
+echo "SWDT installing kubelet, kubeadm, kubectl will overwrite them later as needeed..." 
 sudo apt-get install -y kubelet kubeadm kubectl
 
 sudo apt-mark hold kubelet kubeadm kubectl
@@ -90,7 +94,7 @@ echo "Configuring Containerd"
 sudo apt-get install \
     ca-certificates \
     gnupg \
-    lsb-release
+    lsb-release -y
 
 sudo mkdir -p /etc/apt/keyrings
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
