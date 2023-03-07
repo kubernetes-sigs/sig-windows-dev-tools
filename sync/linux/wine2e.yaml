@@ -43,7 +43,7 @@ spec:
       value: --progress-report-url=http://localhost:8099/progress --node-os-distro=windows
     - name: KUBE_TEST_REPO_LIST
       value: /tmp/sonobuoy/config/image-repo-list-master
-  image: k8s.gcr.io/conformance:$SONOBUOY_K8S_VERSION
+  image: registry.k8s.io/conformance:$SONOBUOY_K8S_VERSION
   imagePullPolicy: Always
   name: e2e
   resources: {}
