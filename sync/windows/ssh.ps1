@@ -55,7 +55,8 @@ Write-Output "Restarting sshd service..."
 Restart-Service sshd
 # OPTIONAL but recommended:
 Set-Service -Name sshd -StartupType 'Automatic'
-
+# Dissabling all the firewalls
+Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled False
 # Confirm the Firewall rule is configured. It should be created automatically by setup. 
 $firewall = Get-NetFirewallRule -Name *ssh*
 
