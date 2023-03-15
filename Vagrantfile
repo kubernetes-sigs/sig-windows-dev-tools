@@ -72,7 +72,8 @@ Vagrant.configure(2) do |config|
     winw1.vm.box_version = "1.0"
 
     winw1.vm.provider "qemu" do |qe, override|
-      qe.arch="x86_64"
+      qe.arch = "x86_64"
+      qe.memory = windows_ram
 
       # need for x86_64
       qe.machine = "q35"
