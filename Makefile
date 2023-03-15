@@ -13,6 +13,7 @@
 # limitations under the License.
 
 VAGRANT?="vagrant"
+PROVIDER?="qemu"
 
 .SILENT: clean
 
@@ -44,10 +45,10 @@ all: 0-fetch-k8s 1-build-binaries 2-vagrant-up 3-smoke-test 4-e2e-test
 	@echo "Retry vagrant up if the first time the windows node failed"
 	@echo "Starting the control plane"
 	@echo "######################################"
-	@$(VAGRANT) up controlplane
+	@$(VAGRANT) up --provider=$(PROVIDER) controlplane
 	
 	@echo "*********** vagrant up first run done ~~~~ ENTERING WINDOWS BRINGUP LOOP ***"
-	@until `$(VAGRANT) status | grep winw1 | grep -q "running"` ; do $(VAGRANT) up winw1 || echo failed_win_up ; done
+	@until `$(VAGRANT) status | grep winw1 | grep -q "running"` ; do $(VAGRANT) up winw1 --provider=$(PROVIDER) || echo failed_win_up ; done
 	@until `$(VAGRANT) ssh controlplane -c "kubectl get nodes" | grep -q winw1` ; do $(VAGRANT) provision winw1 || echo failed_win_join; done
 	@touch .lock/joined
 	@$(VAGRANT) provision winw1
