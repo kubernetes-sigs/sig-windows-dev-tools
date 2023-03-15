@@ -48,6 +48,7 @@ Vagrant.configure(2) do |config|
       qe.machine = "q35"
       qe.cpu = "qemu64"
       qe.net_device = "virtio-net-pci"
+      print "qemu loop"
     end
 
     ### This allows the node to default to the right IP i think....
