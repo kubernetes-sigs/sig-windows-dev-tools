@@ -41,14 +41,12 @@ Vagrant.configure(2) do |config|
 
     controlplane.vm.provider "qemu" do |qe|
       qe.memory = linux_ram
-      qe.qemu_dir = "/opt/homebrew/share/qemu"
       qe.arch = "x86_64"
 
       # need for x86_64
       qe.machine = "q35"
       qe.cpu = "qemu64"
       qe.net_device = "virtio-net-pci"
-      print "qemu loop"
     end
 
     ### This allows the node to default to the right IP i think....
