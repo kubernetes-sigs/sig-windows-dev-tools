@@ -34,12 +34,19 @@ Vagrant.configure(2) do |config|
     controlplane.vm.box = "roboxes/ubuntu2004"
 
     controlplane.vm.network :private_network, ip:"#{k8s_linux_kubelet_nodeip}"
-    controlplane.vm.provider :virtualbox do |vb|
-    controlplane.vm.synced_folder "./sync/shared", "/var/sync/shared"
-    controlplane.vm.synced_folder "./forked", "/var/sync/forked"
-    controlplane.vm.synced_folder "./sync/linux", "/var/sync/linux"
-      vb.memory = linux_ram
-      vb.cpus = linux_cpus
+    controlplane.vm.synced_folder ".", "/vagrant", disabled: true
+    controlplane.vm.synced_folder "./sync/shared", "/var/sync/shared", type: "rsync"
+    controlplane.vm.synced_folder "./forked", "/var/sync/forked", type: "rsync"
+    controlplane.vm.synced_folder "./sync/linux", "/var/sync/linux", type: "rsync"
+
+    controlplane.vm.provider "qemu" do |qe|
+      qe.memory = linux_ram
+      qe.arch = "x86_64"
+
+      # need for x86_64
+      qe.machine = "q35"
+      qe.cpu = "qemu64"
+      qe.net_device = "virtio-net-pci"
     end
 
     ### This allows the node to default to the right IP i think....
@@ -62,10 +69,22 @@ Vagrant.configure(2) do |config|
     winw1.vm.box = "sig-windows-dev-tools/windows-2019"
     winw1.vm.box_version = "1.0"
 
-    winw1.vm.provider :virtualbox do |vb|
-      vb.memory = windows_ram
-      vb.cpus = windows_cpus
-      vb.gui = false
+    winw1.vm.provider "qemu" do |qe, override|
+      qe.arch = "x86_64"
+      qe.memory = windows_ram
+
+      # need for x86_64
+      qe.machine = "q35"
+      qe.cpu = "qemu64"
+
+      # devices compatible with this box
+      qe.net_device = "e1000"
+      qe.drive_interface = "ide"
+      qe.ssh_port = 50023
+
+      # use password (use winrm?)
+      override.ssh.username = "vagrant"
+      override.ssh.password = "vagrant"
     end
 
     winw1.vm.network :private_network, ip:"#{windows_node_ip}"
