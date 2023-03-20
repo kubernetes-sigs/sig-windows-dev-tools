@@ -133,12 +133,15 @@ nodeRegistration:
   kubeletExtraArgs:
     node-ip: $k8s_kubelet_node_ip
     cgroup-driver: cgroupfs
+apiServer:
+  timeoutForControlPlane: 8m0s
 ---
 apiVersion: kubeadm.k8s.io/v1beta3
 kind: ClusterConfiguration
 kubernetesVersion: $k8s_linux_apiserver
 networking:
   podSubnet: "${pod_cidr}"
+
 EOF
 
 # Ignore kubelet mismatch in the copy process

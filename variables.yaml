@@ -14,7 +14,7 @@ calico_version: "3.25.0"
 ## Linux settings
 k8s_linux_kubelet_nodeip: "10.20.30.10"
 windows_node_ip: "10.20.30.11"
-windows_ram: 6048
+windows_ram: 4096
 linux_ram: 4096
 linux_cpus: 2
 windows_cpus: 4
