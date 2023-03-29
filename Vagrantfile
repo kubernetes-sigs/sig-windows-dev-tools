@@ -76,7 +76,7 @@ Vagrant.configure(2) do |config|
     winw1.vm.network :private_network, ip:"#{windows_node_ip}"
     winw1.vm.provider "qemu" do |qe, override|
       qe.vm.network "private_network", type: "dhcp", ip: "10.20.30.20"
-      qq.arch = "x86_64"
+      qe.arch = "x86_64"
       qe.memory = windows_ram
       # need for x86_64
       qe.machine = "q35"
