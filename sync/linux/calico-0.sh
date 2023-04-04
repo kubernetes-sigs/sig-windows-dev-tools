@@ -27,9 +27,9 @@ kubectl taint nodes --all node-role.kubernetes.io/master-
 kubectl create ns calico-system
 kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v${calico_version}/manifests/tigera-operator.yaml
 
-wget https://raw.githubusercontent.com/projectcalico/calico/v${calico_version}/manifests/custom-resources.yaml -O trigera-custom-resource.yaml
-sed -i "s|cidr: 192.168.0.0/16|cidr: ${pod_cidr}|g" trigera-custom-resource.yaml
-kubectl create -f trigera-custom-resource.yaml
+wget https://raw.githubusercontent.com/projectcalico/calico/v${calico_version}/manifests/custom-resources.yaml -O tigera-custom-resource.yaml
+sed -i "s|cidr: 192.168.0.0/16|cidr: ${pod_cidr}|g" tigera-custom-resource.yaml
+kubectl create -f tigera-custom-resource.yaml
 kubectl patch installation default --type=merge -p '{"spec": {"calicoNetwork": {"bgp": "Disabled"}}}'
 
 echo "waiting 20s for calico pods..."

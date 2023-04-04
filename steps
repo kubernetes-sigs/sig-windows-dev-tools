@@ -5,10 +5,10 @@
 
 2. Install CRD
 	2.1 Download CRD
-		$. wget https://raw.githubusercontent.com/projectcalico/calico/v3.25.0/manifests/custom-resources.yaml -O trigera-custom-resource.yaml
+		$. wget https://raw.githubusercontent.com/projectcalico/calico/v3.25.0/manifests/custom-resources.yaml -O tigera-custom-resource.yaml
 
 	2.2 Update PodCIDR and create resource [100.244.0.0/16]
-		$. kubectl create -f trigera-custom-resource.yaml
+		$. kubectl create -f tigera-custom-resource.yaml
 
 	2.3 Download Manifest for Windows Host Process
 		$. wget https://raw.githubusercontent.com/projectcalico/calico/v3.25.0/manifests/calico-windows-vxlan.yaml -O calico-windows.yaml
