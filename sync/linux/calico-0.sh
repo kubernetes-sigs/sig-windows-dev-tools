@@ -5,7 +5,7 @@ if [[ "$1" == "" || "$2" == ""  ]]; then
     cat << EOF
     Missing args.
     You need to send pod_cidr and calico version i.e.
-    ./calico-0.sh.sh  100.244.0.0/16 3.25.0
+    ./calico-0.sh  100.244.0.0/16 3.25.0
     Normally these are in your variables.yml, and piped in by Vagrant.
     So, check that you didn't break the Vagrantfile :)
 EOF
