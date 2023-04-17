@@ -13,7 +13,7 @@ This is a fully batteries-included development environment for Windows on Kubern
 ## Quick Start
 
 ### Prerequisites 
-- Linux host - mostly tested on [Ubuntu](#ubuntu). Alternatively, see [Windows with WSL](#windows-with-wsl).
+- Linux host - mostly tested on [Ubuntu](#ubuntu). Alternatively, Windows host with WSL as environment providing `make`, see [Windows with WSL](#windows-with-wsl).
 - [make](https://www.gnu.org/software/make/)
 - [Vagrant](https://www.vagrantup.com/downloads)
 - [VirtualBox](https://www.virtualbox.org/wiki/Downloads) (we only have VirtualBox automated here, but these recipes have been used with others, like Microsoft HyperV and VMware Fusion).
