@@ -29,10 +29,25 @@ cni = settings['cni']
 Vagrant.configure(2) do |config|
   puts "[Vagrantfile] cni: #{cni}"
 
-#   LINUX Control Plane
+  config.vagrant.plugins = ["vagrant-vbguest"]
+
+  #   LINUX Control Plane
   config.vm.define :controlplane do |controlplane|
     controlplane.vm.host_name = "controlplane"
-    controlplane.vm.box = "roboxes/ubuntu2004"
+    controlplane.vm.box = "roboxes/ubuntu2204"
+    controlplane.vm.boot_timeout = 900
+
+    # Workaround for missing libraries on Debian 11, Ubuntu 22.04 and later boxes:
+    # /opt/VBoxGuestAdditions-7.0.2/bin/VBoxClient: error while loading shared libraries: libXt.so.6: cannot open shared object file: No such file or directory
+    # See https://github.com/dotless-de/vagrant-vbguest/issues/425#issuecomment-1515225030
+    controlplane.vbguest.installer_hooks[:before_install] = [
+      "apt-get update",
+      "apt-get -y install libxt6 libxmu6"
+    ]
+    controlplane.vbguest.installer_hooks[:after_install] = [
+      "VBoxClient --version"
+    ]
+    controlplane.vbguest.installer_options = { allow_kernel_upgrade: true }
 
     controlplane.vm.network :private_network, ip:"#{k8s_linux_kubelet_nodeip}"
     controlplane.vm.provider :virtualbox do |vb|
