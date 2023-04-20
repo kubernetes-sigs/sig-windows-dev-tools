@@ -86,6 +86,7 @@ Vagrant.configure(2) do |config|
     winw1.vm.host_name = "winw1"
     winw1.vm.box = "sig-windows-dev-tools/windows-2019"
     winw1.vm.box_version = "1.0"
+    winw1.vm.boot_timeout = 900
 
     winw1.vm.provider :virtualbox do |vb|
       vb.memory = windows_ram
