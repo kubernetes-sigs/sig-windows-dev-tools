@@ -118,9 +118,9 @@ Vagrant.configure(2) do |config|
     winw1.vm.provision "shell", inline: "netsh advfirewall set allprofiles state off"
 
     if not File.file?(".lock/joined") then
-     # Update containerd
-     winw1.vm.provision "shell", path: "sync/windows/0-containerd.ps1", args: "#{calico_version} #{containerd_version}", privileged: true
+      # Update containerd
       puts "[Vagrantfile] calico: #{calico_version}; containerd: #{containerd_version}"
+      winw1.vm.provision "shell", path: "sync/windows/0-containerd.ps1", args: "#{calico_version} #{containerd_version}", privileged: true
 
       # Joining the controlplane
       winw1.vm.provision "shell", path: "sync/windows/forked.ps1", args: "#{kubernetes_version}", privileged: true
