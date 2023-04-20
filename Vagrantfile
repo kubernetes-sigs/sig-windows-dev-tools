@@ -56,6 +56,15 @@ Vagrant.configure(2) do |config|
     controlplane.vm.synced_folder "./sync/linux", "/var/sync/linux"
       vb.memory = linux_ram
       vb.cpus = linux_cpus
+      # Enabling I/O APIC is required for 64-bit guests
+      vb.customize ["modifyvm", :id, "--ioapic", "on"]
+      # Force newer VirtualBox default graphics controller for Linux guests
+      vb.customize ['modifyvm', :id, '--graphicscontroller', 'vmsvga']
+      # Explicitly disable unnecessary features for better performance
+      vb.customize ["modifyvm", :id, "--accelerate3d", "off"]
+      vb.customize ["modifyvm", :id, "--accelerate2dvideo", "off"]
+      vb.customize ['modifyvm', :id, '--clipboard', 'disabled']
+      vb.customize ['modifyvm', :id, '--draganddrop', 'disabled']
     end
 
     ### This allows the node to default to the right IP i think....
@@ -81,6 +90,17 @@ Vagrant.configure(2) do |config|
     winw1.vm.provider :virtualbox do |vb|
       vb.memory = windows_ram
       vb.cpus = windows_cpus
+      # Enabling I/O APIC is required for 64-bit guests
+      vb.customize ["modifyvm", :id, "--ioapic", "on"]
+      # Explicitly use Windows guest default graphics controller
+      vb.customize ['modifyvm', :id, '--graphicscontroller', 'vboxsvga']
+      # Explicitly disable unnecessary features for better performance
+      vb.customize ["modifyvm", :id, "--accelerate3d", "off"]
+      vb.customize ["modifyvm", :id, "--accelerate2dvideo", "off"]
+      vb.customize ['modifyvm', :id, '--clipboard', 'disabled']
+      vb.customize ['modifyvm', :id, '--draganddrop', 'disabled']
+      # Use paravirtualization provider VirtualBox recommends for Windows guests
+      vb.customize ["modifyvm", :id, "--paravirt-provider", "hyperv"]
       vb.gui = false
     end
 
