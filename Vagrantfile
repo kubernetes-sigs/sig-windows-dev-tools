@@ -114,6 +114,9 @@ Vagrant.configure(2) do |config|
     winw1.winrm.username = "vagrant"
     winw1.winrm.password = "vagrant"
 
+    # Turn off Windows Firewall for apparent better performance
+    winw1.vm.provision "shell", inline: "netsh advfirewall set allprofiles state off"
+
     if not File.file?(".lock/joined") then
      # Update containerd
      winw1.vm.provision "shell", path: "sync/windows/0-containerd.ps1", args: "#{calico_version} #{containerd_version}", privileged: true
