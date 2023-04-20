@@ -29,9 +29,11 @@ Vagrant.configure(2) do |config|
   puts "cni: #{cni}"
 
 #   LINUX Control Plane
+#   The provider for roboxes/ubuntu2004 vagrant box are libvirt, hyperv, parallels, vmware_desktop and virtual box
   config.vm.define :controlplane do |controlplane|
     controlplane.vm.host_name = "controlplane"
     controlplane.vm.box = "roboxes/ubuntu2004"
+    controlplane.vm.box_version = "4.2.16"
 
     controlplane.vm.network :private_network, ip:"#{k8s_linux_kubelet_nodeip}"
     controlplane.vm.provider :virtualbox do |vb|
@@ -62,6 +64,7 @@ Vagrant.configure(2) do |config|
     winw1.vm.box = "sig-windows-dev-tools/windows-2019"
     winw1.vm.box_version = "1.0"
 
+ # The provider for sig-windows-dev-tools/windows-2019 vagrant box are libvirt and virtual box   
     winw1.vm.provider :virtualbox do |vb|
       vb.memory = windows_ram
       vb.cpus = windows_cpus
