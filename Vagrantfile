@@ -3,19 +3,20 @@
 require 'yaml'
 require 'fileutils'
 
-# Modify these in the variables.yaml file... they are described there in gory detail...
-# This will get copied down later to synch/shared/variables... and read by the controlplane.sh etc...
-settingsFile = "variables.yaml" || ENV["VAGRANT_VARIABLES"]
+# Give user-defined variables file higher precedence, for example, make.ps1
+# searches for user-specific variables.local.yaml and assigns VAGRANT_VARIABLES.
+# Otherwise, use the provided variables.yaml with defaults.
+# This settings file will be copied to sync/shared/variables.yaml for controlplane.sh.
+settingsFile = ENV["VAGRANT_VARIABLES"] || "variables.yaml"
+puts "[Vagrantfile] settings: #{settingsFile}"
 FileUtils.cp(settingsFile, "sync/shared/variables.yaml")
 settings = YAML.load_file settingsFile
-
 
 kubernetes_version=settings["kubernetes_version"]
 k8s_linux_kubelet_nodeip=settings['k8s_linux_kubelet_nodeip']
 pod_cidr=settings['pod_cidr']
 calico_version=settings['calico_version']
 containerd_version=settings['containerd_version']
-
 
 linux_ram = settings['linux_ram']
 linux_cpus = settings['linux_cpus']
