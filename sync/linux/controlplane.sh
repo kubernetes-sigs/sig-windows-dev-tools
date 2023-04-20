@@ -115,6 +115,7 @@ do
   if [ -f $file ]; then
     echo "copying $file to node path.."
     sudo cp $file /usr/bin/ -f
+    sudo chmod +x /usr/bin/$BIN
   fi
 done
 
