@@ -27,17 +27,16 @@ function script:Write-Log {
 }
 
 # Get-SettingsVaribale <setting property key>
-function Get-SettingsVariable
-{
+function Get-SettingsVariable {
     $settingsFile = $env:VAGRANT_VARIABLES
     if (-not $settingsFile) {
-        Write-Log "WARNING: Environment variable VAGRANT_VARIABLES not defined"
-        $settingsFile = Resolve-Path -Path ".\variables.yaml"
+        Write-Log 'WARNING: Environment variable VAGRANT_VARIABLES not defined'
+        $settingsFile = Resolve-Path -Path '.\variables.yaml'
     }
     Get-Content -Path $settingsFile |
-        Select-String -Pattern ('^{0}.*\:.+' -f $args[0]) |
-        ForEach-Object { ($_ -Split ':').Trim().Trim('"') } |
-        Select-Object -Last 1
+    Select-String -Pattern ('^{0}.*\:.+' -f $args[0]) |
+    ForEach-Object { ($_ -Split ':').Trim().Trim('"') } |
+    Select-Object -Last 1
 }
 
 function script:Set-PrivateKeyPermissions {
@@ -102,22 +101,22 @@ function script:Invoke-Clean {
 function script:Invoke-Download {
     # This is settings check only as this property does not really control the make.ps1 workflow
     # That is becasue make.ps1 steps are invoked individually one-by-one (not like dependency-based Makefile targets)
-    $buildFromSource = (Get-SettingsVariable "build_from_source") -eq 'false' ? $false : $true
+    $buildFromSource = (Get-SettingsVariable 'build_from_source') -eq 'false' ? $false : $true
     if ($buildFromSource) {
-        throw "TODO: Build from source"
+        throw 'TODO: Build from source'
     }
-    $kubernetesVersion = (Get-SettingsVariable "kubernetes_version")
-    Write-Log ("Using requested Kubernetes version {0}" -f $kubernetesVersion)
+    $kubernetesVersion = (Get-SettingsVariable 'kubernetes_version')
+    Write-Log ('Using requested Kubernetes version {0}' -f $kubernetesVersion)
 
     Set-ExecutionPolicy Bypass -Scope Process -Force;
     [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072;
-    $kubernetesVersion = (New-Object System.Net.WebClient).DownloadString(("https://storage.googleapis.com/k8s-release-dev/ci/latest-{0}.txt" -f $kubernetesVersion))
-    $kubernetesTag = ($kubernetesVersion -split '+', 2, "SimpleMatch" | Select-Object -First 1)
-    $kubernetesSha = ($kubernetesVersion -split '+', 2, "SimpleMatch" | Select-Object -Last 1)
+    $kubernetesVersion = (New-Object System.Net.WebClient).DownloadString(('https://storage.googleapis.com/k8s-release-dev/ci/latest-{0}.txt' -f $kubernetesVersion))
+    $kubernetesTag = ($kubernetesVersion -split '+', 2, 'SimpleMatch' | Select-Object -First 1)
+    $kubernetesSha = ($kubernetesVersion -split '+', 2, 'SimpleMatch' | Select-Object -Last 1)
     if (-not $kubernetesTag -or -not $kubernetesSha) {
         throw "Unknown Kubernetes tag and hash for version $kubernetesVersion"
     }
-    Write-Log ("Downloading Kubernetes version {0}-{1} from upstream" -f $kubernetesTag, $kubernetesSha)
+    Write-Log ('Downloading Kubernetes version {0}-{1} from upstream' -f $kubernetesTag, $kubernetesSha)
     
     $linuxBinDir = Join-Path -Path (Get-Location) -ChildPath '.\sync\Linux\bin'
     $windowsBinDir = Join-Path -Path (Get-Location) -ChildPath '.\sync\windows\bin'
@@ -134,7 +133,7 @@ function script:Invoke-Download {
     # Linux binaries
     @('kubeadm', 'kubectl', 'kubelet') | ForEach-Object {
         $bin = $_
-        $url = ("https://storage.googleapis.com/k8s-release-dev/ci/{0}/bin/linux/amd64/{1}" -f $kubernetesVersion, $bin)
+        $url = ('https://storage.googleapis.com/k8s-release-dev/ci/{0}/bin/linux/amd64/{1}' -f $kubernetesVersion, $bin)
         Write-Log ('Downloading {0}' -f $url)
         $webClient.DownloadFile($url, (Join-Path -Path $linuxBinDir -ChildPath $bin))
         # NOTICE: controlplane.sh executes chmod +x
@@ -142,7 +141,7 @@ function script:Invoke-Download {
     # Windows binaries
     @('kubeadm', 'kubelet', 'kube-proxy') | ForEach-Object {
         $bin = $_
-        $url = ("https://storage.googleapis.com/k8s-release-dev/ci/{0}/bin/windows/amd64/{1}.exe" -f $kubernetesVersion, $bin)
+        $url = ('https://storage.googleapis.com/k8s-release-dev/ci/{0}/bin/windows/amd64/{1}.exe' -f $kubernetesVersion, $bin)
         Write-Log ('Downloading {0}' -f $url)
         $webClient.DownloadFile($url, (Join-Path -Path $windowsBinDir -ChildPath ('{0}.exe' -f $bin)))
     }
@@ -232,7 +231,7 @@ $commands = @{
 }
 
 if ($args.Count -eq 0 -or $commands.Keys -notcontains $args[0] -or $args[0] -contains 'help') {
-    Write-Host "Usage: .\make.ps1 <command>"
+    Write-Host 'Usage: .\make.ps1 <command>'
     Write-Host "`nRun commands one by one in the following order:"
     $commands.GetEnumerator() | Sort-Object -Property Value | Format-Table -HideTableHeaders -AutoSize
     Write-Host "`nDefault settings are defined in variables.yaml file."
