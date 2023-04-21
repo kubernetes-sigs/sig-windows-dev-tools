@@ -13,7 +13,7 @@ This is a fully batteries-included development environment for Windows on Kubern
 ## Quick Start
 
 ### Prerequisites 
-- Linux host - mostly tested on [Ubuntu](#ubuntu). Alternatively, Windows host with WSL as environment providing `make`, see [Windows with WSL](#windows-with-wsl).
+- Linux host - mostly tested on [Ubuntu](#ubuntu). Alternatively, Windows host with WSL as environment providing `make`, see [Windows with WSL](#windows-with-wsl) or Windows host with PowerShell, see [Windows Natively](#windows-natively).
 - [make](https://www.gnu.org/software/make/)
 - [Vagrant](https://www.vagrantup.com/downloads)
 - [VirtualBox](https://www.virtualbox.org/wiki/Downloads) (we only have VirtualBox automated here, but these recipes have been used with others, like Microsoft HyperV and VMware Fusion).
@@ -46,6 +46,26 @@ make all
 # ...
 make clean
 ```
+
+## Windows Natively
+
+All the above Quick Start steps apply, except you have to run the `Makefile` *clone* `make.ps1` from the PowerShell command line on Windows host directly:
+
+```powershell
+.\make.ps1 0-fetch-k8s
+#.\make.ps1 1-build-binaries # TODO
+.\make.ps1 2-vagrant-up
+.\make.ps1 3-smoke-test
+.\make.ps1 4-e2e-test
+```
+
+This variant of the workflow deploys Kubernetes from the official binaries.
+
+Run `.\make.ps1 status` to query status of Vagrant machines status and Kubernetes nodes.
+
+Run `.\make.ps clean` to delete the whole cluster and start fresh.
+
+Run `.\make.ps help` to display the script usage message.
 
 ## Ubuntu
 
