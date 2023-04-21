@@ -211,6 +211,23 @@ function script:Invoke-Status {
     Write-Log 'kubectl get nodes'
     vagrant ssh controlplane -c 'kubectl get nodes'
 }
+
+function script:Invoke-SmokeTest {
+    Write-Log 'kubectl apply -f /var/sync/linux/smoke-test.yaml'
+    vagrant ssh controlplane -c 'kubectl apply -f /var/sync/linux/smoke-test.yaml'
+    Write-Log 'kubectl scale deployment whoami-windows --replicas 0'
+    vagrant ssh controlplane -c 'kubectl scale deployment whoami-windows --replicas 0'
+    Write-Log 'kubectl scale deployment whoami-windows --replicas 3'
+    vagrant ssh controlplane -c 'kubectl scale deployment whoami-windows --replicas 3'
+    vagrant ssh controlplane -c "kubectl wait --for=condition=Ready=true pod -l 'app=whoami-windows' --timeout=600s"
+    Write-Log 'kubectl exec -it netshoot -- curl http://whoami-windows:80/'
+    vagrant ssh controlplane -c 'kubectl exec -it netshoot -- curl http://whoami-windows:80/'
+}
+
+function script:Invoke-EndToEndTest {
+    Write-Log 'Executing e2e.sh on controlplane'
+    vagrant ssh controlplane -c "cd /var/sync/linux && chmod +x ./e2e.sh && ./e2e.sh"
+}
 #endregion Command Functions
 
 #region Main Script
@@ -261,12 +278,10 @@ else {
         script:Invoke-Run | Tee-Object -FilePath $logFile
     }
     elseif ($command -eq '3-smoke-test') {
-        Write-Host 'TODO: Invoke-SmokeTest'
-        #script:Invoke-SmokeTest | Tee-Object -FilePath $logFile
+        script:Invoke-SmokeTest | Tee-Object -FilePath $logFile
     }
     elseif ($command -eq '4-e2e-test') {
-        Write-Host 'TODO: Invoke-EndToEndTest'
-        #script:Invoke-EndToEndTest | Tee-Object -FilePath $logFile
+        script:Invoke-EndToEndTest | Tee-Object -FilePath $logFile
     }
 }
 
