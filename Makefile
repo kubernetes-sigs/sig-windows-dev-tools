@@ -63,6 +63,11 @@ all: 0-fetch-k8s 1-build-binaries 2-vagrant-up 3-smoke-test 4-e2e-test
 4-e2e-test:
 	@$(VAGRANT) ssh controlplane -c "cd /var/sync/linux && chmod +x ./e2e.sh && ./e2e.sh"
 
+status:
+	$(VAGRANT) status
+	@echo
+	$(VAGRANT) ssh controlplane -c "kubectl get nodes"
+
 clean:
 	@touch sync/shared/kubejoin.ps1
 	$(VAGRANT) destroy --force

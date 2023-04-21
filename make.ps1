@@ -220,20 +220,20 @@ function script:Invoke-Status {
 
 #region Main Script
 $commands = @{
-    'clean'      = '0. Start fresh destroying any existing Vagrant machines';
-    'download'   = '1. Download Kubernetes binaries for Linux and Windows (set version in variables.yaml or variables.local.yaml)';
-    'build'      = '2. Optionally, build Kubernetes from sources for Linux and Windows';
-    'run'        = '3. Create and run two-node cluster';
-    'status'     = '4. Check state of Vagrant machines and Kubernetes nodes';
-    'smoke-test' = '5. Run smoke tests';
-    'e2e-test'   = '6. Run end-to-end tests';
-    'help'       = 'Print this message';
+    '0-fetch-k8s'      = 'Download Kubernetes binaries for Linux and Windows (set version in variables.yaml or variables.local.yaml)';
+    '1-build-binaries' = 'Optionally, build Kubernetes from sources for Linux and Windows';
+    '2-vagrant-up'     = 'Create and run two-node cluster';
+    '3-smoke-test'     = 'Run smoke tests';
+    '4-e2e-test'       = 'Run end-to-end tests';
+    'status'           = 'Check state of Vagrant machines and Kubernetes nodes';
+    'clean'            = 'Start fresh destroying any existing Vagrant machines';
+    'help'             = 'Print this message';
 }
 
 if ($args.Count -eq 0 -or $commands.Keys -notcontains $args[0] -or $args[0] -contains 'help') {
     Write-Host 'Usage: .\make.ps1 <command>'
     Write-Host "`nRun commands one by one in the following order:"
-    $commands.GetEnumerator() | Sort-Object -Property Value | Format-Table -HideTableHeaders -AutoSize
+    $commands.GetEnumerator() | Sort-Object -Property Name | Format-Table -HideTableHeaders -AutoSize
     Write-Host "`nDefault settings are defined in variables.yaml file."
     Write-Host "To tweak the defaults, make a copy as variables.local.yaml and edit.`n"
     exit
@@ -253,21 +253,21 @@ else {
     $logFile = (Join-Path -Path (Get-Location) -ChildPath ('make-{0}-{1}.log' -f $command, $logTime))
     Write-Log "Saving command output to $logFile"
     
-    if ($command -eq 'download') {
+    if ($command -eq '0-fetch-k8s') {
         script:Invoke-Download | Tee-Object -FilePath $logFile
     }
-    elseif ($command -eq 'build') {
+    elseif ($command -eq '1-build-binaries') {
         Write-Host 'TODO: Invoke-Build'
         #script:Invoke-Build | Tee-Object -FilePath $logFile
     }
-    elseif ($command -eq 'run') {
+    elseif ($command -eq '2-vagrant-up') {
         script:Invoke-Run | Tee-Object -FilePath $logFile
     }
-    elseif ($command -eq 'smoke-test') {
+    elseif ($command -eq '3-smoke-test') {
         Write-Host 'TODO: Invoke-SmokeTest'
         #script:Invoke-SmokeTest | Tee-Object -FilePath $logFile
     }
-    elseif ($command -eq 'e2e-test') {
+    elseif ($command -eq '4-e2e-test') {
         Write-Host 'TODO: Invoke-EndToEndTest'
         #script:Invoke-EndToEndTest | Tee-Object -FilePath $logFile
     }
