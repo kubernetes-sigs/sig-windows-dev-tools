@@ -78,7 +78,6 @@ function script:Set-VagrantEnv {
 
 #region Command Functions
 function script:Invoke-Clean {
-    Write-Log 'Invoking command: clean'
     vagrant destroy --force
     @(
         '.\sync\linux\bin',
@@ -148,8 +147,6 @@ function script:Invoke-Download {
 }
 
 function script:Invoke-Run {
-    Write-Log 'Invoking command: run'
-    
     Write-Log 'Creating .\.lock directory'
     if (Test-Path '.\.lock') {
         Remove-Item -Path '.\.lock' -Recurse -Force | Out-Null
@@ -208,8 +205,6 @@ function script:Invoke-Run {
 }
 
 function script:Invoke-Status {
-    Write-Log 'Invoking command: status'
-
     Write-Log 'vagrant status'
     vagrant status
     
@@ -239,9 +234,11 @@ if ($args.Count -eq 0 -or $commands.Keys -notcontains $args[0] -or $args[0] -con
     exit
 }
 
+$command = $args[0]
+Write-Log "Invoking command: $command"
+
 script:Set-VagrantEnv
 
-$command = $args[0]
 if ($command -eq 'clean') {
     script:Invoke-Clean
 }
