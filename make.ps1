@@ -98,14 +98,15 @@ function script:Invoke-Clean {
 }
 
 function script:Invoke-Download {
-    # This is settings check only as this property does not really control the make.ps1 workflow
-    # That is becasue make.ps1 steps are invoked individually one-by-one (not like dependency-based Makefile targets)
+    $kubernetesVersion = (Get-SettingsVariable 'kubernetes_version')
+    Write-Log ('Downloading binaries of Kubernetes {0}' -f $kubernetesVersion)
+
+    # This is only settings consistency check as this property does not really control the make.ps1 workflow.
+    # That is becasue make.ps1 steps are invoked individually one-by-one (not like dependency-based Makefile targets).
     $buildFromSource = (Get-SettingsVariable 'build_from_source') -eq 'false' ? $false : $true
     if ($buildFromSource) {
-        throw 'TODO: Build from source'
+        throw "Vagrant variables file declares 'build_from_source=true'. Modify the variable or run .\make.ps1 1-build-binaries instead."
     }
-    $kubernetesVersion = (Get-SettingsVariable 'kubernetes_version')
-    Write-Log ('Using requested Kubernetes version {0}' -f $kubernetesVersion)
 
     Set-ExecutionPolicy Bypass -Scope Process -Force;
     [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072;
@@ -144,6 +145,20 @@ function script:Invoke-Download {
         Write-Log ('Downloading {0}' -f $url)
         $webClient.DownloadFile($url, (Join-Path -Path $windowsBinDir -ChildPath ('{0}.exe' -f $bin)))
     }
+}
+
+function script:Invoke-Build {
+    $kubernetesVersion = (Get-SettingsVariable 'kubernetes_version')
+    Write-Log ('Building Kubernetes {0} from source' -f $kubernetesVersion)
+
+    # This is only settings consistency check as this property does not really control the make.ps1 workflow.
+    # That is becasue make.ps1 steps are invoked individually one-by-one (not like dependency-based Makefile targets).
+    $buildFromSource = (Get-SettingsVariable 'build_from_source') -eq 'false' ? $false : $true
+    if (-not $buildFromSource) {
+        throw "Vagrant variables file declares 'build_from_source=false'. Modify the variable or run .\make.ps1 0-fetch-k8s instead."
+    }
+
+    throw "TODO: Building Kubernetes from sources on Windows host without make is not implemented yet"
 }
 
 function script:Invoke-Run {
@@ -271,8 +286,7 @@ else {
         script:Invoke-Download | Tee-Object -FilePath $logFile
     }
     elseif ($command -eq '1-build-binaries') {
-        Write-Host 'TODO: Invoke-Build'
-        #script:Invoke-Build | Tee-Object -FilePath $logFile
+        script:Invoke-Build | Tee-Object -FilePath $logFile
     }
     elseif ($command -eq '2-vagrant-up') {
         script:Invoke-Run | Tee-Object -FilePath $logFile
