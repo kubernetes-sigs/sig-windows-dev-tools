@@ -118,7 +118,7 @@ function script:Invoke-Download {
     }
     Write-Log ('Downloading Kubernetes version {0}-{1} from upstream' -f $kubernetesTag, $kubernetesSha)
     
-    $linuxBinDir = Join-Path -Path (Get-Location) -ChildPath '.\sync\Linux\bin'
+    $linuxBinDir = Join-Path -Path (Get-Location) -ChildPath '.\sync\linux\bin'
     $windowsBinDir = Join-Path -Path (Get-Location) -ChildPath '.\sync\windows\bin'
     if (-not (Test-Path -Path $linuxBinDir -PathType Container)) {
         New-Item -Path $linuxBinDir -ItemType Directory -Force -ErrorAction Stop | Out-Null
