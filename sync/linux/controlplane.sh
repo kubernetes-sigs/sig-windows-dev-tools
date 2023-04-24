@@ -158,6 +158,9 @@ cp $HOME/.kube/config /var/sync/shared/config
 rm -f /var/sync/shared/kubejoin.ps1
 
 cat << EOF > /var/sync/shared/kubejoin.ps1
+if(!(Test-Path ("C:\Program Files\containerd\crictl.exe"))) {
+    mv "C:\Users\vagrant\crictl.exe" "C:\Program Files\containerd\"
+}
 stop-service -name kubelet
 cp C:\sync\windows\bin\* c:\k
 
