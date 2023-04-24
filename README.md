@@ -13,7 +13,7 @@ This is a fully batteries-included development environment for Windows on Kubern
 ## Quick Start
 
 ### Prerequisites 
-- Linux host - mostly tested on [Ubuntu](#ubuntu). Alternatively, Windows host with WSL as environment providing `make`, see [Windows with WSL](#windows-with-wsl).
+- Linux host - mostly tested on [Ubuntu](#ubuntu). Alternatively, Windows host with WSL as environment providing `make`, see [Windows with WSL](#windows-with-wsl) or Windows host with Go, see [Windows Natively](#windows-natively).
 - [make](https://www.gnu.org/software/make/)
 - [Vagrant](https://www.vagrantup.com/downloads)
 - [VirtualBox](https://www.virtualbox.org/wiki/Downloads) (we only have VirtualBox automated here, but these recipes have been used with others, like Microsoft HyperV and VMware Fusion).
@@ -46,6 +46,27 @@ make all
 # ...
 make clean
 ```
+
+## Windows Natively
+
+All the above Quick Start steps apply, except that on Windows host directly you can use the provided [Magefiles](https://magefile.org) written in Go instead of the `Makefile`:
+
+```console
+mage all
+```
+
+which is equivalent of step-by-step invocation:
+
+```console
+mage fetch
+mage run
+```
+
+This variant of the workflow deploys Kubernetes from the official binaries.
+
+Run `mage status` to query status of Vagrant machines status and Kubernetes nodes.
+
+Run `mage clean` to delete the whole cluster and start fresh.
 
 ## Ubuntu
 
