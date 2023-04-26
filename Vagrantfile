@@ -34,13 +34,15 @@ Vagrant.configure(2) do |config|
     controlplane.vm.box = "roboxes/ubuntu2004"
 
     controlplane.vm.network :private_network, ip:"#{k8s_linux_kubelet_nodeip}"
+
     controlplane.vm.provider :virtualbox do |vb|
-    controlplane.vm.synced_folder "./sync/shared", "/var/sync/shared"
-    controlplane.vm.synced_folder "./forked", "/var/sync/forked"
-    controlplane.vm.synced_folder "./sync/linux", "/var/sync/linux"
       vb.memory = linux_ram
       vb.cpus = linux_cpus
     end
+    
+    controlplane.vm.synced_folder "./sync/shared", "/var/sync/shared"
+    controlplane.vm.synced_folder "./forked", "/var/sync/forked"
+    controlplane.vm.synced_folder "./sync/linux", "/var/sync/linux"
 
     ### This allows the node to default to the right IP i think....
     # 1) this seems to break the ability to get to the internet
