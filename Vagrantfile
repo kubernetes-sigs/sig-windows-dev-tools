@@ -28,7 +28,7 @@ cni = settings['cni']
 Vagrant.configure(2) do |config|
   puts "cni: #{cni}"
 
-#   LINUX Control Plane
+  # LINUX Control Plane
   config.vm.define :controlplane do |controlplane|
     controlplane.vm.host_name = "controlplane"
     controlplane.vm.box = "roboxes/ubuntu2004"
@@ -80,9 +80,8 @@ Vagrant.configure(2) do |config|
     winw1.winrm.password = "vagrant"
 
     if not File.file?(".lock/joined") then
-     # Update containerd
-     puts "calico: #{calico_version}; containerd: #{containerd_version}"
-     winw1.vm.provision "shell", path: "sync/windows/0-containerd.ps1", args: "#{calico_version} #{containerd_version}", privileged: true
+      # Update containerd
+      winw1.vm.provision "shell", path: "sync/windows/0-containerd.ps1", args: "#{calico_version} #{containerd_version}", privileged: true
 
       # Joining the controlplane
       winw1.vm.provision "shell", path: "sync/windows/forked.ps1", args: "#{kubernetes_version}", privileged: true
