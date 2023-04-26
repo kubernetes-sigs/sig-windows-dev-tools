@@ -6,6 +6,7 @@ require 'fileutils'
 # Modify these in the variables.yaml file... they are described there in gory detail...
 # This will get copied down later to synch/shared/variables... and read by the controlplane.sh etc...
 settingsFile = "variables.yaml" || ENV["VAGRANT_VARIABLES"]
+puts "[Vagrantfile] Loading settings from #{settingsFile}"
 FileUtils.cp(settingsFile, "sync/shared/variables.yaml")
 settings = YAML.load_file settingsFile
 
@@ -26,7 +27,8 @@ windows_node_ip = settings['windows_node_ip']
 cni = settings['cni']
 
 Vagrant.configure(2) do |config|
-  puts "cni: #{cni}"
+  puts "[Vagrantfile] Using Kubernetes version: #{kubernetes_version}"
+  puts "[Vagrantfile] Using Kubernetes CNI implementation: #{cni}"
 
   # LINUX Control Plane
   config.vm.define :controlplane do |controlplane|
@@ -52,6 +54,7 @@ Vagrant.configure(2) do |config|
     # TODO shoudl we pass KuberneteVersion to calico agent exe? and also service cidr if needed?
     # dont run as priveliged cuz we need the kubeconfig from regular user
     if cni == "calico" then
+      puts "[Vagrantfile] Provisioning controlplane with Calico: #{calico_version}"
       controlplane.vm.provision "shell", path: "sync/linux/calico-0.sh", args: "#{pod_cidr} #{calico_version}"
     else
       controlplane.vm.provision "shell", path: "sync/linux/antrea-0.sh"
@@ -81,6 +84,7 @@ Vagrant.configure(2) do |config|
 
     if not File.file?(".lock/joined") then
       # Update containerd
+      puts "[Vagrantfile] Provisioning winw1 node with Calico: #{calico_version}; containerd: #{containerd_version}"
       winw1.vm.provision "shell", path: "sync/windows/0-containerd.ps1", args: "#{calico_version} #{containerd_version}", privileged: true
 
       # Joining the controlplane
