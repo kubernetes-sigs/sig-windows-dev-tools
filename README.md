@@ -1,6 +1,7 @@
 # Welcome to the SIG Windows Development Environment!
 
 This is a fully batteries-included development environment for Windows on Kubernetes, including:
+
 - Vagrant file for launching a two-node cluster
 - The latest Containerd
 - Support for two CNIs: antrea, or calico on containerd:  configure your CNI option in variables.yml
@@ -12,9 +13,14 @@ This is a fully batteries-included development environment for Windows on Kubern
 
 ## Quick Start
 
-### Prerequisites 
-- Linux host - mostly tested on [Ubuntu](#ubuntu). Alternatively, Windows host with WSL as environment providing `make`, see [Windows with WSL](#windows-with-wsl).
-- [make](https://www.gnu.org/software/make/)
+### Prerequisites
+
+- Linux host - mostly tested on [Ubuntu](#ubuntu).- Alternatively, Windows host with either
+  - WSL as environment providing `make`, see [Windows with WSL](#windows-with-wsl)
+  - Go and Mage, see [Windows Natively](#windows-natively).
+
+- [Go](https://go.dev)
+- [Mage](https://magefile.org)
 - [Vagrant](https://www.vagrantup.com/downloads)
 - [VirtualBox](https://www.virtualbox.org/wiki/Downloads) (we only have VirtualBox automated here, but these recipes have been used with others, like Microsoft HyperV and VMware Fusion).
 - [Kubectl](https://kubernetes.io/docs/tasks/tools/#kubectl)
@@ -25,12 +31,13 @@ Simple steps to a Windows Kubernetes cluster, from scratch, built from source...
 
 - `vagrant plugin install vagrant-reload vagrant-vbguest winrm winrm-elevated`, vagrant-reload needed to easily reboot windows VMs during setup of containers features.
 - `make all`, this will create the entire cluster for you.  To compile k/k/ from local source, see instructions later in this doc. 
-	- *If the above failed, run `vagrant provision winw1`, just in case you have a flake during windows installation.*
+  - *If the above failed, run `vagrant provision winw1`, just in case you have a flake during windows installation.*
 - `vagrant ssh controlplane` and run `kubectl get nodes` to see your running dual-os linux+windows k8s cluster.
 
 ## Windows with WSL
 
 All the above Quick Start steps apply, except you have to run the `Makefile` targets in WSL
+
 - using `vagrant.exe` on the host
 - while inside clone of this repo on Windows filesystem, not WSL filesystem.
 
@@ -45,7 +52,7 @@ Next, pass the mount path to the executable on the Windows host with the `VAGRAN
 
 Then, ensure you clone this repository onto filesystem inside `/mnt` and not the WSL filesystem, in order to avoid failures similar to this one:
 
-```
+```console
 The host path of the shared folder is not supported from WSL.
 Host path of the shared folder must be located on a file system with
 DrvFs type. Host path: ./sync/shared
@@ -61,6 +68,27 @@ make all
 # ...
 make clean
 ```
+
+## Windows Natively
+
+All the above Quick Start steps apply, except that on Windows host directly you can use the provided [Magefiles](https://magefile.org) written in Go instead of the `Makefile`:
+
+```console
+mage all
+```
+
+which is equivalent of step-by-step invocation:
+
+```console
+mage fetch
+mage run
+```
+
+This variant of the workflow deploys Kubernetes from the official binaries.
+
+Run `mage status` to query status of Vagrant machines status and Kubernetes nodes.
+
+Run `mage clean` to delete the whole cluster and start fresh.
 
 ## Ubuntu
 
