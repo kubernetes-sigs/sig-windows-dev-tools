@@ -70,8 +70,26 @@ Vagrant.configure(2) do |config|
 
   # WINDOWS WORKER (win server 2019)
   config.vm.define :winw1 do |winw1|
+
+    # SSH doesnt work bc comnuicator.rb fails w/ windows and tries to use bash to provision
+    winw1.vm.communicator = "winrm"
+    #winw1.vm.winrm.port = "5985"
+    #winw1.winrm.port = "5985"
+    
+    # Add the forwarded port rule that you need
+
+    
     winw1.vm.host_name = "winw1"
+    winw1.vm.communicator = "winrm"
+    winw1.winrm.username = "vagrant"
+    winw1.winrm.password = "vagrant"
+    winw1.winrm.port = 5986 # WinRM HTTPS port
+    winw1.winrm.transport = :ssl
+    winw1.winrm.ssl_peer_verification = false
     winw1.vm.box = "sig-windows-dev-tools/windows-2019"
+
+    # Doesnt support qemu...
+    # winw1.vm.box = "mloskot/sig-windows-dev-tools-windows-2019"
     winw1.vm.box_version = "1.0"
     winw1.vm.network :private_network, ip:"#{windows_node_ip}"
     winw1.vm.provider "qemu" do |qe, override|
@@ -86,7 +104,7 @@ Vagrant.configure(2) do |config|
       qe.net_device = "e1000"
       qe.drive_interface = "ide"
       qe.ssh_port = 50023
- 
+      
       qe.extra_netdev_args = "net=10.20.30.0/24,dhcpstart=10.20.30.20"
 
       # use password (use winrm?)
@@ -103,15 +121,29 @@ Vagrant.configure(2) do |config|
     winw1.winrm.username = "vagrant"
     winw1.winrm.password = "vagrant"
 
+    puts "0"
+
     if not File.file?(".lock/joined") then
-     # Update containerd
+      puts "1"
+
+      # Update containerd
      puts "calico: #{calico_version}; containerd: #{containerd_version}"
      winw1.vm.provision "shell", path: "sync/windows/0-containerd.ps1", args: "#{calico_version} #{containerd_version}", privileged: true
 
+      puts "2"
+
       # Joining the controlplane
       winw1.vm.provision "shell", path: "sync/windows/forked.ps1", args: "#{kubernetes_version}", privileged: true
+
+      puts "2.1"
+
       winw1.vm.provision "shell", path: "sync/shared/kubejoin.ps1", privileged: true #, run: "never"
+
+      puts "[done defining win provisioning 1]"
+
     else
+      puts "3"
+
       if not File.file?(".lock/cni") then
         if cni == "calico" then
           # we don't need to run Calico agents as service now,
@@ -124,6 +156,7 @@ Vagrant.configure(2) do |config|
           winw1.vm.provision "shell", path: "sync/windows/1-antrea.ps1", privileged: true, args: "#{windows_node_ip}" #, run: "always"
         end
       end
+    puts "[done defining win provisioning 2]"
     end
   end
 end
