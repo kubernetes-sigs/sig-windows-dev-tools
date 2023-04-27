@@ -117,7 +117,7 @@ Vagrant.configure(2) do |config|
 
       # Joining the controlplane
       winw1.vm.provision "shell", path: "sync/windows/forked.ps1", args: "#{kubernetes_version}", privileged: true
-      # TODO: Why this is required? From Makefile: making mock kubejoin file to keep Vagrantfile happy in sync/shared
+      # TODO: Why this is required? From old Makefile: making mock kubejoin file to keep Vagrantfile happy in sync/shared
       FileUtils.touch("sync/shared/kubejoin.ps1") unless File.exist?("sync/shared/kubejoin.ps1")
       winw1.vm.provision "shell", path: "sync/shared/kubejoin.ps1", privileged: true #, run: "never"
     else
