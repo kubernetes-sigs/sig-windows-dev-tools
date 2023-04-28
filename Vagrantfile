@@ -68,95 +68,46 @@ Vagrant.configure(2) do |config|
     end
   end
 
-  # WINDOWS WORKER (win server 2019)
-  config.vm.define :winw1 do |winw1|
 
-    # SSH doesnt work bc comnuicator.rb fails w/ windows and tries to use bash to provision
-    winw1.vm.communicator = "winrm"
-    #winw1.vm.winrm.port = "5985"
-    #winw1.winrm.port = "5985"
-    
-    # Add the forwarded port rule that you need
+  config.vm.define "winw1" do |winw1|
+    winw1.vm.box = "sig-windows-dev-tools/windows-2019"
+     windows_box_path = File.expand_path("../../boxes/sig-windows-dev-tools-windows-2019.qcow2", __FILE__)
 
+
+
+     #winw1.vm.network :forwarded_port, guest: 5986, host: 55986
+     #winw1.vm.network :forwarded_port, guest: 2222, host: 50024
+     #winw1.vm.network :forwarded_port, guest:2222, host:50025
+     #config.vm.network :forwarded_port, guest:2222, host:50026
+
+     winw1.vm.provider :qemu do |qemu|
+	  qemu.arch = "x86_64"
+	  qemu.memory = windows_ram
+	  qemu.machine = "q35"
+	  qemu.cpu = "qemu64"
+	  qemu.net_device = "e1000"
+	  qemu.drive_interface = "ide"
+	  # without this you get port collision and vagrant vm wont come up
+	  qemu.ssh_port = 50023
+
+	  qemu.command_line = [
+	    "-device", "virtio-net-pci,netdev=net0",
+	    "-netdev", "user,id=net0,hostfwd=tcp::50023:22,hostfwd=tcp::3333:22,hostfwd=tcp::55985:5985,hostfwd=tcp::55986:5986",
+	    "-drive", "file=#{windows_box_path},format=qcow2,if=none,id=hd0",
+	    "-device", "ide-hd,bus=ide.0,drive=hd0",
+	    "-object", "rng-random,filename=/dev/random,id=rng0",
+	    "-device", "virtio-rng-pci,rng=rng0",
+	  ]
+	  qemu.extra_netdev_args = "net=10.20.30.0/24,dhcpstart=10.20.30.20"
+    end
+
+    winw1.vm.provision "shell", inline: "echo Hello, World!"
     
-    winw1.vm.host_name = "winw1"
     winw1.vm.communicator = "winrm"
     winw1.winrm.username = "vagrant"
     winw1.winrm.password = "vagrant"
     winw1.winrm.port = 5986 # WinRM HTTPS port
     winw1.winrm.transport = :ssl
     winw1.winrm.ssl_peer_verification = false
-    winw1.vm.box = "sig-windows-dev-tools/windows-2019"
-
-    # Doesnt support qemu...
-    # winw1.vm.box = "mloskot/sig-windows-dev-tools-windows-2019"
-    winw1.vm.box_version = "1.0"
-    winw1.vm.network :private_network, ip:"#{windows_node_ip}"
-    winw1.vm.provider "qemu" do |qe, override|
-      qe.vm.network "private_network", type: "dhcp", ip: "10.20.30.20"
-      qe.arch = "x86_64"
-      qe.memory = windows_ram
-      # need for x86_64
-      qe.machine = "q35"
-      qe.cpu = "qemu64"
-
-      # devices compatible with this box
-      qe.net_device = "e1000"
-      qe.drive_interface = "ide"
-      qe.ssh_port = 50023
-      
-      qe.extra_netdev_args = "net=10.20.30.0/24,dhcpstart=10.20.30.20"
-
-      # use password (use winrm?)
-      override.ssh.username = "vagrant"
-      override.ssh.password = "vagrant"
-    end
-
-    winw1.vm.network :private_network, ip:"#{windows_node_ip}"
-    winw1.vm.synced_folder ".", "/vagrant", disabled:true
-    winw1.vm.synced_folder "./sync/shared", "C:/sync/shared"
-    winw1.vm.synced_folder "./sync/windows/", "C:/sync/windows/"
-    winw1.vm.synced_folder "./forked", "C:/forked/"
-
-    winw1.winrm.username = "vagrant"
-    winw1.winrm.password = "vagrant"
-
-    puts "0"
-
-    if not File.file?(".lock/joined") then
-      puts "1"
-
-      # Update containerd
-     puts "calico: #{calico_version}; containerd: #{containerd_version}"
-     winw1.vm.provision "shell", path: "sync/windows/0-containerd.ps1", args: "#{calico_version} #{containerd_version}", privileged: true
-
-      puts "2"
-
-      # Joining the controlplane
-      winw1.vm.provision "shell", path: "sync/windows/forked.ps1", args: "#{kubernetes_version}", privileged: true
-
-      puts "2.1"
-
-      winw1.vm.provision "shell", path: "sync/shared/kubejoin.ps1", privileged: true #, run: "never"
-
-      puts "[done defining win provisioning 1]"
-
-    else
-      puts "3"
-
-      if not File.file?(".lock/cni") then
-        if cni == "calico" then
-          # we don't need to run Calico agents as service now,
-          # calico will be installed as a HostProcess container
-          # installs both felix and node
-          #winw1.vm.provision "shell", path: "sync/windows/0-calico.ps1", privileged: true
-          #winw1.vm.provision "shell", path: "sync/windows/1-calico.ps1", privileged: true
-        else
-          winw1.vm.provision "shell", path: "sync/windows/0-antrea.ps1", privileged: true #, run: "always"
-          winw1.vm.provision "shell", path: "sync/windows/1-antrea.ps1", privileged: true, args: "#{windows_node_ip}" #, run: "always"
-        end
-      end
-    puts "[done defining win provisioning 2]"
-    end
   end
 end
