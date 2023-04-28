@@ -12,7 +12,7 @@ import (
 
 // Check state of Vagrant machines and Kubernetes nodes.
 func Status() error {
-	mg.SerialDeps(startup, checkVagrant)
+	mg.SerialDeps(startup, Config.Vagrant)
 
 	var err error
 

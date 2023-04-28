@@ -14,7 +14,7 @@ type Test mg.Namespace
 
 // Run smoke tests.
 func (Test) Smoke() error {
-	mg.SerialDeps(startup, checkVagrant)
+	mg.SerialDeps(startup, Config.Vagrant)
 
 	var err error
 
@@ -51,7 +51,7 @@ func (Test) Smoke() error {
 
 // Run end-to-end tests.
 func (Test) EndToEnd() error {
-	mg.SerialDeps(startup, checkVagrant)
+	mg.SerialDeps(startup, Config.Vagrant)
 
 	log.Printf("Running ./e2e.sh on controlplane")
 	err := sh.Run("vagrant", "ssh", "controlplane", "-c", "cd /var/sync/linux && chmod +x ./e2e.sh && ./e2e.sh")
