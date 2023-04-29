@@ -12,9 +12,7 @@ This is a fully batteries-included development environment for Windows on Kubern
 - Windows binaries for kube-proxy.exe and kubelet.exe that are fully built from source (K8s main branch)
 - Kubeadm installation that can put the bleeding-edge Linux control plane in place, so you can test new features like privileged containers
 
-## Quick Start
-
-### Prerequisites
+## Prerequisites
 
 - Linux host - mostly tested on [Ubuntu](#ubuntu). Alternatively, Windows host.
 - [VirtualBox](https://www.virtualbox.org/wiki/Downloads) (we only have VirtualBox automated here, but these recipes have been used with others, like Microsoft HyperV and VMware Fusion).
@@ -27,7 +25,7 @@ This is a fully batteries-included development environment for Windows on Kubern
 
 Go and Mage are required to run steps of the cluster workflow which are coded as [Magefiles](https://magefile.org) in Go language.
 
-### Getting cluster up and running
+## Quick Start
 
 Simple steps to a Windows Kubernetes cluster, from scratch, from Kubernetes binaries downloaded or built from source:
 
@@ -97,6 +95,38 @@ Simple steps to a Windows Kubernetes cluster, from scratch, from Kubernetes bina
 6. Run `mage test:smoke` and `mage test:endToEnd`.
 
 7. Run `mage clean` to delete the whole cluster and start over.
+
+## Advanced Usage
+
+There is a set of `mage` targets dedicated to testers who may appareciate fine-grained control of nodes lifetime:
+
+1. Create individual node
+
+    ```console
+    mage node:create controlplane
+    mage node:create winw1
+    ```
+
+2. Stop individual node
+
+    ```console
+    mage node:stop controlplane
+    mage node:stop winw1
+    ```
+
+3. Start individual node
+
+    ```console
+    mage node:start controlplane
+    mage node:start winw1
+    ```
+
+4. Destroy individual node
+
+    ```console
+    mage node:destroy winw1
+    mage node:destroy controlplane
+    ```
 
 ## Windows with WSL
 
