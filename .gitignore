@@ -4,10 +4,10 @@ sync/linux/bin/
 sync/shared/config
 sync/shared/kubejoin.ps1
 sync/shared/kubeadm.yaml
-sync/shared/variables.yaml
+sync/shared/settings.yaml
 kubernetes
 .vagrant/
-variables.local.yaml
+settings.local.yaml
 
 # semaphores during build
 .lock/

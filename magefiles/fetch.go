@@ -16,22 +16,21 @@ import (
 	"github.com/magefile/mage/mg"
 )
 
-// Download Kubernetes binaries for Linux and Windows.
-// Default Kubernetes version is declared in variables.yaml.
-// User can declare custom version in variables.local.yaml,
-// a user-specific copy of variables.yaml.
+// Download Kubernetes binaries.
+// Default Kubernetes version is declared in settings.yaml.
+// User can declare custom version in settings.local.yaml,
+// a user-specific copy of settings.yaml
 func Fetch() error {
-	mg.SerialDeps(startup)
+	mg.SerialDeps(startup, Config.Settings)
 
-	if Settings["build_from_source"] == "true" {
+	if settings.Kubernetes.BuildFromSource {
 		log.Println("TODO: Building Kubernetes from sources on Windows host without make is not implemented yet")
-		log.Printf("File %s declares 'build_from_source=%v'. Skipping.", os.Getenv("VAGRANT_VARIABLES"), Settings["build_from_source"])
+		log.Printf("File %s declares 'kubernetes_build_from_source=%v'. Skipping.", os.Getenv("SWDT_SETTINGS_FILE"), settings.Kubernetes.BuildFromSource)
 		return nil
 	}
 
 	// Fetch Kubernetes version manifest
-	var kubernetesVersion = Settings["kubernetes_version"]
-	manifestUrl := fmt.Sprintf("https://storage.googleapis.com/k8s-release-dev/ci/latest-%s.txt", kubernetesVersion)
+	manifestUrl := fmt.Sprintf("https://storage.googleapis.com/k8s-release-dev/ci/latest-%s.txt", settings.Kubernetes.Version)
 	log.Println("Downloading manifest", manifestUrl)
 	kubernetesGitVersion, _, _ := downloadKubernetesVersion(manifestUrl)
 	if kubernetesGitVersion == "" {

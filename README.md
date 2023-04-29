@@ -38,10 +38,20 @@ Simple steps to a Windows Kubernetes cluster, from scratch, from Kubernetes bina
     cd sig-windows-dev-tools
    ```
 
-2. Optionally, copy `variables.yaml` with default settings to `variables.local.yaml` and modify you desire,
+2. Optionally, copy `settings.yaml` with default settings to `settings.local.yaml` and modify you desire,
     for example, tweak RAM and CPUs for Vagrant machines or update Kubernetes version, etc.
 
-3. Create the cluster
+3. Check your local environment and configuration settings
+
+    ```console
+    mage config:vagrant
+    mage config:settings
+    ```
+
+    These commands will verify Go, Mage and Vagrant installations are working, then print out
+    configuration settings which will be used to create and run the cluster.
+
+4. Create the cluster
 
     ```console
     mage all        # or mage | tee run.log
@@ -59,7 +69,7 @@ Simple steps to a Windows Kubernetes cluster, from scratch, from Kubernetes bina
 
     > **TIP:** If provisioning of `winw1` failed, then try running `vagrant provision winw1`, just in case you have a flake during Windows installation.
 
-4. Check status of machines, nodes and pods
+5. Check status of machines, nodes and pods
 
     ```console
     mage status
@@ -84,9 +94,9 @@ Simple steps to a Windows Kubernetes cluster, from scratch, from Kubernetes bina
     kubectl --kubeconfig=./swdt-kubeconfig get -A pods
     ```
 
-5. Run `mage test:smoke` and `mage test:endToEnd`.
+6. Run `mage test:smoke` and `mage test:endToEnd`.
 
-6. Run `mage clean` to delete the whole cluster and start over.
+7. Run `mage clean` to delete the whole cluster and start over.
 
 ## Windows with WSL
 
@@ -139,7 +149,7 @@ Working on Windows Kubernetes is a great way to learn about Kubernetes internals
 
 So, even if you aren't a Windows user, we encourage Kubernetes users of all types to try to get involved and contribute!
 
-We are a new project and we need help with... 
+We are a new project and we need help with...
 
 - contributing / testing recipes on different Vagrant providers
 - docs of existing workflows
