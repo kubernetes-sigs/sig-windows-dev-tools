@@ -190,32 +190,33 @@ func setVagrantPrivateKeyPermissions() error {
 			if err != nil {
 				return err
 			}
-		} else {
-			err = sh.Run("icacls", keyFile, "/c", "/t", "/Inheritance:d")
-			if err != nil {
-				return err
-			}
-			err = sh.Run("icacls", keyFile, "/c", "/t", "/Inheritance:d")
-			if err != nil {
-				return err
-			}
-			user := fmt.Sprintf("%s:F", os.Getenv("USERNAME"))
-			err = sh.Run("icacls", keyFile, "/c", "/t", "/Grant", user)
-			if err != nil {
-				return err
-			}
-			err = sh.Run("icacls", keyFile, "/c", "/t", "/Grant:r", user)
-			if err != nil {
-				return err
-			}
-			err = sh.Run("icacls", keyFile, "/c", "/t", "/Remove:g", "Administrator", "Authenticated Users", "BUILTIN\\Administrators", "BUILTIN", "Everyone", "System", "Users")
-			if err != nil {
-				return err
-			}
-			err = sh.Run("icacls", keyFile)
-			if err != nil {
-				return err
-			}
+			continue
+		}
+
+		err = sh.Run("icacls", keyFile, "/c", "/t", "/Inheritance:d")
+		if err != nil {
+			return err
+		}
+		user := fmt.Sprintf("%s:F", os.Getenv("USERNAME"))
+		err = sh.Run("icacls", keyFile, "/c", "/t", "/Grant", user)
+		if err != nil {
+			return err
+		}
+		err = sh.Run("takeown", "/F", keyFile)
+		if err != nil {
+			return err
+		}
+		err = sh.Run("icacls", keyFile, "/c", "/t", "/Grant:r", user)
+		if err != nil {
+			return err
+		}
+		err = sh.Run("icacls", keyFile, "/c", "/t", "/Remove:g", "Administrator", "Authenticated Users", "BUILTIN\\Administrators", "BUILTIN", "Everyone", "System", "Users")
+		if err != nil {
+			return err
+		}
+		err = sh.Run("icacls", keyFile)
+		if err != nil {
+			return err
 		}
 	}
 
