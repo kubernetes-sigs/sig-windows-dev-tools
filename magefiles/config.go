@@ -130,7 +130,9 @@ func findSettingsFile() (string, error) {
 	if settingsFile != "" {
 		_, err := os.Stat(settingsFile)
 		if os.IsNotExist(err) {
-			settingsFile = ""
+			// Users expects the settings file they specify to be used,
+			// without any unexpected fallback to default settings file (below).
+			return "", fmt.Errorf("User-defined SWDT_SETTINGS_FILE=%s not found", settingsFile)
 		}
 	}
 	// Alternatively, user may have created local variables file
