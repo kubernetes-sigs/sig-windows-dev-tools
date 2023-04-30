@@ -148,7 +148,7 @@ func findSettingsFile() (string, error) {
 		}
 	}
 	// Othwerise, fallback to default variable file
-	if settingsFile == "" && strings.TrimSpace(os.Getenv("SWDT_SETTINGS_FILE")) == "" {
+	if strings.TrimSpace(os.Getenv("SWDT_SETTINGS_FILE")) == "" {
 		_, err := os.Stat("settings.yaml")
 		if os.IsNotExist(err) {
 			return "", err
