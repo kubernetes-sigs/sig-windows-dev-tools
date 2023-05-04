@@ -48,7 +48,7 @@ Vagrant.configure(2) do |config|
       vb.memory = cfg_linux_ram
       vb.cpus = cfg_linux_cpus
       vb.gui = false
-      # Explicitly  Windows guest version and type
+      # Explicitly set guest version and type
       vb.customize ['modifyvm', :id, '--ostype', 'Ubuntu22_LTS_64']
       # Enabling I/O APIC is required for 64-bit guests
       vb.customize ['modifyvm', :id, '--ioapic', 'on']
@@ -93,7 +93,7 @@ Vagrant.configure(2) do |config|
       vb.memory = cfg_windows_ram
       vb.cpus = cfg_windows_cpus
       vb.gui = false
-      # Explicitly  Windows guest version and type
+      # Explicitly set guest version and type
       vb.customize ['modifyvm', :id, '--ostype', 'Windows2019_64']
       # Enabling I/O APIC is required for 64-bit guests
       vb.customize ['modifyvm', :id, '--ioapic', 'on']
