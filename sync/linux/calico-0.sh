@@ -40,6 +40,15 @@ k8s_service_host=$(kubectl get endpoints kubernetes -n default -o jsonpath='{.su
 k8s_service_port=$(kubectl get endpoints kubernetes -n default -o jsonpath='{.subsets[0].ports[0].port}')
 sed -i "s|KUBERNETES_SERVICE_HOST: \"\"|KUBERNETES_SERVICE_HOST: \"$k8s_service_host\"|g" calico-windows.yaml
 sed -i "s|KUBERNETES_SERVICE_PORT: \"\"|KUBERNETES_SERVICE_PORT: \"$k8s_service_port\"|g" calico-windows.yaml
+# TODO - (damei) find a better way to update the configmap
+sed -i "s|FELIX_HEALTHENABLED: \"true\"|FELIX_HEALTHENABLED: \"true\"\n  KUBE_NETWORK: \"Calico.*\"|g" calico-windows.yaml
+sed -i "s|FELIX_HEALTHENABLED: \"true\"|FELIX_HEALTHENABLED: \"true\"\n  VXLAN_VNI: \"4096\"|g" calico-windows.yaml
+sed -i "s|FELIX_HEALTHENABLED: \"true\"|FELIX_HEALTHENABLED: \"true\"\n  VXLAN_MAC_PREFIX: \"0E-2A\"|g" calico-windows.yaml
+sed -i "s|FELIX_HEALTHENABLED: \"true\"|FELIX_HEALTHENABLED: \"true\"\n  CALICO_DATASTORE_TYPE: \"kubernetes\"|g" calico-windows.yaml
+sed -i "s|FELIX_HEALTHENABLED: \"true\"|FELIX_HEALTHENABLED: \"true\"\n  FELIX_LOGSEVERITYSCREEN: \"debug\"|g" calico-windows.yaml
+sed -i "s|FELIX_HEALTHENABLED: \"true\"|FELIX_HEALTHENABLED: \"true\"\n  CALICO_K8S_NODE_REF: \"winw1\"|g" calico-windows.yaml
+sed -i "s|FELIX_HEALTHENABLED: \"true\"|FELIX_HEALTHENABLED: \"true\"\n  CNI_IPAM_TYPE: \"calico-ipam\"|g" calico-windows.yaml
+sed -i "s|FELIX_HEALTHENABLED: \"true\"|FELIX_HEALTHENABLED: \"true\"\n  KUBECONFIG: \"C:/etc/kubernetes/kubelet.conf\"|g" calico-windows.yaml
 kubectl create -f calico-windows.yaml
 
 curl -L https://github.com/projectcalico/calico/releases/download/v${calico_version}/calicoctl-linux-amd64 -o calicoctl
