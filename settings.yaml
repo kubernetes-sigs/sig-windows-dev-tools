@@ -21,7 +21,7 @@ vagrant_windows_box: "mloskot/sig-windows-dev-tools-windows-2019"
 vagrant_windows_box_version: "1.0"
 vagrant_windows_cpus: 2
 vagrant_windows_ram: 6048
-vagrant_windows_max_provision_attempts: 5 # Try vagrant up/provision this number of times before giving up
+vagrant_windows_max_provision_attempts: 3 # Try vagrant up/provision this number of times before giving up
 
 ## Kubernetes
 # Download pre-built Kubernetes binaries (false) or build locally from sources.
