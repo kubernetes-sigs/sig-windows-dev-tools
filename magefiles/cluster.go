@@ -16,11 +16,72 @@ import (
 	"github.com/magefile/mage/sh"
 )
 
-// Create and run Kubernetes cluster with Linux (control plane) and Windows (worker) nodes.
-func Run() error {
-	mg.SerialDeps(startup, checkClusterNotExist, Config.Settings, Config.Vagrant, preRun, runLinuxControlPlaneNode, runWindowsWorkerNode, postRun, Status)
+// Exported targets namespace
+type Cluster mg.Namespace
+
+// Create Kubernetes cluster with Linux (control plane) and Windows (worker) nodes.
+func (Cluster) Create() error {
+	mg.SerialDeps(startup, checkClusterNotExist, Config.Settings, Config.Vagrant, preRun, runLinuxControlPlaneNode, runWindowsWorkerNode, postRun)
 
 	logTargetRunTime("Run")
+	return nil
+}
+
+// Destroy Vagrant machines with Kubernetes cluster nodes.
+func (Cluster) Destroy() error {
+	mg.SerialDeps(startup, Config.Settings, Config.Vagrant)
+
+	// ignore errors and continue
+	sh.Run("vagrant", "destroy", "--force")
+
+	var volatilePaths = [...]string{
+		filepath.Join("sync", "shared", "config"),
+		filepath.Join("sync", "shared", "kubeadm.yaml"),
+		filepath.Join("sync", "shared", "kubejoin.ps1"),
+		filepath.Join("sync", "shared", "settings.yaml"),
+		filepath.Join(".lock"),
+	}
+
+	for _, path := range volatilePaths {
+		_, err := os.Stat(filepath.Clean(path))
+		if !os.IsNotExist(err) {
+			log.Println("Cleaning", path)
+			err := os.RemoveAll(path)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	logTargetRunTime("Run")
+	return nil
+}
+
+// Check state of Vagrant machines and Kubernetes nodes.
+func (Cluster) Status() error {
+	mg.SerialDeps(startup, Config.Vagrant)
+
+	var err error
+
+	log.Println("vagrant status")
+	err = sh.Run("vagrant", "status")
+	if err != nil {
+		return err
+	}
+
+	log.Println("kubectl get nodes")
+	err = sh.Run("vagrant", "ssh", "controlplane", "-c", "kubectl get nodes")
+	if err != nil {
+		return err
+	}
+
+	log.Println("kubectl get pods")
+	err = sh.Run("vagrant", "ssh", "controlplane", "-c", "kubectl get --all-namespaces pods --output=wide")
+	if err != nil {
+		return err
+	}
+
+	logTargetRunTime("Status")
 	return nil
 }
 
@@ -52,8 +113,8 @@ func runWindowsWorkerNode() error {
 
 	log.Println("Creating Windows worker node")
 
-	for i := 1; i < settings.Vagrant.WindowsMaxAttempts; i++ {
-		log.Printf("vagrant status winw1 - attempt %d of %d", i, settings.Vagrant.WindowsMaxAttempts)
+	for i := 0; i < settings.Vagrant.WindowsMaxAttempts; i++ {
+		log.Printf("vagrant status winw1 - attempt %d of %d", i+1, settings.Vagrant.WindowsMaxAttempts)
 		output, err := sh.Output("vagrant", "status", "winw1")
 		if err != nil {
 			return err
@@ -63,7 +124,7 @@ func runWindowsWorkerNode() error {
 		if strings.Contains(status, "running") {
 			break
 		}
-		log.Printf("vagrant up winw1 - attempt %d of %d", i, settings.Vagrant.WindowsMaxAttempts)
+		log.Printf("vagrant up winw1 - attempt %d of %d", i+1, settings.Vagrant.WindowsMaxAttempts)
 		err = sh.Run("vagrant", "up", "winw1")
 		if err != nil {
 			return err
@@ -77,8 +138,8 @@ func runWindowsWorkerNode() error {
 
 	// TODO: Is re-provisioning required? What problem does it actually solve? If boxes are usable then vagrant up above should be sufficient.
 	log.Println("Provisioning Windows worker node")
-	for i := 1; i < settings.Vagrant.WindowsMaxAttempts; i++ {
-		log.Printf("kubectl get nodes | grep winw1  - attempt %d of %d", i, settings.Vagrant.WindowsMaxAttempts)
+	for i := 0; i < settings.Vagrant.WindowsMaxAttempts; i++ {
+		log.Printf("kubectl get nodes | grep winw1  - attempt %d of %d", i+1, settings.Vagrant.WindowsMaxAttempts)
 		output, err := sh.Output("vagrant", "ssh", "controlplane", "-c", "kubectl get nodes")
 		if err != nil {
 			return err
@@ -87,7 +148,7 @@ func runWindowsWorkerNode() error {
 		if strings.Contains(output, "winw1") {
 			break
 		}
-		log.Printf("vagrant provision winw1 - attempt %d of %d", i, settings.Vagrant.WindowsMaxAttempts)
+		log.Printf("vagrant provision winw1 - attempt %d of %d", i+1, settings.Vagrant.WindowsMaxAttempts)
 		err = sh.Run("vagrant", "provision", "winw1")
 		if err != nil {
 			return err

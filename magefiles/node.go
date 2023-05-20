@@ -15,7 +15,7 @@ import (
 // Exported targets namespace
 type Node mg.Namespace
 
-// Destroy Vagrant machine with given cluster node name.
+// Create new Vagrant machine of named cluster node.
 func (Node) Create(nodeName string) error {
 	nodeName = strings.TrimSpace(nodeName)
 	if nodeName == "" {
@@ -43,7 +43,7 @@ func (Node) Create(nodeName string) error {
 	return fmt.Errorf("Node '%s' is unknown", nodeName)
 }
 
-// Destroy Vagrant machine with given cluster node.
+// Destroy Vagrant machine of named cluster node.
 func (Node) Destroy(nodeName string) error {
 	nodeName = strings.TrimSpace(nodeName)
 	if nodeName == "" {
@@ -68,7 +68,7 @@ func (Node) Destroy(nodeName string) error {
 	return nil
 }
 
-// Start existing Vagrant machine name with given cluster node name, without running provisioners.
+// Start Vagrant machine of existing named cluster node, without running provisioners.
 func (Node) Start(nodeName string) error {
 	nodeName = strings.TrimSpace(nodeName)
 	if nodeName == "" {
@@ -94,7 +94,7 @@ func (Node) Start(nodeName string) error {
 	return nil
 }
 
-// Stop existing Vagrant machine name with given cluster node name
+// Stop Vagrant machine of existing named cluster node.
 func (Node) Stop(nodeName string) error {
 	nodeName = strings.TrimSpace(nodeName)
 	if nodeName == "" {

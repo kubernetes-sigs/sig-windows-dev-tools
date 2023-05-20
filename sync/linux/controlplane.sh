@@ -111,7 +111,7 @@ sudo apt-get install containerd.io
 #if $overwrite_linux_bins ; then
 for BIN in kubeadm kubectl kubelet
 do
-  file="/var/sync/linux/bin/$BIN"
+  file="/var/sync/linux/download/$BIN"
   if [ -f $file ]; then
     echo "copying $file to node path.."
     sudo cp $file /usr/bin/ -f
@@ -159,11 +159,16 @@ cp $HOME/.kube/config /var/sync/shared/config
 rm -f /var/sync/shared/kubejoin.ps1
 
 cat << EOF > /var/sync/shared/kubejoin.ps1
-if(!(Test-Path ("C:\Program Files\containerd\crictl.exe"))) {
-    mv "C:\Users\vagrant\crictl.exe" "C:\Program Files\containerd\"
+# Downloaded is newer
+if((Test-Path ("C:\sync\windows\download\crictl.exe"))) {
+    cp "C:\sync\windows\download\crictl.exe" "C:\Program Files\containerd\"
+}
+# Box-burned fallback
+if((Test-Path ("C:\Users\vagrant\crictl.exe"))) {
+    cp "C:\Users\vagrant\crictl.exe" "C:\Program Files\containerd\"
 }
 stop-service -name kubelet
-cp C:\sync\windows\bin\* c:\k
+cp C:\sync\windows\download\k* c:\k
 
 \$env:path += ";C:\Program Files\containerd"
 [Environment]::SetEnvironmentVariable("Path", \$env:Path, [System.EnvironmentVariableTarget]::Machine)

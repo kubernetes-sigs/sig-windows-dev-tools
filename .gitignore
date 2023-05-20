@@ -1,6 +1,6 @@
 sync/config
-sync/windows/bin/
-sync/linux/bin/
+sync/windows/download/
+sync/linux/download/
 sync/shared/config
 sync/shared/kubejoin.ps1
 sync/shared/kubeadm.yaml

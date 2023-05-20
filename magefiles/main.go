@@ -14,21 +14,12 @@ import (
 // Mage default target.
 var Default = All
 
-// Aliases based on original Makefile targets.
-// Use mage -h <target> to see available aliases.
-var Aliases = map[string]interface{}{
-	"1-build-binaries": Build,
-	"2-vagrant-up":     Run,
-	"3-smoke-test":     Test.Smoke,
-	"4-e2e-test":       Test.EndToEnd,
-}
-
 // All logs from Magefiles are prefixed with this tag (e.g. for easy search)
 const LogPrefix = "[swdt-mage] "
 
 // Run complete workflow: download Kubernetes, create cluster, execute tests.
 func All() error {
-	mg.SerialDeps(startup, Config.Settings, Fetch, Run, Test.Smoke, Test.EndToEnd)
+	mg.SerialDeps(startup, Config.Settings, Binaries.Download, Binaries.Build, Cluster.Create, Cluster.Status, Test.Smoke, Test.EndToEnd)
 
 	logTargetRunTime("All")
 	return nil

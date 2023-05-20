@@ -1,16 +1,7 @@
 # Welcome to the SIG Windows Development Environment!
 
-This is a fully batteries-included development environment for Windows on Kubernetes, including:
-
-- Vagrant file for launching a two-node cluster
-- The latest Containerd
-- Support for two CNIs: antrea, or calico on containerd:
-  - configure your CNI option in `variables.yml`
-  - Calico 3.19 on containerd runs containers out of the box
-  - Antrea 0.13.2 runs but requires running with a patch for https://github.com/antrea-io/antrea/issues/2344 which was recently made available
-- NetworkPolicy support for Windows and Linux provided by [Antrea](https://antrea.io) and [Calico](https://www.tigera.io/project-calico/)
-- Windows binaries for kube-proxy.exe and kubelet.exe that are fully built from source (K8s main branch)
-- Kubeadm installation that can put the bleeding-edge Linux control plane in place, so you can test new features like privileged containers
+This is a fully batteries-included development setup to run two-node hybrid Kubernetes cluster
+with control plane node on Linux and worker node on Windows.
 
 ## Prerequisites
 
@@ -27,7 +18,11 @@ Go and Mage are required to run steps of the cluster workflow which are coded as
 
 ## Quick Start
 
-Simple steps to a Windows Kubernetes cluster, from scratch, from Kubernetes binaries downloaded or built from source:
+This section presents the basic usage instructions. For advanced usage of the Mage-based driver to run
+and manage the cluster refer to [docs/usage.md](docs/usage.md).
+
+Follow these steps to run the two-node Kubernetes cluster from scratch, using downloaded
+official Kubernetes binaries or binaries built from source:
 
 1. Clone the repository
 
@@ -36,10 +31,7 @@ Simple steps to a Windows Kubernetes cluster, from scratch, from Kubernetes bina
     cd sig-windows-dev-tools
    ```
 
-2. Optionally, copy `settings.yaml` with default settings to `settings.local.yaml` and modify you desire,
-    for example, tweak RAM and CPUs for Vagrant machines or update Kubernetes version, etc.
-
-3. Check your local environment and configuration settings
+2. Check your local environment and configuration settings
 
     ```console
     mage config:vagrant
@@ -49,7 +41,7 @@ Simple steps to a Windows Kubernetes cluster, from scratch, from Kubernetes bina
     These commands will verify Go, Mage and Vagrant installations are working, then print out
     configuration settings which will be used to create and run the cluster.
 
-4. Create the cluster
+3. Create the cluster
 
     ```console
     mage all        # or mage | tee run.log
@@ -67,13 +59,13 @@ Simple steps to a Windows Kubernetes cluster, from scratch, from Kubernetes bina
 
     > **TIP:** If provisioning of `winw1` failed, then try running `vagrant provision winw1`, just in case you have a flake during Windows installation.
 
-5. Check status of machines, nodes and pods
+4. Check status of machines, nodes and pods
 
     ```console
-    mage status
+    mage cluster:status
     ```
 
-    The mage status is a convenient wrapper for the sequence of these commands:
+    The mage status is a convenient wrapper for the following sequence of commands:
 
     ```console
     vagrant status
@@ -81,90 +73,29 @@ Simple steps to a Windows Kubernetes cluster, from scratch, from Kubernetes bina
     vagrant ssh controlplane -c 'kubectl get -A pods'
     ```
 
-    Alternatively, run `vagrant ssh controlplane` and run `kubectl get nodes` to see your running two-node dual-OS Linux+Windows k8s cluster.
+5. Run `mage test:smoke` and `mage test:endToEnd`.
 
-    Alternatively, you can download kubeconfig form the controlplane node to run any Kubernetes client directly from the Windows host:
-
-    ```console
-    vagrant plugin install vagrant-scp
-    vagrant scp controlplane:~/.kube/config ./swdt-kubeconfig
-    kubectl --kubeconfig=./swdt-kubeconfig get nodes
-    kubectl --kubeconfig=./swdt-kubeconfig get -A pods
-    ```
-
-6. Run `mage test:smoke` and `mage test:endToEnd`.
-
-7. Run `mage clean` to delete the whole cluster and start over.
-
-## Advanced Usage
-
-There is a set of `mage` targets dedicated to testers who may appareciate fine-grained control of nodes lifetime:
-
-1. Create individual node
-
-    ```console
-    mage node:create controlplane
-    mage node:create winw1
-    ```
-
-2. Stop individual node
-
-    ```console
-    mage node:stop controlplane
-    mage node:stop winw1
-    ```
-
-3. Start individual node
-
-    ```console
-    mage node:start controlplane
-    mage node:start winw1
-    ```
-
-4. Destroy individual node
-
-    ```console
-    mage node:destroy winw1
-    mage node:destroy controlplane
-    ```
-
-## Windows with WSL
-
-All the above Quick Start steps apply, except you have to:
-
-- clone this repo onto Windows host filesystem, not WSL filesystem
-- use `vagrant.exe` installed on the host, typically `C:\HashiCorp\Vagrant\bin\vagrant.exe`
-
-First, get the path for your `vagrant.exe` on the host use `Get-Command vagrant` in PowerShell like the following example.
-
-```powershell
-~ > $(get-command vagrant).Source.Replace("\","/").Replace("C:/", "/mnt/c/")
-/mnt/c/HashiCorp/Vagrant/bin/vagrant.exe
-```
-
-Next, pass the mount path to the executable on the Windows host with the `VAGRANT` environment variable exported in WSL.
-
-Then, ensure you clone this repository onto filesystem inside `/mnt` and not the WSL filesystem, in order to avoid failures similar to this one:
-
-```console
-The host path of the shared folder is not supported from WSL.
-Host path of the shared folder must be located on a file system with
-DrvFs type. Host path: ./sync/shared
-```
-
-Finally, steps to a Windows Kubernetes cluster on Windows host in WSL is turn into the following sequence:
-
-```bash
-export VAGRANT=/mnt/c/HashiCorp/Vagrant/bin/vagrant.exe
-cd /mnt/c/Users/joe
-git clone https://github.com/kubernetes-sigs/sig-windows-dev-tools.git
-```
+6. Run `mage clean` to delete the whole cluster and start over.
 
 ## Goal
 
 Our goal is to make Windows ridiculously easy to contribute to, play with, and learn about for anyone interested
 in using or contributing to the ongoing Kubernetes-on-Windows story. Windows is rapidly becoming an increasingly
 viable alternative to Linux thanks to the recent introduction of Windows HostProcess containers and Windows support for NetworkPolicies + Containerd integration.
+
+## Features
+
+- Vagrant file for launching a two-node hybrid Kubernetes cluster with Linux and Windows nodes
+- The latest ContainerD
+- Support for two CNIs: Antrea, or Calico on ContainerD:
+  - configure your CNI option in `variables.yml`
+  - Calico 3.19 on ContainerD runs containers out of the box
+  - Antrea 0.13.2 runs but requires running with a patch for https://github.com/antrea-io/antrea/issues/2344 which was recently made available
+- `NetworkPolicy` support for Windows and Linux provided by [Antrea](https://antrea.io) and [Calico](https://www.tigera.io/project-calico/)
+- Windows binaries for `kube-proxy.exe` and `kubelet.exe` that are fully built from source (K8s main branch)
+- `kubeadm` installation that can put the bleeding-edge Linux control plane in place, so you can test new features like privileged containers
+- Support for Windows as host
+- Support for Windows Subsystem for Linux as host, see [docs/wsl.md](docs/wsl.md)
 
 ## Where we derived these recipes from
 
