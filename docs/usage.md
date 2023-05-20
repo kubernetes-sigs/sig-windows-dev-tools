@@ -4,23 +4,6 @@ For basic usage instructions refer to [Quick Start](../README.md#quick-start).
 
 Run `mage -l` to list all available targets.
 
-## Customize Settings
-
-By default, configuration settings used to run and manage the cluster is read from the `settings.yaml` file.
-
-Advanced users can overwrite the defaults with user-specific copy of the file with the defaults:
-
-1. Copy `settings.yaml` with  to `settings.local.yaml`
-2. Edit the `settings.local.yaml` modifying the settings as you desire.
-
-For example, advanced users can tweak:
-
-- RAM and CPUs allocated for Vagrant machines
-- update Kubernetes version
-- use custom Vagrant boxes
-
-and more.
-
 ## Fetch kubeconfig
 
 In order to connect to using a Kubernetes client from the host to the cluster,
@@ -45,6 +28,38 @@ kubectl --kubeconfig=./sync/shared/swdt-kubeconfig get nodes
 ```
 
 to see your running two-node dual-OS Linux+Windows k8s cluster.
+
+## Customize Settings
+
+By default, configuration settings used to run and manage the cluster is read from the `settings.yaml` file.
+
+Advanced users can overwrite the defaults with user-specific copy of the file with the defaults:
+
+1. Copy `settings.yaml` with  to `settings.local.yaml`
+2. Edit the `settings.local.yaml` modifying the settings as you desire.
+
+For example, advanced users can tweak:
+
+- RAM and CPUs allocated for Vagrant machines
+- update Kubernetes version
+- use custom Vagrant boxes
+
+and more.
+
+## Control Cluster
+
+Once Kubernetes binaries have been built or downloaded together with binaries of other tools, for example:
+
+```console
+mage binaries:download
+```
+
+it is possible to create and destroy cluster repeatedly:
+
+```console
+mage cluster:create
+mage cluster:destroy
+```
 
 ## Control Nodes
 

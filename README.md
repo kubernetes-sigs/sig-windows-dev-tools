@@ -62,7 +62,7 @@ official Kubernetes binaries or binaries built from source:
 4. Check status of machines, nodes and pods
 
     ```console
-    mage status
+    mage cluster:status
     ```
 
     The mage status is a convenient wrapper for the following sequence of commands:

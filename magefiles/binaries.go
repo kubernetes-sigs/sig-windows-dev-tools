@@ -16,9 +16,28 @@ import (
 	"github.com/magefile/mage/mg"
 )
 
-// Download Kubernetes, Calico binaries according to versions declared in settings.yaml.
+// Exported targets namespace
+type Binaries mg.Namespace
+
+// Build Kubernetes binaries from cloned sources (on Windows native host use fetch).
+// This step is optional, an alternative to fetch command.
+func (Binaries) Build() error {
+	mg.SerialDeps(startup, Config.Settings)
+
+	log.Println("TODO: Building Kubernetes from sources on Windows host without make is not implemented yet")
+
+	if !settings.Kubernetes.BuildFromSource {
+		log.Printf("File %s declares 'kubernetes_build_from_source=%v'. Skipping.", os.Getenv("SWDT_SETTINGS_FILE"), settings.Kubernetes.BuildFromSource)
+		return nil
+	}
+
+	logTargetRunTime("Build")
+	return nil
+}
+
+// Download Kubernetes, Calico, cri-tools and other binaries for versions from settings.yaml.
 // User can declare custom version in settings.local.yaml, a user-specific copy of settings.yaml.
-func Fetch() error {
+func (Binaries) Download() error {
 	mg.SerialDeps(startup, Config.Settings)
 
 	syncPathLinux := filepath.Join("sync", "linux", "download")

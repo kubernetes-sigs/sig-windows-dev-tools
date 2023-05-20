@@ -9,24 +9,16 @@ import (
 	"path/filepath"
 
 	"github.com/magefile/mage/mg"
-	"github.com/magefile/mage/sh"
 )
 
-// Delete cluster and start fresh destroying existing Vagrant machines.
+// Destroy cluster, destroying existing Vagrant machines
+// delete downloaded and built binaries, to start fresh.
 func Clean() error {
-	mg.SerialDeps(startup, Config.Settings, Config.Vagrant)
-
-	// ignore errors and continue
-	sh.Run("vagrant", "destroy", "--force")
+	mg.SerialDeps(startup, Config.Settings, Config.Vagrant, Cluster.Destroy)
 
 	var volatilePaths = [...]string{
-		filepath.Join("sync", "linux", "bin"),
-		filepath.Join("sync", "windows", "bin"),
-		filepath.Join("sync", "shared", "config"),
-		filepath.Join("sync", "shared", "kubeadm.yaml"),
-		filepath.Join("sync", "shared", "kubejoin.ps1"),
-		filepath.Join("sync", "shared", "settings.yaml"),
-		filepath.Join(".lock"),
+		filepath.Join("sync", "linux", "download"),
+		filepath.Join("sync", "windows", "download"),
 		filepath.Join(".vagrant"),
 	}
 
