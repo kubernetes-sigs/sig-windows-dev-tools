@@ -12,12 +12,12 @@
 # difference, then enable the auto update.
 vagrant_vbguest_auto_update: false
 # Linux control plane
-vagrant_linux_box: "mloskot/sig-windows-dev-tools-ubuntu-2204"
-vagrant_linux_box_version: "1.0"
+vagrant_linux_box: "roboxes/ubuntu2004"
+vagrant_linux_box_version: "4.2.16"
 vagrant_linux_cpus: 2
 vagrant_linux_ram: 4096
 # Windows worker node
-vagrant_windows_box: "mloskot/sig-windows-dev-tools-windows-2019"
+vagrant_windows_box: "sig-windows-dev-tools/windows-2019"
 vagrant_windows_box_version: "1.0"
 vagrant_windows_cpus: 2
 vagrant_windows_ram: 6048
