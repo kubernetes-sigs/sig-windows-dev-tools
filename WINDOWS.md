@@ -95,7 +95,7 @@ As we are utilizing our existing Windows 11 computer, we will start by shrinking
 
     - Windows node:
     ```
-    vagrant ssh winw1
+    vagrant ssh winworker
     ```
 
 Now [let's run it!](https://github.com/kubernetes-sigs/sig-windows-dev-tools#lets-run-it)

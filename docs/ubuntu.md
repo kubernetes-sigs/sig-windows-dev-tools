@@ -53,5 +53,5 @@ kubectl get pods -A
 
 - Windows node:
 ```
-vagrant ssh winw1
+vagrant ssh winworker
 ```

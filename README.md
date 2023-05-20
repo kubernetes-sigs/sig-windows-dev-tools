@@ -57,7 +57,7 @@ official Kubernetes binaries or binaries built from source:
     By default, cluster is created from Kubernetes pre-built binaries.
     To compile Kubernetes from local source, on Linux host, see instructions later in this doc.
 
-    > **TIP:** If provisioning of `winw1` failed, then try running `vagrant provision winw1`, just in case you have a flake during Windows installation.
+    > **TIP:** If provisioning of `winworker` failed, then try running `vagrant provision winworker`, just in case you have a flake during Windows installation.
 
 4. Check status of machines, nodes and pods
 

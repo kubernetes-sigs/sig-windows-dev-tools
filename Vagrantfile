@@ -82,14 +82,14 @@ Vagrant.configure(2) do |config|
   end
 
   ############ Windows worker node #1 ############
-  config.vm.define :winw1 do |winw1|
-    winw1.vm.box = cfg_windows_box
-    winw1.vm.box_version = cfg_windows_box_version
-    winw1.vm.communicator = "winrm"
-    winw1.vm.guest = :windows
-    winw1.vm.boot_timeout = 900
+  config.vm.define :winworker do |winworker|
+    winworker.vm.box = cfg_windows_box
+    winworker.vm.box_version = cfg_windows_box_version
+    winworker.vm.communicator = "winrm"
+    winworker.vm.guest = :windows
+    winworker.vm.boot_timeout = 900
 
-    winw1.vm.provider :virtualbox do |vb|
+    winworker.vm.provider :virtualbox do |vb|
       vb.memory = cfg_windows_ram
       vb.cpus = cfg_windows_cpus
       vb.gui = false
@@ -107,35 +107,35 @@ Vagrant.configure(2) do |config|
       vb.customize ['modifyvm', :id, '--vrde', 'off']
     end
 
-    winw1.vm.network :private_network, ip:"#{cfg_windows_node_ip}"
-    winw1.vm.synced_folder ".", "/vagrant", disabled:true
-    winw1.vm.synced_folder "./sync/shared", "C:/sync/shared"
-    winw1.vm.synced_folder "./sync/windows/", "C:/sync/windows/"
-    winw1.vm.synced_folder "./forked", "C:/forked/"
+    winworker.vm.network :private_network, ip:"#{cfg_windows_node_ip}"
+    winworker.vm.synced_folder ".", "/vagrant", disabled:true
+    winworker.vm.synced_folder "./sync/shared", "C:/sync/shared"
+    winworker.vm.synced_folder "./sync/windows/", "C:/sync/windows/"
+    winworker.vm.synced_folder "./forked", "C:/forked/"
 
-    winw1.winrm.username = "vagrant"
-    winw1.winrm.password = "vagrant"
+    winworker.winrm.username = "vagrant"
+    winworker.winrm.password = "vagrant"
 
     if not File.file?(".lock/joined") then
       # Update containerd
-      winw1.vm.provision "shell", path: "sync/windows/0-containerd.ps1", args: "#{cfg_calico_version} #{cfg_containerd_version}", privileged: true
+      winworker.vm.provision "shell", path: "sync/windows/0-containerd.ps1", args: "#{cfg_calico_version} #{cfg_containerd_version}", privileged: true
 
       # Joining the controlplane
-      winw1.vm.provision "shell", path: "sync/windows/forked.ps1", args: "#{cfg_kubernetes_version}", privileged: true
+      winworker.vm.provision "shell", path: "sync/windows/forked.ps1", args: "#{cfg_kubernetes_version}", privileged: true
       # TODO: Why this is required? From old Makefile: making mock kubejoin file to keep Vagrantfile happy in sync/shared
       FileUtils.touch("sync/shared/kubejoin.ps1") unless File.exist?("sync/shared/kubejoin.ps1")
-      winw1.vm.provision "shell", path: "sync/shared/kubejoin.ps1", privileged: true #, run: "never"
+      winworker.vm.provision "shell", path: "sync/shared/kubejoin.ps1", privileged: true #, run: "never"
     else
       if not File.file?(".lock/cni") then
         if cfg_cni == "calico" then
           # we don't need to run Calico agents as service now,
           # calico will be installed as a HostProcess container
           # installs both felix and node
-          #winw1.vm.provision "shell", path: "sync/windows/0-calico.ps1", privileged: true
-          #winw1.vm.provision "shell", path: "sync/windows/1-calico.ps1", privileged: true
+          #winworker.vm.provision "shell", path: "sync/windows/0-calico.ps1", privileged: true
+          #winworker.vm.provision "shell", path: "sync/windows/1-calico.ps1", privileged: true
         else
-          winw1.vm.provision "shell", path: "sync/windows/0-antrea.ps1", privileged: true #, run: "always"
-          winw1.vm.provision "shell", path: "sync/windows/1-antrea.ps1", privileged: true, args: "#{cfg_windows_node_ip}" #, run: "always"
+          winworker.vm.provision "shell", path: "sync/windows/0-antrea.ps1", privileged: true #, run: "always"
+          winworker.vm.provision "shell", path: "sync/windows/1-antrea.ps1", privileged: true, args: "#{cfg_windows_node_ip}" #, run: "always"
         end
       end
     end

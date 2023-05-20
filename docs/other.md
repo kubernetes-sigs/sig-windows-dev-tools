@@ -19,11 +19,11 @@ The Windows node might stay 'NotReady' for a while, because it takes some time t
 vagrant@controlplane:~$ kubectl get nodes
 NAME     STATUS     ROLES                  AGE    VERSION
 controlplane    Ready      control-plane,controlplane   8m4s   v1.20.4
-winw1           NotReady   <none>                       64s    v1.20.4
+winworker       NotReady   <none>                       64s    v1.20.4
 ```
 ...
 ```
 NAME     STATUS   ROLES                  AGE     VERSION
 controlplane    Ready    control-plane,controlplane     16m     v1.20.4
-winw1           Ready    <none>                         9m11s   v1.20.4
+winworker       Ready    <none>                         9m11s   v1.20.4
 ```

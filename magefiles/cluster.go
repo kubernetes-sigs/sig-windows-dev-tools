@@ -114,18 +114,18 @@ func runWindowsWorkerNode() error {
 	log.Println("Creating Windows worker node")
 
 	for i := 0; i < settings.Vagrant.WindowsMaxAttempts; i++ {
-		log.Printf("vagrant status winw1 - attempt %d of %d", i+1, settings.Vagrant.WindowsMaxAttempts)
-		output, err := sh.Output("vagrant", "status", "winw1")
+		log.Printf("vagrant status winworker - attempt %d of %d", i+1, settings.Vagrant.WindowsMaxAttempts)
+		output, err := sh.Output("vagrant", "status", "winworker")
 		if err != nil {
 			return err
 		}
-		status := extractMachineStatus(output, "winw1")
-		log.Println("winw1", status)
+		status := extractMachineStatus(output, "winworker")
+		log.Println("winworker", status)
 		if strings.Contains(status, "running") {
 			break
 		}
-		log.Printf("vagrant up winw1 - attempt %d of %d", i+1, settings.Vagrant.WindowsMaxAttempts)
-		err = sh.Run("vagrant", "up", "winw1")
+		log.Printf("vagrant up winworker - attempt %d of %d", i+1, settings.Vagrant.WindowsMaxAttempts)
+		err = sh.Run("vagrant", "up", "winworker")
 		if err != nil {
 			return err
 		}
@@ -139,17 +139,17 @@ func runWindowsWorkerNode() error {
 	// TODO: Is re-provisioning required? What problem does it actually solve? If boxes are usable then vagrant up above should be sufficient.
 	log.Println("Provisioning Windows worker node")
 	for i := 0; i < settings.Vagrant.WindowsMaxAttempts; i++ {
-		log.Printf("kubectl get nodes | grep winw1  - attempt %d of %d", i+1, settings.Vagrant.WindowsMaxAttempts)
+		log.Printf("kubectl get nodes | grep winworker  - attempt %d of %d", i+1, settings.Vagrant.WindowsMaxAttempts)
 		output, err := sh.Output("vagrant", "ssh", "controlplane", "-c", "kubectl get nodes")
 		if err != nil {
 			return err
 		}
 		log.Println(output)
-		if strings.Contains(output, "winw1") {
+		if strings.Contains(output, "winworker") {
 			break
 		}
-		log.Printf("vagrant provision winw1 - attempt %d of %d", i+1, settings.Vagrant.WindowsMaxAttempts)
-		err = sh.Run("vagrant", "provision", "winw1")
+		log.Printf("vagrant provision winworker - attempt %d of %d", i+1, settings.Vagrant.WindowsMaxAttempts)
+		err = sh.Run("vagrant", "provision", "winworker")
 		if err != nil {
 			return err
 		}
@@ -237,7 +237,7 @@ func setVagrantPrivateKeyPermissions() error {
 	// e.g. in case machines are renamed.
 	var keyFiles = [...]string{
 		filepath.Join(".vagrant", "machines", "controlplane", "virtualbox", "private_key"),
-		filepath.Join(".vagrant", "machines", "winw1", "virtualbox", "private_key"),
+		filepath.Join(".vagrant", "machines", "winworker", "virtualbox", "private_key"),
 	}
 
 	for _, keyFile := range keyFiles {

@@ -70,26 +70,26 @@ control of nodes lifetime:
 
     ```console
     mage node:create controlplane
-    mage node:create winw1
+    mage node:create winworker
     ```
 
 2. Stop individual node
 
     ```console
     mage node:stop controlplane
-    mage node:stop winw1
+    mage node:stop winworker
     ```
 
 3. Start individual node
 
     ```console
     mage node:start controlplane
-    mage node:start winw1
+    mage node:start winworker
     ```
 
 4. Destroy individual node
 
     ```console
-    mage node:destroy winw1
+    mage node:destroy winworker
     mage node:destroy controlplane
     ```

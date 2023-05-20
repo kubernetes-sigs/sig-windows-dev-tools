@@ -36,7 +36,7 @@ It's still required to join the control plane, and this step is required
 via Kubejoin, with a provision, this is an usage example:
 
 ```
-winw1.vm.provision "shell", path: "sync/shared/kubejoin.ps1", privileged: true
+winworker.vm.provision "shell", path: "sync/shared/kubejoin.ps1", privileged: true
 ```
 
 ## How image-builder creates the image

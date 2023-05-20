@@ -5,7 +5,7 @@
 You'll obviously want to run commands on the Windows box. The easiest way is to SSH into the Windows machine and use powershell from there:
 
 ```
-vagrant ssh winw1
+vagrant ssh winworker
 C:\ > powershell
 ```
 
@@ -13,7 +13,7 @@ Optionally, you can do this by noting the IP address during `vagrant provision` 
 To run a *command* on the Windows boxes without actually using the UI, you can use `winrm`, which is integrated into Vagrant. For example, you can run:
 
 ```
-vagrant winrm winw1 --shell=powershell --command="ls"
+vagrant winrm winworker --shell=powershell --command="ls"
 ```
 
 IF you want to debug on the windows node, you can also run crictl:

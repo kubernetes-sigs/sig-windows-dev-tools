@@ -35,7 +35,7 @@ func (Node) Create(nodeName string) error {
 		return nil
 	}
 
-	if nodeName == "winw1" {
+	if nodeName == "winworker" {
 		mg.SerialDeps(runWindowsWorkerNode)
 		return nil
 	}

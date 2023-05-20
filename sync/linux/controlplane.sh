@@ -213,7 +213,7 @@ metadata:
   namespace: kube-system
 subjects:
 - kind: User
-  name: system:node:winw1
+  name: system:node:winworker
   apiGroup: rbac.authorization.k8s.io
 roleRef:
   kind: ClusterRole
