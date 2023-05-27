@@ -73,6 +73,18 @@ Vagrant.configure(2) do |config|
     winw1.vm.host_name = "winw1"
     winw1.vm.box = "sig-windows-dev-tools/windows-2019"
     winw1.vm.box_version = "1.0"
+
+    winw1.vm.communicator = "winrm"
+    winw1.vm.guest = :windows
+    winw1.ssh.shell = "powershell"
+
+    winw1.winrm.username = "vagrant"
+    winw1.winrm.password = "vagrant"
+    
+    winw1.vm.network :forwarded_port, guest: 5985, host: 5985, id: "winrm"
+    winw1.vm.network :forwarded_port, guest: 5986, host: 5986, id: "winrm-ssl"
+    # winw1.vm.network :forwarded_port, guest: 3389, host: 3389, id: "rdp"
+
     winw1.vm.network :private_network, ip:"#{windows_node_ip}"
     winw1.vm.provider "qemu" do |qe, override|
       qe.vm.network "private_network", type: "dhcp", ip: "10.20.30.20"
@@ -96,9 +108,9 @@ Vagrant.configure(2) do |config|
 
     winw1.vm.network :private_network, ip:"#{windows_node_ip}"
     winw1.vm.synced_folder ".", "/vagrant", disabled:true
-    winw1.vm.synced_folder "./sync/shared", "C:/sync/shared"
-    winw1.vm.synced_folder "./sync/windows/", "C:/sync/windows/"
-    winw1.vm.synced_folder "./forked", "C:/forked/"
+    winw1.vm.synced_folder "./sync/shared", "C:/sync/shared", type: "smb", smb_host: "10.20.30.20"
+    winw1.vm.synced_folder "./sync/windows/", "C:/sync/windows/", type: "smb", smb_host: "10.20.30.20"
+    winw1.vm.synced_folder "./forked", "C:/forked/", type: "smb", smb_host: "10.20.30.20"
 
     winw1.winrm.username = "vagrant"
     winw1.winrm.password = "vagrant"
