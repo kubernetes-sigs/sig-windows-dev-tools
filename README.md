@@ -2,18 +2,19 @@
 
 This is a fully batteries-included development environment for Windows on Kubernetes, including:
 - Vagrant file for launching a two-node cluster
-- The latest Containerd
+- containerd 1.6.15
 - Support for two CNIs: antrea, or calico on containerd:  configure your CNI option in variables.yml
-  - Calico 3.19 on containerd runs containers out of the box
+  - Calico 3.25.0 on containerd runs containers out of the box
   - Antrea 0.13.2 runs but requires running with a patch for https://github.com/antrea-io/antrea/issues/2344 which was recently made available
 - NetworkPolicy support for Windows and Linux provided by [Antrea](https://antrea.io) and [Calico](https://www.tigera.io/project-calico/)
-- Windows binaries for kube-proxy.exe and kubelet.exe that are fully built from source (K8s main branch)
-- Kubeadm installation that can put the bleeding-edge Linux control plane in place, so you can test new features like privileged containers
+- Windows binaries for kube-proxy.exe and kubelet.exe that are either built from source (K8s main branch) or releases
+- Kubeadm installation that can put the latest Linux control plane in place
 
 ## Quick Start
 
 ### Prerequisites 
-- Linux host - mostly tested on [Ubuntu](#ubuntu). Alternatively, Windows host with WSL as environment providing `make`, see [Windows with WSL](#windows-with-wsl).
+- Linux host - [Fedora 38](#fedora). 
+  - Experimental support for Windows host with WSL as environment providing `make`, see [Windows with WSL](#windows-with-wsl-experimental).
 - [make](https://www.gnu.org/software/make/)
 - [Vagrant](https://www.vagrantup.com/downloads)
 - [VirtualBox](https://www.virtualbox.org/wiki/Downloads) (we only have VirtualBox automated here, but these recipes have been used with others, like Microsoft HyperV and VMware Fusion).
@@ -28,7 +29,7 @@ Simple steps to a Windows Kubernetes cluster, from scratch, built from source...
 	- *If the above failed, run `vagrant provision winw1`, just in case you have a flake during windows installation.*
 - `vagrant ssh controlplane` and run `kubectl get nodes` to see your running dual-os linux+windows k8s cluster.
 
-## Windows with WSL
+## Windows with WSL (experimental)
 
 All the above Quick Start steps apply, except you have to run the `Makefile` targets in WSL
 - using `vagrant.exe` on the host
@@ -62,7 +63,7 @@ make all
 make clean
 ```
 
-## Ubuntu
+## Fedora
 
 Follow the steps presented below to prepare the Linux host environment and create the two-node cluster:
 
@@ -70,17 +71,17 @@ Follow the steps presented below to prepare the Linux host environment and creat
 
 *Example*:
 
-Adding hashicorp repo for most recent vagrant bits:
+[Adding](https://developer.hashicorp.com/vagrant/downloads?product_intent=vagrant)
+ hashicorp repo for most recent vagrant bits:
 ```
-curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
-sudo apt-add-repository \
-	"deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
-sudo apt-get update
+sudo dnf install -y dnf-plugins-core
+sudo dnf config-manager --add-repo https://rpm.releases.hashicorp.com/fedora/hashicorp.repo
+sudo dnf -y install vagrant
 ```
 
 Installing packages:
 ```
-sudo apt install build-essential vagrant virtualbox virtualbox-ext-pack -y
+sudo dnf install -y vagrant VirtualBox
 sudo vagrant plugin install vagrant-reload vagrant-vbguest winrm winrm-elevated vagrant-ssh
 ```
 
@@ -96,6 +97,9 @@ sudo vi /etc/vbox/networks.conf
 ```
 
 **3.** Clone the repo and build
+
+If you are building Kubernetes components from source, please follow the
+[development guide](https://github.com/kubernetes/community/blob/master/contributors/devel/development.md).
 
 ```
 git clone https://github.com/kubernetes-sigs/sig-windows-dev-tools.git
