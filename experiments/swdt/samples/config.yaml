@@ -1,0 +1,24 @@
+apiVersion: windows.k8s.io/v1alpha1
+kind: Config
+metadata:
+  name: sample
+spec:
+  credentials:
+    username: "Administrator"
+    hostname: "192.168.122.220:22"
+    privateKey: ""
+  setup:
+    enableRDP: true
+    chocoPackages:
+    - vim
+    - grep
+  kubernetes:
+    deploys:
+    - name: containerd
+      version: 1.7.11
+      sourceURL: "xx"
+      destination: "c:\\temp"
+    - name: kubelet
+      version: 1.29.0
+      sourceURL: "xx"
+      destination: "c:\\k"
