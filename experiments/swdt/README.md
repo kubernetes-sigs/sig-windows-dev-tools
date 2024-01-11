@@ -1,4 +1,4 @@
-# Design document for the SWDT CLI. 
+# Design document for the SWDT CLI
 
 This document is a reference for decisions regarding multi-OS support architecture. It is developed with Cobra/spf13 to conform to a stable namespace and different connection libraries to support remote command execution.
 
@@ -74,3 +74,8 @@ spec:
 ## Connections
 
 Currently, the project SSH for running commands remotely on the node. The common fields required are username and hostname. To proceed, ssh object content should be filled out with the proper connections parameters.
+
+## Testing
+
+See [experimental early guide for testers](samples/mloskot/README.windows.md)
+dedicated to try SWDT CLI on Windows host.
