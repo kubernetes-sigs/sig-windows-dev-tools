@@ -11,3 +11,7 @@ kubernetes
 # semaphores during build
 .lock/
 .idea/
+
+# Go
+go.work
+go.work.sum
