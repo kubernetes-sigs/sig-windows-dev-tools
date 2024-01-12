@@ -25,6 +25,7 @@ import (
 	"io"
 	"os"
 	"path"
+	"regexp"
 	"swdt/apis/config/v1alpha1"
 	"sync"
 )
@@ -89,6 +90,7 @@ func (c *SSHConnection) Connect() error {
 
 // Run a powershell command passed in the argument
 func (c *SSHConnection) Run(args string) (string, error) {
+
 	if c.client == nil {
 		return "", fmt.Errorf("client is empty, call Connect() first")
 	}
@@ -103,7 +105,10 @@ func (c *SSHConnection) Run(args string) (string, error) {
 	}
 	defer session.Close()
 	session.Stdout = &b
-	if err := session.Run("powershell -c " + args); err != nil {
+
+	// Multiline PowerShell commands over SSH trip over newlines - only first one is executed
+	args = regexp.MustCompile(`\r?\n`).ReplaceAllLiteralString(args, ";")
+	if err := session.Run("powershell -nologo -noprofile -c " + args); err != nil {
 		return "", err
 	}
 

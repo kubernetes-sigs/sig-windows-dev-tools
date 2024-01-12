@@ -2,6 +2,7 @@ package setup
 
 import (
 	"fmt"
+
 	"github.com/fatih/color"
 	"k8s.io/klog/v2"
 )
@@ -20,7 +21,7 @@ type Runner struct {
 }
 
 func (r *Runner) InstallChoco() error {
-	klog.Info(mainc.Sprint("Installing Choco with PowerShell."))
+	klog.Info(mainc.Sprint("Installing Choco with PowerShell"))
 
 	if r.ChocoExists() {
 		klog.Info(resc.Sprintf("Choco already exists, skipping installation..."))
