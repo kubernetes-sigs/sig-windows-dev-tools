@@ -17,22 +17,22 @@ limitations under the License.
 package config
 
 import (
-	"github.com/stretchr/testify/assert"
-	_ "github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 const (
 	SAMPLE_FILE    = "../../samples/config.yaml"
 	SAMPLE_DEFAULT = `apiVersion: windows.k8s.io/v1alpha1
-kind: Config
+kind: Node
 metadata:
   name: sample
 spec:`
 )
 
-func TestLoadConfigDefaults(t *testing.T) {
-	config, err := loadConfig([]byte(SAMPLE_DEFAULT))
+func TestLoadConfigNodeDefaults(t *testing.T) {
+	config, err := loadConfigNode([]byte(SAMPLE_DEFAULT))
 	config.Spec.Defaults()
 	assert.Nil(t, err)
 
@@ -40,8 +40,8 @@ func TestLoadConfigDefaults(t *testing.T) {
 	assert.Len(t, *config.Spec.Setup.ChocoPackages, 0)
 }
 
-func TestLoadConfig(t *testing.T) {
-	config, err := LoadConfigFromFile(SAMPLE_FILE)
+func TestLoadConfigNode(t *testing.T) {
+	config, err := LoadConfigNodeFromFile(SAMPLE_FILE)
 	assert.Nil(t, err)
 
 	assert.True(t, *config.Spec.Setup.EnableRDP)

@@ -21,7 +21,7 @@ var defaultTrue = true
 // todo(knabben): this is not the best approach and a workaround for the CLI.
 
 // Defaults must be called to fill out the empty values
-func (c *ConfigSpec) Defaults() {
+func (c *NodeSpec) Defaults() {
 	if c.Setup.EnableRDP == nil {
 		c.Setup.EnableRDP = &defaultTrue
 	}
