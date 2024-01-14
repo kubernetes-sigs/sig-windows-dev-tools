@@ -41,7 +41,8 @@ var setupCmd = &cobra.Command{
 }
 
 func Run(cmd *cobra.Command, args []string) error {
-	configuration, err := config.LoadConfigFromFile(configFile)
+	// TODO(mloskot): For now load Windows node config only, but will this become config.LoadConfigFromFile for whole cluster config is implemented?
+	configuration, err := config.LoadConfigNodeFromFile(configFile)
 	if err != nil {
 		return err
 	}

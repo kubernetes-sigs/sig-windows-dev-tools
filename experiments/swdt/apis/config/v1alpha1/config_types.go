@@ -61,39 +61,39 @@ type SetupSpec struct {
 	ChocoPackages *[]string `json:"chocoPackages,omitempty"`
 }
 
-// ConfigSpec defines the desired state of Config
-type ConfigSpec struct {
+// NodeSpec defines the desired state of Node
+type NodeSpec struct {
 	Cred       CredentialsSpec `json:"credentials,omitempty"`
 	Setup      SetupSpec       `json:"setup,omitempty"`
 	Kubernetes KubernetesSpec  `json:"kubernetes,omitempty"`
 }
 
-// ConfigStatus -- tbd
-type ConfigStatus struct {
+// NodeStatus -- tbd
+type NodeStatus struct {
 }
 
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
 //+k8s:defaulter-gen=true
 
-// Config is the Schema for the configs API
-type Config struct {
+// Node is the Schema for the configs API
+type Node struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec   ConfigSpec   `json:"spec,omitempty"`
-	Status ConfigStatus `json:"status,omitempty"`
+	Spec   NodeSpec   `json:"spec,omitempty"`
+	Status NodeStatus `json:"status,omitempty"`
 }
 
 //+kubebuilder:object:root=true
 
-// ConfigList contains a list of Config
-type ConfigList struct {
+// NodeList contains a list of Node
+type NodeList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
-	Items           []Config `json:"items"`
+	Items           []Node `json:"items"`
 }
 
 func init() {
-	SchemeBuilder.Register(&Config{}, &ConfigList{})
+	SchemeBuilder.Register(&Node{}, &NodeList{})
 }

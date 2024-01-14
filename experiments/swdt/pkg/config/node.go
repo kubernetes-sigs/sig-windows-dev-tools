@@ -36,23 +36,23 @@ func init() {
 	utilruntime.Must(v1alpha1.AddToScheme(scheme))
 }
 
-// LoadConfigFromFile returns the marshalled Configuration object
-func LoadConfigFromFile(file string) (*v1alpha1.Config, error) {
+// LoadConfigFromFile returns the marshalled Node configuration object
+func LoadConfigNodeFromFile(file string) (*v1alpha1.Node, error) {
 	data, err := os.ReadFile(file)
 	if err != nil {
 		return nil, err
 	}
-	return loadConfig(data)
+	return loadConfigNode(data)
 }
 
 // loadConfig decode the input read YAML into a configuration object
-func loadConfig(data []byte) (*v1alpha1.Config, error) {
+func loadConfigNode(data []byte) (*v1alpha1.Node, error) {
 	var deserializer = codecs.UniversalDeserializer()
 	configObj, gvk, err := deserializer.Decode(data, nil, nil)
 	if err != nil {
 		return nil, err
 	}
-	config, ok := configObj.(*v1alpha1.Config)
+	config, ok := configObj.(*v1alpha1.Node)
 	if !ok {
 		return nil, fmt.Errorf("got unexpected config type: %v", gvk)
 	}

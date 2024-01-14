@@ -44,7 +44,7 @@ Following a configuration sample:
 
 ```
 apiVersion: windows.k8s.io/v1alpha1
-kind: Config
+kind: Node
 metadata:
   name: sample
 spec:
