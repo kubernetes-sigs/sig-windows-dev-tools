@@ -37,6 +37,21 @@ func (r *Runner) InstallChoco() error {
 	return nil
 }
 
+func (r *Runner) InstallChocoPackages(packages []string) error {
+	if !r.ChocoExists() {
+		return fmt.Errorf("choco not installed. Skipping package installation")
+	}
+
+	for _, pkg := range packages {
+		output, err := r.Run(fmt.Sprintf("choco install --accept-licenses --yes %s", pkg)))
+		if err != nil {
+			return err
+		}
+		klog.Info(resc.Sprintf("Installed package %s: %s", pkg, output))
+	}
+	return nil
+}
+
 func (r *Runner) ChocoExists() bool {
 	_, err := r.Run(fmt.Sprintf("%s --version", CHOCO_PATH))
 	// todo(knabben) - fix the error granularity and find the correct stderr

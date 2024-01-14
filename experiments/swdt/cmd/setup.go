@@ -54,10 +54,16 @@ func Run(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	return runSteps(sshConnection)
+	return runSteps(configuration.Spec.Setup.ChocoPackages, sshConnection)
 }
 
-func runSteps(conn connections.Connection) error {
+func runSteps(packages *[]string, conn connections.Connection) error {
+	var err error
+
 	runner := setup.Runner{Run: conn.Run, Copy: conn.Copy}
-	return runner.InstallChoco()
+	if err = runner.InstallChoco(); err != nil {
+		return err
+	}
+
+	return runner.InstallChocoPackages(*packages)
 }
