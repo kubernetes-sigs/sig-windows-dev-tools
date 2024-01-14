@@ -47,10 +47,10 @@ func TestLoadConfigNode(t *testing.T) {
 	assert.True(t, *config.Spec.Setup.EnableRDP)
 	assert.Equal(t, len(*config.Spec.Setup.ChocoPackages), 2)
 
-	deploys := config.Spec.Kubernetes.Deploys
-	assert.Len(t, deploys, 2)
+	provisioners := config.Spec.Kubernetes.Provisioners
+	assert.Len(t, provisioners, 2)
 
-	for _, d := range deploys {
+	for _, d := range provisioners {
 		assert.GreaterOrEqual(t, len(d.SourceURL), 2)
 		assert.GreaterOrEqual(t, len(d.Destination), 4)
 	}

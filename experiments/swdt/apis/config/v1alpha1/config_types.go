@@ -20,7 +20,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-type DeploySpec struct {
+type ProvisionerSpec struct {
 	// Name of the service to be deployed
 	Name string `json:"name,omitempty"`
 
@@ -38,8 +38,8 @@ type DeploySpec struct {
 }
 
 type KubernetesSpec struct {
-	// Deploys list the objects to be deployed
-	Deploys []DeploySpec `json:"deploys"`
+	// Provisioners list the objects to be deployed
+	Provisioners []ProvisionerSpec `json:"provisioners"`
 }
 
 type CredentialsSpec struct {
