@@ -1,0 +1,14 @@
+apiVersion: windows.k8s.io/v1alpha1
+kind: Config
+metadata:
+  name: winworker
+spec:
+  credentials:
+    hostname: "192.168.10.3:22"
+    username: "Administrator"
+    privateKey: ".\\experiments\\swdt\\samples\\mloskot\\ssh.id_rsa"
+  setup:
+    enableRDP: true
+    chocoPackages:
+    - vim
+    - grep
