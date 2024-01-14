@@ -49,7 +49,6 @@ func Run(cmd *cobra.Command, args []string) error {
 
 	sshConnection := connections.NewConnection(password, configuration.Spec.Cred)
 	defer sshConnection.Close()
-
 	if err := sshConnection.Connect(); err != nil {
 		return err
 	}
