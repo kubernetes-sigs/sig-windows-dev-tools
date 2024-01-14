@@ -58,7 +58,7 @@ spec:
       - vim
       - grep
   kubernetes:
-    deploys:
+    provisioners:
       - name: containerd:
         version: 1.7.11
         sourceURL: http://xyz/containerd.exe
