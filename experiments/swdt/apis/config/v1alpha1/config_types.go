@@ -49,6 +49,9 @@ type CredentialsSpec struct {
 	// Hostname set the Windows node endpoint
 	Hostname string `json:"hostname,omitempty"`
 
+	// Password is the SSH password for this user
+	Password string `json:"password,omitempty"`
+
 	// PrivateKey is the SSH private path for this user
 	PrivateKey string `json:"privateKey,omitempty"`
 }

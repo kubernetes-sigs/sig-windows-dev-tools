@@ -5,7 +5,6 @@ sync/shared/config
 sync/shared/kubejoin.ps1
 sync/shared/kubeadm.yaml
 sync/shared/variables.yaml
-kubernetes
 .vagrant/
 
 # semaphores during build

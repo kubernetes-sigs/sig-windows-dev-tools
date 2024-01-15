@@ -36,7 +36,7 @@ func init() {
 	utilruntime.Must(v1alpha1.AddToScheme(scheme))
 }
 
-// LoadConfigFromFile returns the marshalled Node configuration object
+// LoadConfigNodeFromFile LoadConfigFromFile returns the marshalled Node configuration object
 func LoadConfigNodeFromFile(file string) (*v1alpha1.Node, error) {
 	data, err := os.ReadFile(file)
 	if err != nil {
@@ -56,5 +56,6 @@ func loadConfigNode(data []byte) (*v1alpha1.Node, error) {
 	if !ok {
 		return nil, fmt.Errorf("got unexpected config type: %v", gvk)
 	}
+	config.Spec.Defaults()
 	return config, nil
 }

@@ -18,6 +18,7 @@ package connections
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"fmt"
 	scp "github.com/bramvdbogaerde/go-scp"
@@ -28,16 +29,17 @@ import (
 	"regexp"
 	"swdt/apis/config/v1alpha1"
 	"sync"
+	"time"
 )
 
 const (
-	TCP_TYPE   = "tcp"
-	SCP_BINARY = "C:\\Windows\\System32\\OpenSSH\\scp.exe"
+	TCP_TYPE                 = "tcp"
+	SCP_BINARY               = "C:\\Windows\\System32\\OpenSSH\\scp.exe"
+	timeout    time.Duration = 30 * time.Second
 )
 
 type SSHConnection struct {
 	credentials *v1alpha1.CredentialsSpec
-	password    string
 	client      *ssh.Client
 }
 
@@ -46,6 +48,7 @@ func (c *SSHConnection) fetchAuthMethod() (authMethod []ssh.AuthMethod, err erro
 	var (
 		file       *os.File
 		privateKey = c.credentials.PrivateKey
+		password   = c.credentials.Password
 		content    []byte
 		signer     ssh.Signer
 	)
@@ -64,8 +67,8 @@ func (c *SSHConnection) fetchAuthMethod() (authMethod []ssh.AuthMethod, err erro
 		}
 		authMethod = append(authMethod, ssh.PublicKeys(signer))
 	}
-	if c.password != "" {
-		authMethod = append(authMethod, ssh.Password(c.password))
+	if password != "" {
+		authMethod = append(authMethod, ssh.Password(password))
 	}
 	return
 }
@@ -90,7 +93,6 @@ func (c *SSHConnection) Connect() error {
 
 // Run a powershell command passed in the argument
 func (c *SSHConnection) Run(args string) (string, error) {
-
 	if c.client == nil {
 		return "", fmt.Errorf("client is empty, call Connect() first")
 	}
@@ -131,7 +133,10 @@ func (c *SSHConnection) Copy(local, remote, perm string) error {
 
 // CopyPassThru is an auxiliary function for Copy
 func (c *SSHConnection) CopyPassThru(reader io.Reader, remote string, permissions string, size int64) error {
-	var filename = path.Base(remote)
+	var (
+		ctx      = context.Background()
+		filename = path.Base(remote)
+	)
 
 	session, err := c.client.NewSession()
 	if err != nil {
@@ -152,12 +157,13 @@ func (c *SSHConnection) CopyPassThru(reader io.Reader, remote string, permission
 	wg := sync.WaitGroup{}
 	wg.Add(2)
 
-	errCh := make(chan error, 1)
+	errCh := make(chan error, 2)
 
 	go func() {
 		defer wg.Done()
 		defer writer.Close()
-		_, err = fmt.Fprintln(writer, "C"+permissions, size, filename)
+
+		_, err := fmt.Fprintln(writer, "C"+permissions, size, filename)
 		if err != nil {
 			errCh <- err
 			return
@@ -193,7 +199,16 @@ func (c *SSHConnection) CopyPassThru(reader io.Reader, remote string, permission
 		}
 	}()
 
-	wg.Wait()
+	if timeout > 0 {
+		var cancel context.CancelFunc
+		ctx, cancel = context.WithTimeout(ctx, timeout)
+		defer cancel()
+	}
+
+	if err := wait(&wg, ctx); err != nil {
+		return err
+	}
+
 	close(errCh)
 	for err := range errCh {
 		if err != nil {
@@ -201,6 +216,24 @@ func (c *SSHConnection) CopyPassThru(reader io.Reader, remote string, permission
 		}
 	}
 	return nil
+}
+
+// wait waits for the waitgroup for the specified max timeout.
+// Returns true if waiting timed out.
+func wait(wg *sync.WaitGroup, ctx context.Context) error {
+	c := make(chan struct{})
+	go func() {
+		defer close(c)
+		wg.Wait()
+	}()
+
+	select {
+	case <-c:
+		return nil
+
+	case <-ctx.Done():
+		return ctx.Err()
+	}
 }
 
 // Close finishes the connection

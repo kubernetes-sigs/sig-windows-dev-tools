@@ -17,26 +17,25 @@ limitations under the License.
 package cmd
 
 import (
+	"github.com/spf13/cobra"
 	"swdt/apis/config/v1alpha1"
 	"swdt/pkg/pwsh/executor"
-	"swdt/pkg/pwsh/setup"
-
-	"github.com/spf13/cobra"
+	"swdt/pkg/pwsh/kubernetes"
 )
 
 func init() {
-	rootCmd.AddCommand(setupCmd)
+	rootCmd.AddCommand(kubernetesCmd)
 }
 
 // setupCmd represents the setup command
-var setupCmd = &cobra.Command{
-	Use:   "setup",
-	Short: "Bootstrap the node via basic unit setup",
-	Long:  `Bootstrap the node via basic unit setup`,
-	RunE:  RunSetup,
+var kubernetesCmd = &cobra.Command{
+	Use:   "kubernetes",
+	Short: "Provision Kubernetes binaries into a running node",
+	Long:  `Provision Kubernetes binaries into a running node`,
+	RunE:  RunKubernetes,
 }
 
-func RunSetup(cmd *cobra.Command, args []string) error {
+func RunKubernetes(cmd *cobra.Command, args []string) error {
 	var (
 		err        error
 		nodeConfig *v1alpha1.Node
@@ -45,22 +44,11 @@ func RunSetup(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	runner, err := executor.NewRunner(nodeConfig, &setup.SetupRunner{})
+	runner, err := executor.NewRunner(nodeConfig, &kubernetes.KubernetesRunner{})
 	if err != nil {
 		return err
 	}
 	defer runner.CloseConnection() //nolint
 
-	// Install choco binary
-	if err = runner.Inner.InstallChoco(); err != nil {
-		return err
-	}
-
-	// Install Choco packages from the input list
-	if err = runner.Inner.InstallChocoPackages(*nodeConfig.Spec.Setup.ChocoPackages); err != nil {
-		return err
-	}
-
-	// Enable RDP if the option is true
-	return runner.Inner.EnableRDP(*nodeConfig.Spec.Setup.EnableRDP)
+	return runner.Inner.InstallProvisioners(nodeConfig.Spec.Kubernetes.Provisioners)
 }

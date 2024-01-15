@@ -33,7 +33,6 @@ spec:`
 
 func TestLoadConfigNodeDefaults(t *testing.T) {
 	config, err := loadConfigNode([]byte(SAMPLE_DEFAULT))
-	config.Spec.Defaults()
 	assert.Nil(t, err)
 
 	assert.True(t, *config.Spec.Setup.EnableRDP)
