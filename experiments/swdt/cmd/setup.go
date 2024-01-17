@@ -49,7 +49,7 @@ func RunSetup(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
-	defer runner.CloseConnection() //nolint
+	defer runner.CloseConnection() // nolint
 
 	// Install choco binary
 	if err = runner.Inner.InstallChoco(); err != nil {

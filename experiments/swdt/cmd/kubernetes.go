@@ -48,7 +48,7 @@ func RunKubernetes(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
-	defer runner.CloseConnection() //nolint
+	defer runner.CloseConnection() // nolint
 
 	return runner.Inner.InstallProvisioners(nodeConfig.Spec.Kubernetes.Provisioners)
 }

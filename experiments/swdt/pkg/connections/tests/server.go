@@ -3,7 +3,7 @@ package tests
 import (
 	"fmt"
 	"golang.org/x/crypto/ssh"
-	"golang.org/x/crypto/ssh/terminal"
+	"golang.org/x/term"
 	"log"
 	"net"
 )
@@ -54,8 +54,11 @@ KaT3SUfkvAKQEAAAAOYWtuYWJiZW5AaG9ydXMBAgMEBQ==
 )
 
 func NewServer(hostname, expected string) {
+	var err error
 	config := &ssh.ServerConfig{PasswordCallback: passwordCallback}
-	parsePrivateKey(config, privateKey)
+	if err = parsePrivateKey(config, privateKey); err != nil {
+		log.Fatal(err)
+	}
 
 	listener, err := net.Listen("tcp", hostname)
 	if err != nil {
@@ -84,10 +87,13 @@ func acceptConnection(listener net.Listener, config *ssh.ServerConfig, result st
 
 			go handleRequest(requests, channel)
 
-			term := terminal.NewTerminal(channel, "")
-			term.Write([]byte(result))
-			term.ReadLine()
-			channel.Close()
+			t := term.NewTerminal(channel, "")
+			_, err = t.Write([]byte(result))
+			if err != nil {
+				log.Fatalf("error writing channel: %v", err)
+			}
+			t.ReadLine()    // nolint
+			channel.Close() // nolint
 		}
 	}
 }
@@ -96,9 +102,9 @@ func handleRequest(in <-chan *ssh.Request, channel ssh.Channel) {
 	for req := range in {
 		switch req.Type {
 		case "exec":
-			channel.SendRequest("exit-status", false, []byte{0, 0, 0, 0})
+			channel.SendRequest("exit-status", false, []byte{0, 0, 0, 0}) // nolint
 		}
-		req.Reply(req.Type == "exec", nil)
+		req.Reply(req.Type == "exec", nil) // nolint
 	}
 }
 

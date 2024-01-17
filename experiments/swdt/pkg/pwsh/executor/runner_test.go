@@ -17,13 +17,15 @@ func TestMultipleExecutors(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, kubeRunner.Inner)
 	assert.IsType(t, kubernetes.KubernetesRunner{}, *kubeRunner.Inner)
-	kubeRunner.CloseConnection()
+	err = kubeRunner.CloseConnection()
+	assert.Nil(t, err)
 
 	setupRunner, err := NewRunner(createNodeConfig(hostname), &setup.SetupRunner{})
 	assert.Nil(t, err)
 	assert.NotNil(t, setupRunner.Inner)
 	assert.IsType(t, setup.SetupRunner{}, *setupRunner.Inner)
-	setupRunner.CloseConnection()
+	err = setupRunner.CloseConnection()
+	assert.Nil(t, err)
 }
 
 func createNodeConfig(hostname string) *v1alpha1.Node {

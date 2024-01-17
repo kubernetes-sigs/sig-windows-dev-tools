@@ -3,7 +3,7 @@ package kubernetes
 import (
 	"fmt"
 	"github.com/fatih/color"
-	"k8s.io/klog/v2"
+	klog "k8s.io/klog/v2"
 	"swdt/apis/config/v1alpha1"
 	"swdt/pkg/connections"
 )
