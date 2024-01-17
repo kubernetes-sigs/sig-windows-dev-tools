@@ -19,7 +19,13 @@ package cmd
 import (
 	"github.com/spf13/cobra"
 	"os"
+	"swdt/apis/config/v1alpha1"
+	"swdt/pkg/config"
 )
+
+func init() {
+	rootCmd.PersistentFlags().StringP("config", "c", "samples/config.yaml", "Configuration file path.")
+}
 
 // rootCmd represents the base command
 var rootCmd = &cobra.Command{
@@ -27,6 +33,11 @@ var rootCmd = &cobra.Command{
 	Short: "SIG Windows Development Tools",
 	Long: `Auxiliary program for Windows nodes installation and initial setup.
 	Check the subcommands.`,
+}
+
+// loadConfiguration marshal the YAML configuration in an internal struct
+func loadConfiguration() (*v1alpha1.Node, error) {
+	return config.LoadConfigNodeFromFile(rootCmd.Flag("config").Value.String())
 }
 
 func Execute() {

@@ -6,7 +6,7 @@ spec:
   credentials:
     username: "Administrator"
     hostname: "192.168.122.220:22"
-    privateKey: ""
+    privateKey: "/home/<user>/.ssh/id_rsa"
   setup:
     enableRDP: true
     chocoPackages:
@@ -16,9 +16,9 @@ spec:
     provisioners:
     - name: containerd
       version: 1.7.11
-      sourceURL: "xx"
-      destination: "c:\\temp"
+      sourceURL: "/home/<user>/go/src/github.com/containerd/containerd/bin/containerd"
+      destination: "C:\\Program Files\\containerd\\containerd.exe"
     - name: kubelet
       version: 1.29.0
-      sourceURL: "xx"
-      destination: "c:\\k"
+      sourceURL: "/home/<user>/go/src/k8s.io/kubernetes/_output/local/bin/windows/amd64/kubelet.exe"
+      destination: "C:\\k\\kubelet.exe"

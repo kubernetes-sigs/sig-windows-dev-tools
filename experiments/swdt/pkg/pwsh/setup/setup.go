@@ -2,9 +2,9 @@ package setup
 
 import (
 	"fmt"
-
 	"github.com/fatih/color"
-	"k8s.io/klog/v2"
+	klog "k8s.io/klog/v2"
+	"swdt/pkg/connections"
 )
 
 var (
@@ -18,14 +18,20 @@ const (
 	CHOCO_INSTALL = "choco install --accept-licenses --yes"
 )
 
-// Runner holds the executor functions for running remote commands
-type Runner struct {
-	Run  func(args string) (string, error)
-	Copy func(local, remote, perm string) error
+type SetupRunner struct {
+	conn connections.Connection
+	run  func(args string) (string, error)
+	copy func(local, remote, perm string) error
+}
+
+func (r *SetupRunner) SetConnection(conn *connections.Connection) {
+	r.conn = *conn
+	r.run = r.conn.Run
+	r.copy = r.conn.Copy
 }
 
 // InstallChoco proceed to install choco in the default ProgramData folder.
-func (r *Runner) InstallChoco() error {
+func (r *SetupRunner) InstallChoco() error {
 	klog.Info(mainc.Sprint("Installing Choco with PowerShell"))
 
 	if r.ChocoExists() {
@@ -34,7 +40,7 @@ func (r *Runner) InstallChoco() error {
 	}
 
 	// Proceed to install choco package manager.
-	output, err := r.Run(`Set-ExecutionPolicy Bypass -Scope Process -Force;
+	output, err := r.run(`Set-ExecutionPolicy Bypass -Scope Process -Force;
 		[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; 
 		iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))`)
 	if err != nil {
@@ -46,12 +52,14 @@ func (r *Runner) InstallChoco() error {
 }
 
 // InstallChocoPackages iterate on a list of packages and execute the installation.
-func (r *Runner) InstallChocoPackages(packages []string) error {
+func (r *SetupRunner) InstallChocoPackages(packages []string) error {
 	if !r.ChocoExists() {
 		return fmt.Errorf("choco not installed. Skipping package installation")
 	}
+
+	klog.Info(mainc.Sprint("Installing Choco packages."))
 	for _, pkg := range packages {
-		output, err := r.Run(fmt.Sprintf("%s %s", CHOCO_INSTALL, pkg))
+		output, err := r.run(fmt.Sprintf("%s %s", CHOCO_INSTALL, pkg))
 		if err != nil {
 			return err
 		}
@@ -62,7 +70,23 @@ func (r *Runner) InstallChocoPackages(packages []string) error {
 
 // ChocoExists check if choco is already installed in the system.
 // todo(knabben) - fix the error granularity and find the correct stderr
-func (r *Runner) ChocoExists() bool {
-	_, err := r.Run(fmt.Sprintf("%s --version", CHOCO_PATH))
+func (r *SetupRunner) ChocoExists() bool {
+	_, err := r.run(fmt.Sprintf("%s --version", CHOCO_PATH))
 	return err == nil
+}
+
+// EnableRDP allow RDP to be accessed in Windows property and Firewall rule
+func (r *SetupRunner) EnableRDP(enable bool) error {
+	if !enable {
+		klog.Warning("Remote Desktop field is disabled. Check the configuration to enable it.")
+		return nil
+	}
+
+	output, err := r.run(`Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -name "fDenyTSConnections" -value 0;
+		Enable-NetFirewallRule -DisplayGroup "Remote Desktop"`)
+	if err != nil {
+		return err
+	}
+	klog.Info(resc.Sprintf("Enabling RDP. %s", output))
+	return nil
 }
