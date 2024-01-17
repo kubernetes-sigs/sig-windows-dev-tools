@@ -29,7 +29,6 @@ func (r *KubernetesRunner) InstallProvisioners(provisioners []v1alpha1.Provision
 	for _, provisioner := range provisioners {
 		source, destination := provisioner.SourceURL, provisioner.Destination
 		name := provisioner.Name
-
 		klog.Info(resc.Sprintf("Service %s binary replacement, trying to stop service...", name))
 		_, err := r.run(fmt.Sprintf("Stop-Service -name %s -Force", name))
 		if err != nil {

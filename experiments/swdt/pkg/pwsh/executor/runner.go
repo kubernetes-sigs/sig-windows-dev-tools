@@ -8,7 +8,7 @@ import (
 )
 
 type RunnerInterface interface {
-	*kubernetes.KubernetesRunner | *setup.SetupRunner
+	*setup.SetupRunner | *kubernetes.KubernetesRunner
 	SetConnection(conn *connections.Connection)
 }
 
