@@ -10,7 +10,6 @@ import (
 var (
 	mainc = color.New(color.FgHiBlack).Add(color.Underline)
 	resc  = color.New(color.FgHiGreen).Add(color.Bold)
-	errc  = color.New(color.FgHiRed)
 )
 
 const (
