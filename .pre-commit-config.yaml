@@ -1,0 +1,29 @@
+repos:
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v4.5.0
+  hooks:
+  - id: trailing-whitespace
+  - id: end-of-file-fixer
+  - id: check-added-large-files
+  - id: check-json
+  - id: check-yaml
+    args:
+    - --unsafe
+  - id: check-symlinks
+- repo: https://github.com/dnephin/pre-commit-golang
+  rev: v0.5.1
+  hooks:
+  - id: go-fmt
+    files: ^experiments/swdt/
+  - id: go-imports
+    files: ^experiments/swdt/
+- repo: https://github.com/golangci/golangci-lint
+  rev: v1.55.2
+  hooks:
+  - id: golangci-lint
+    name: golangci-lint
+    description: Fast linters runner for Go.
+    entry: golangci-lint run ./experiments/swdt/...
+    types: [go]
+    language: golang
+    pass_filenames: false
