@@ -110,7 +110,9 @@ func (c *SSHConnection) Run(args string) (string, error) {
 
 	// Multiline PowerShell commands over SSH trip over newlines - only first one is executed
 	args = regexp.MustCompile(`\r?\n`).ReplaceAllLiteralString(args, ";")
-	if err := session.Run("powershell -nologo -noprofile -c " + args); err != nil {
+	cmd := fmt.Sprintf("powershell -nologo -noprofile -c { %s }", args)
+	// TODO(mloskot): Log executed commands in --verbose mode
+	if err := session.Run(cmd); err != nil {
 		return "", err
 	}
 
