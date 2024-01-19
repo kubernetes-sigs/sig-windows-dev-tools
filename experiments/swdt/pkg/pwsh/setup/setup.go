@@ -81,11 +81,12 @@ func (r *SetupRunner) EnableRDP(enable bool) error {
 		return nil
 	}
 
-	output, err := r.run(`Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -name "fDenyTSConnections" -value 0;
+	klog.Info(resc.Sprintf("Enabling RDP."))
+	output, err := r.run(`Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\Terminal Server" -name "fDenyTSConnections" -value 0;
 		Enable-NetFirewallRule -DisplayGroup "Remote Desktop"`)
 	if err != nil {
 		return err
 	}
-	klog.Info(resc.Sprintf("Enabling RDP. %s", output))
+	klog.Info(resc.Sprintf(output))
 	return nil
 }
