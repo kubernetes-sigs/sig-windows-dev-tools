@@ -40,7 +40,7 @@ func TestInstallChocoPackages(t *testing.T) {
 	assert.Len(t, calls, expectedCalls)
 	assert.Equal(t, calls[0], chocoCheck)
 	for i := 0; i < expectedCalls-1; i++ {
-		assert.Equal(t, calls[i+1], fmt.Sprintf("%s %s", CHOCO_INSTALL, pkgs[i]))
+		assert.Equal(t, calls[i+1], fmt.Sprintf("%s %s %s", CHOCO_PATH, CHOCO_INSTALL, pkgs[i]))
 	}
 }
 
