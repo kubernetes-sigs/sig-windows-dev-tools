@@ -14,7 +14,7 @@ var (
 
 const (
 	CHOCO_PATH    = "C:\\ProgramData\\chocolatey\\bin\\choco.exe"
-	CHOCO_INSTALL = "choco install --accept-licenses --yes"
+	CHOCO_INSTALL = "install --accept-licenses --yes"
 )
 
 type SetupRunner struct {
@@ -58,7 +58,7 @@ func (r *SetupRunner) InstallChocoPackages(packages []string) error {
 
 	klog.Info(mainc.Sprint("Installing Choco packages."))
 	for _, pkg := range packages {
-		output, err := r.run(fmt.Sprintf("%s %s", CHOCO_INSTALL, pkg))
+		output, err := r.run(fmt.Sprintf("%s %s %s", CHOCO_PATH, CHOCO_INSTALL, pkg))
 		if err != nil {
 			return err
 		}
