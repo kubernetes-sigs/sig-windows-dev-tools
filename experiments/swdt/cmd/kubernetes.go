@@ -17,10 +17,11 @@ limitations under the License.
 package cmd
 
 import (
-	"github.com/spf13/cobra"
 	"swdt/apis/config/v1alpha1"
 	"swdt/pkg/pwsh/executor"
 	"swdt/pkg/pwsh/kubernetes"
+
+	"github.com/spf13/cobra"
 )
 
 func init() {

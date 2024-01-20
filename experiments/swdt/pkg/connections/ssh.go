@@ -21,8 +21,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	scp "github.com/bramvdbogaerde/go-scp"
-	"golang.org/x/crypto/ssh"
 	"io"
 	"os"
 	"path"
@@ -30,6 +28,10 @@ import (
 	"swdt/apis/config/v1alpha1"
 	"sync"
 	"time"
+
+	scp "github.com/bramvdbogaerde/go-scp"
+	"golang.org/x/crypto/ssh"
+	"k8s.io/klog/v2"
 )
 
 const (
@@ -70,15 +72,19 @@ func (c *SSHConnection) fetchAuthMethod() (authMethod []ssh.AuthMethod, err erro
 	if password != "" {
 		authMethod = append(authMethod, ssh.Password(password))
 	}
+
 	return
 }
 
 // Connect creates the client connection object
 func (c *SSHConnection) Connect() error {
+	klog.V(1).Infof("SSH connecting to %s as %s", c.credentials.Hostname, c.credentials.Username)
+
 	authMethod, err := c.fetchAuthMethod()
 	if err != nil {
 		return err
 	}
+
 	client, err := ssh.Dial(TCP_TYPE, c.credentials.Hostname, &ssh.ClientConfig{
 		User:            c.credentials.Username,
 		Auth:            authMethod,
@@ -111,7 +117,10 @@ func (c *SSHConnection) Run(args string) (string, error) {
 	// Multiline PowerShell commands over SSH trip over newlines - only first one is executed
 	args = regexp.MustCompile(`\r?\n`).ReplaceAllLiteralString(args, ";")
 	cmd := fmt.Sprintf("powershell -nologo -noprofile -c { %s }", args)
-	// TODO(mloskot): Log executed commands in --verbose mode
+
+	// TODO(mloskot): Why this is not printed?
+	klog.V(1).Infof("SSH executing command: %s", cmd)
+
 	if err := session.Run(cmd); err != nil {
 		return "", err
 	}

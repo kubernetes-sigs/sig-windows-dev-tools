@@ -17,14 +17,18 @@ limitations under the License.
 package cmd
 
 import (
+	"flag"
 	"os"
 	"swdt/apis/config/v1alpha1"
 	"swdt/pkg/config"
 
 	"github.com/spf13/cobra"
+	"k8s.io/klog"
 )
 
 func init() {
+	klog.InitFlags(nil)
+	rootCmd.PersistentFlags().AddGoFlagSet(flag.CommandLine)
 	rootCmd.PersistentFlags().StringP("config", "c", "samples/config.yaml", "Configuration file path.")
 }
 
