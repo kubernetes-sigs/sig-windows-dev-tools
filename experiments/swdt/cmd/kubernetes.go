@@ -17,15 +17,12 @@ limitations under the License.
 package cmd
 
 import (
-	"github.com/spf13/cobra"
 	"swdt/apis/config/v1alpha1"
 	"swdt/pkg/pwsh/executor"
 	"swdt/pkg/pwsh/kubernetes"
-)
 
-func init() {
-	rootCmd.AddCommand(kubernetesCmd)
-}
+	"github.com/spf13/cobra"
+)
 
 // setupCmd represents the setup command
 var kubernetesCmd = &cobra.Command{
@@ -40,7 +37,7 @@ func RunKubernetes(cmd *cobra.Command, args []string) error {
 		err        error
 		nodeConfig *v1alpha1.Node
 	)
-	if nodeConfig, err = loadConfiguration(); err != nil {
+	if nodeConfig, err = loadConfiguration(cmd); err != nil {
 		return err
 	}
 

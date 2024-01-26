@@ -16,8 +16,21 @@ limitations under the License.
 
 package main
 
-import "swdt/cmd"
+import (
+	"os"
+	"swdt/cmd"
+
+	"k8s.io/apimachinery/pkg/util/runtime"
+	"k8s.io/component-base/cli"
+	"k8s.io/component-base/featuregate"
+	logsapi "k8s.io/component-base/logs/api/v1"
+)
+
+var featureGate = featuregate.NewFeatureGate()
 
 func main() {
-	cmd.Execute()
+	runtime.Must(logsapi.AddFeatureGates(featureGate))
+	command := cmd.NewRootCommand()
+	code := cli.Run(command)
+	os.Exit(code)
 }

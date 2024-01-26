@@ -24,10 +24,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func init() {
-	rootCmd.AddCommand(setupCmd)
-}
-
 // setupCmd represents the setup command
 var setupCmd = &cobra.Command{
 	Use:   "setup",
@@ -41,7 +37,8 @@ func RunSetup(cmd *cobra.Command, args []string) error {
 		err        error
 		nodeConfig *v1alpha1.Node
 	)
-	if nodeConfig, err = loadConfiguration(); err != nil {
+
+	if nodeConfig, err = loadConfiguration(cmd); err != nil {
 		return err
 	}
 
