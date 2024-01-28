@@ -21,8 +21,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	scp "github.com/bramvdbogaerde/go-scp"
-	"golang.org/x/crypto/ssh"
 	"io"
 	"os"
 	"path"
@@ -30,6 +28,11 @@ import (
 	"swdt/apis/config/v1alpha1"
 	"sync"
 	"time"
+
+	scp "github.com/bramvdbogaerde/go-scp"
+	"golang.org/x/crypto/ssh"
+
+	klog "k8s.io/klog/v2"
 )
 
 const (
@@ -53,6 +56,7 @@ func (c *SSHConnection) fetchAuthMethod() (authMethod []ssh.AuthMethod, err erro
 		signer     ssh.Signer
 	)
 	if privateKey != "" {
+		klog.V(2).Infof("SSH authenticating with private key '%s'\n", privateKey)
 		file, err = os.Open(privateKey)
 		if err != nil {
 			return
@@ -68,6 +72,7 @@ func (c *SSHConnection) fetchAuthMethod() (authMethod []ssh.AuthMethod, err erro
 		authMethod = append(authMethod, ssh.PublicKeys(signer))
 	}
 	if password != "" {
+		klog.V(2).Info("SSH authenticating with password")
 		authMethod = append(authMethod, ssh.Password(password))
 	}
 	return
@@ -79,6 +84,8 @@ func (c *SSHConnection) Connect() error {
 	if err != nil {
 		return err
 	}
+
+	klog.V(2).Infof("SSH connecting to '%s' as '%s'\n", c.credentials.Hostname, c.credentials.Username)
 	client, err := ssh.Dial(TCP_TYPE, c.credentials.Hostname, &ssh.ClientConfig{
 		User:            c.credentials.Username,
 		Auth:            authMethod,
@@ -111,7 +118,7 @@ func (c *SSHConnection) Run(args string) (string, error) {
 	// Multiline PowerShell commands over SSH trip over newlines - only first one is executed
 	args = regexp.MustCompile(`\r?\n`).ReplaceAllLiteralString(args, ";")
 	cmd := fmt.Sprintf("powershell -nologo -noprofile -c { %s }", args)
-	// TODO(mloskot): Log executed commands in --verbose mode
+	klog.V(2).Infof("SSH executing PowerShell command: %s\n", cmd)
 	if err := session.Run(cmd); err != nil {
 		return "", err
 	}
@@ -121,6 +128,7 @@ func (c *SSHConnection) Run(args string) (string, error) {
 
 // Copy a file from local to remote setting the permissions
 func (c *SSHConnection) Copy(local, remote, perm string) error {
+	klog.V(2).Infof("SSH copying local '%s' to remote '%s'\n", local, remote)
 	file, err := os.Open(local)
 	if err != nil {
 		return err

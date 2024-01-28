@@ -25,6 +25,7 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/serializer"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
+	klog "k8s.io/klog/v2"
 )
 
 var (
@@ -38,6 +39,8 @@ func init() {
 
 // LoadConfigNodeFromFile LoadConfigFromFile returns the marshalled Node configuration object
 func LoadConfigNodeFromFile(file string) (*v1alpha1.Node, error) {
+	klog.V(2).Infof("Loading node configuration from '%s'", file)
+
 	data, err := os.ReadFile(file)
 	if err != nil {
 		return nil, err
